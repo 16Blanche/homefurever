@@ -1,0 +1,272 @@
+import axios from "axios";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Form from 'react-bootstrap/Form';
+import PhoneInput from 'react-phone-number-input/input';
+import 'react-phone-number-input/style.css';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import Image from 'react-bootstrap/Image';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import "./Homepage.css";
+import AddPhoto from "./assets/addphoto.png";
+import StartNavBar from "./StartNavBar";
+
+const SignUp = () => {
+    const navigate = useNavigate();
+    const [pimg, setPimg] = useState("");
+    const [pusername, setPusername] = useState("");
+    const [pemailadd, setPemailadd] = useState("");
+    const [pfname, setPfname] = useState("");
+    const [plname, setPlname] = useState("");
+    const [pmname, setPmname] = useState("");
+    const [ppassword, setPpassword] = useState("");
+    const [prepassword, setPrepassword] = useState("");
+    const [padd, setPadd] = useState("");
+    const [pcontactnumber, setPcontactnumber] = useState("");
+    const [pgender, setPgender] = useState("");
+    const [pbirthdate, setPbirthdate] = useState("");
+    const [pvalidID, setPvalidID] = useState(null);
+    const [errors, setErrors] = useState({});
+    const [showModal, setShowModal] = useState(false); // to show the modal
+    const [privacyAccepted, setPrivacyAccepted] = useState(false); // to track checkbox state
+
+    const validate = () => {
+        const newErrors = {};
+        if (!pusername || pusername.length < 3) newErrors.pusername = "Username must be at least 3 characters long.";
+        if (!pemailadd || !/\S+@\S+\.\S+/.test(pemailadd)) newErrors.pemailadd = "Email address is invalid.";
+        if (!pfname) newErrors.pfname = "First name is required.";
+        if (!plname) newErrors.plname = "Last name is required.";
+        if (!ppassword || ppassword.length < 6) newErrors.ppassword = "Password must be at least 6 characters long.";
+        if (ppassword !== prepassword) newErrors.prepassword = "Passwords do not match.";
+        if (!padd) newErrors.padd = "Address is required.";
+        if (!pcontactnumber || !/^\+?[1-9]\d{1,14}$/.test(pcontactnumber)) newErrors.pcontactnumber = "Contact number is invalid.";
+        if (!pbirthdate) newErrors.pbirthdate = "Birthdate is required.";
+        if (!pgender) newErrors.pgender = "Gender is required.";
+        if (!pvalidID) newErrors.pvalidID = "Valid ID is required.";
+        return newErrors;
+    };
+
+    const handleOpenModal = (e) => {
+        e.preventDefault();
+        const newErrors = validate();
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+        setShowModal(true); // Show the modal
+    };
+
+    const handleAcceptAndSubmit = () => {
+        if (!privacyAccepted) return; // Ensure the user accepted the privacy terms
+
+        const newUser = {
+            pending_id: undefined,
+            p_img: pimg,
+            p_username: pusername,
+            p_emailadd: pemailadd,
+            p_fname: pfname,
+            p_lname: plname,
+            p_mname: pmname,
+            p_password: ppassword,
+            p_repassword: prepassword,
+            p_add: padd,
+            p_contactnumber: pcontactnumber,
+            p_gender: pgender,
+            p_birthdate: pbirthdate ? pbirthdate.toLocaleDateString("en-GB") : "",
+            p_validID: pvalidID
+        };
+
+        const formData = new FormData();
+        Object.keys(newUser).forEach(key => {
+            if (newUser[key] instanceof File) {
+                formData.append(key, newUser[key]);
+            } else {
+                formData.append(key, newUser[key]);
+            }
+        });
+
+        axios.post("http://localhost:8000/api/user/new", formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then((response) => {
+            console.log(response.data);
+            setShowModal(false); // Close modal after submission
+            navigate("/login"); // Redirect to login page
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    };
+
+    const handleFileChange = (e) => {
+        setPvalidID(e.target.files[0]);
+    };
+
+    const handleImgChange = (e) => {
+        setPimg(e.target.files[0]);
+    };
+
+    return (
+        <div className="signupbox">
+            <StartNavBar/>
+            <div className="signupbox1">
+                <h1 className="signuptxt">Sign Up</h1>
+                <div className="signupbox2">
+                    <div className="signupbox3">
+                        <div className="signuserrow">
+                            <label htmlFor="fileInput">
+                                <Image src={AddPhoto} className="signaddphoto" />
+                            </label>
+                            <input
+                                type="file"
+                                id="fileInput"
+                                style={{ display: 'none' }}
+                                onChange={handleImgChange}
+                            />
+                            <div className="signuserdiv">
+                                <p className="title">Username</p>
+                                <input type="text" className="signinput" placeholder="Enter username" onChange={(e) => { setPusername(e.target.value) }} />
+                                <div className="signerror">
+                                    {errors.pusername && <p className="error">{errors.pusername}</p>}
+                                </div>
+                            </div>
+                        </div>
+
+                        <p className="title">Email Address</p>
+                        <input type="text" className="signinput" placeholder="Enter email address" onChange={(e) => { setPemailadd(e.target.value) }} />
+                        <div className="signerror">
+                            {errors.pemailadd && <p className="error">{errors.pemailadd}</p>}
+                        </div>
+
+                        <div className="signnamerow">
+                            <div className="signnamediv">
+                                <p className="title">First Name</p>
+                                <input type="text" className="signshortinput" placeholder="Enter first name" onChange={(e) => { setPfname(e.target.value) }} />
+                                <div className="signerror">
+                                    {errors.pfname && <p className="error">{errors.pfname}</p>}
+                                </div>
+                            </div>
+                            <div className="signnamediv">
+                                <p className="title">Last Name</p>
+                                <input type="text" className="signshortinput" placeholder="Enter last name" onChange={(e) => { setPlname(e.target.value) }} />
+                                <div className="signerror">
+                                    {errors.plname && <p className="error">{errors.plname}</p>}
+                                </div>
+                            </div>
+                            <div className="signmiddiv">
+                                <p className="title">M.I.</p>
+                                <input type="text" className="signinput" placeholder="M.I" onChange={(e) => { setPmname(e.target.value) }} />
+                            </div>
+                        </div>
+
+                        <div className="pwbox">
+                            <div className="pwbox2">
+                                <p className="title">Password</p>
+                                <input type="password" className="signshortinput" placeholder="Enter password" onChange={(e) => { setPpassword(e.target.value) }} />
+                                <div className="signerror">
+                                    {errors.ppassword && <p className="error">{errors.ppassword}</p>}
+                                </div>
+                            </div>
+
+                            <div className="pwbox2">
+                                <p className="title">Re-enter Password</p>
+                                <input type="password" className="signshortinput" placeholder="Re-enter password" onChange={(e) => { setPrepassword(e.target.value) }} />
+                                <div className="signerror">
+                                    {errors.prepassword && <p className="error">{errors.prepassword}</p>}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="signupbox3">
+                        <p className="title">Address</p>
+                        <input type="text" className="signinput" placeholder="Enter complete address" onChange={(e) => { setPadd(e.target.value) }} />
+                        <div className="signerror">
+                            {errors.padd && <p className="error">{errors.padd}</p>}
+                        </div>
+                        <div className="signupbox4">
+                            <div className="signupbox5">
+                                <p className="title">Contact Number</p>
+                                <PhoneInput placeholder="Enter phone number" defaultCountry="PH" className="signshortinput" onChange={setPcontactnumber} />
+                                <div className="signerror">
+                                    {errors.pcontactnumber && <p className="error">{errors.pcontactnumber}</p>}
+                                </div>
+                            </div>
+
+                            <div className="signupbox5">
+                                <p className="title">Birthdate</p>
+                                <DatePicker
+                                    selected={pbirthdate}
+                                    onChange={date => setPbirthdate(date)}
+                                    dateFormat="dd/MM/yyyy"
+                                    placeholderText="DD/MM/YYYY"
+                                    className="signshortinput"
+                                />
+                                <div className="signerror">
+                                    {errors.pbirthdate && <p className="error">{errors.pbirthdate}</p>}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="signupbox6">
+                            <div className="signupbox8">
+                                <div className="signupbox7">
+                                    <p className="title">Gender</p>
+                                    <div className="gender">
+                                        <input type="radio" value="Male" name="gender" onChange={(e) => { setPgender(e.target.value) }} />Male
+                                        <input type="radio" className="gendertext" value="Female" name="gender" onChange={(e) => { setPgender(e.target.value) }} />Female
+                                    </div>
+                                    <div className="signerror">
+                                        {errors.pgender && <p className="error">{errors.pgender}</p>}
+                                    </div>
+                                </div>
+                                <div className="signupbox7">
+                                    <p className="title">Valid ID</p>
+                                    <div className="validid">
+                                        <input type="file" onChange={handleFileChange} />
+                                    </div>
+                                    <div className="signerror">
+                                        {errors.pvalidID && <p className="error">{errors.pvalidID}</p>}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="signindiv">
+                            <Button type="submit" className="signinbtn" onClick={handleOpenModal}>Sign Up</Button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Modal for Data Privacy */}
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Data Privacy</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Your privacy is important to us. This statement outlines how we collect, use, and protect your information when you sign up for our service.</p>
+                    <ul>
+                        <li>We collect your name, email, and other details for account management.</li>
+                        <li>We ensure your data is secure and only use it for app functionality.</li>
+                        <li>You have the right to access, update, or delete your data.</li>
+                    </ul>
+                    <Form.Check 
+                        type="checkbox"
+                        label="I accept the Data Privacy Policy"
+                        checked={privacyAccepted}
+                        onChange={() => setPrivacyAccepted(!privacyAccepted)}
+                    />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={handleAcceptAndSubmit} disabled={!privacyAccepted}>Submit</Button>
+                </Modal.Footer>
+            </Modal>
+        </div>
+    );
+};
+
+export default SignUp;

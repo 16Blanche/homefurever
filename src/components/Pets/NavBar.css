@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Antic&display=swap');
+
+.navbar{
+    height: 50px;
+    background-color: rgb(9, 119, 106);
+}
+
+.nav-link {
+    display: block;
+    padding: var(--bs-nav-link-padding-y) var(--bs-nav-link-padding-x);
+    font-size: var(--bs-nav-link-font-size);
+    font-weight: var(--bs-nav-link-font-weight);
+    color: white;
+    text-decoration: none;
+    background: 0 0;
+    border: 0;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+}
+
+.info {
+    margin-top: 50px;
+    width: 900px;
+    height: 300px;
+    display: inline-flex;
+}
+
+
+
+.Pets {
+
+    height: 100px;
+    display: inline-flex;
+    background-color: blue;
+    
+}
+
+body {
+    margin: 0;
+    font-family: var(--bs-body-font-family);
+    font-size: var(--bs-body-font-size);
+    font-weight: var(--bs-body-font-weight);
+    line-height: var(--bs-body-line-height);
+    color: var(--bs-body-color);
+    text-align: var(--bs-body-text-align);
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+}

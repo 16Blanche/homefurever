@@ -1,0 +1,456 @@
+import axios from "axios";
+import CryptoJS from 'crypto-js';
+import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import Table from 'react-bootstrap/Table';
+import NavigationBar from "./NavigationBar";
+import TaskBar from "./TaskBar";
+import AuthContext from '../../context/AuthContext';
+import './Homepage.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+
+const AdminList = () => {
+    const navigate = useNavigate();
+    const { user } = useContext(AuthContext);
+    const { pusername } = useParams();
+
+    const [allStaff, setAllStaff] = useState([]);
+    const [allAdmins, setAllAdmins] = useState([]);
+    const [selectedUserForView, setSelectedUserForView] = useState(null);
+    const [selectedUserForDelete, setSelectedUserForDelete] = useState(null);
+    const [selectedStaff, setSelectedStaff] = useState(null);
+
+    const [showViewModal, setShowViewModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showAddAdminModal, setShowAddAdminModal] = useState(false);
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+
+
+    const [showPassword, setShowPassword] = useState(false);
+
+    const generateUsername = (firstName, lastName) => {
+        const shortFirstName = firstName.charAt(0).toLowerCase();
+        const shortLastName = lastName.slice(0, 5).toLowerCase();
+        const randomNum = Math.floor(Math.random() * 1000);
+        return `${shortFirstName}${shortLastName}${randomNum}`;
+    };
+    
+    
+    const generatePassword = () => {
+        const randomBytes = CryptoJS.lib.WordArray.random(16); // Generates 16 random bytes
+        return randomBytes.toString(CryptoJS.enc.Hex); // Converts to hex string
+    };
+
+    const handlePasswordToggle = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const [formData, setFormData] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        username: "",
+        password: ""
+    });
+
+    const handleConfirmation = (e) => {
+        e.preventDefault(); // Prevent form submission
+        setShowConfirmationModal(true);
+    }
+    
+
+    const [formErrors, setFormErrors] = useState({});
+
+    const validateForm = () => {
+        const errors = {};
+        if (!formData.username) errors.username = "Username is required";
+        if (!formData.password) {
+            errors.password = "Password is required";
+        } else if (formData.password.length < 6) {
+            errors.password = "Password must be at least 6 characters";
+        }
+        if (!formData.s_id) {
+            errors.s_id = "Staff ID is required";
+        }
+        setFormErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+    
+
+    useEffect(() => {
+        axios.get("http://localhost:8000/api/staff/all")
+            .then((response) => {
+                setAllStaff(response.data.theStaff || []);
+            })
+            .catch((err) => {
+                console.error("Error fetching staff:", err);
+            });
+    }, []);
+
+useEffect(() => {
+    axios.get("http://localhost:8000/api/admin/all")
+        .then((response) => {
+            setAllAdmins(response.data.admins || []);
+        })
+        .catch((err) => {
+            console.error("Error fetching admins:", err);
+        });
+}, []);
+
+
+    useEffect(() => {
+        if (pusername) {
+            axios.get(`http://localhost:8000/api/user/username/${pusername}`)
+                .then((response) => {
+                    setSelectedUserForView(response.data.theUser);
+                })
+                .catch((err) => {
+                    console.error("Error fetching user by username:", err);
+                });
+        }
+    }, [pusername]);
+
+    const handleAddAdmin = () => {
+        setShowAddAdminModal(true); // Open the staff selection modal
+    };
+
+    const handleStaffSelection = (staff) => {
+        setSelectedStaff(staff);
+        setFormData({
+            s_id: staff.s_id,
+            firstName: staff.s_fname,
+            lastName: staff.s_lname,
+            middleName: staff.s_mname,
+            address: staff.s_add,
+            contact: staff.s_contactnumber,
+            position: staff.s_position,
+            gender: staff.s_gender,
+            birthdate: staff.s_birthdate,
+            email: staff.s_email,
+
+            username: '',
+            password: ''
+        });
+        setShowAddAdminModal(false); // Close staff selection modal
+    };
+
+    const handleConfirmAddAdmin = async () => {
+        const generatedUsername = generateUsername(formData.firstName, formData.lastName);
+        const generatedPassword = generatePassword();
+    
+        const updatedFormData = {
+            ...formData,
+            username: generatedUsername,
+            password: generatedPassword,
+            s_id: selectedStaff.s_id // Include s_id here
+        };
+    
+        setFormData(updatedFormData);
+    
+        if (validateForm()) {
+            try {
+                const response = await axios.post("http://localhost:8000/api/admin/new", {
+                    firstName: updatedFormData.firstName, 
+                    lastName: updatedFormData.lastName,
+                    middleName: updatedFormData.middleName,
+                    address: updatedFormData.address,
+                    contact: updatedFormData.contact,
+                    position: updatedFormData.position,
+                    gender: updatedFormData.gender,
+                    birthdate: updatedFormData.birthdate,
+                    email: updatedFormData.email,
+                    username: generatedUsername,
+                    password: generatedPassword,
+                    s_id: updatedFormData.s_id // Send s_id to backend
+                });
+    
+                console.log("Admin added:", response.data);
+                setShowConfirmationModal(false); // Close confirmation modal after adding admin
+    
+                // Send email with generated credentials
+                await axios.post("http://localhost:8000/api/send-email", {
+                    to: updatedFormData.email,
+                    subject: "Your Admin Credentials",
+                    text: `Dear ${updatedFormData.firstName},\n\nYour admin account has been created. Below are your login credentials:\n\nUsername: ${generatedUsername}\nPassword: ${generatedPassword}\n\nPlease change your password after logging in.\n`
+                });
+                console.log("Email successfully sent");
+    
+                fetchAdmins();
+    
+            } catch (err) {
+                console.error("There was an error adding the admin!", err.response ? err.response.data : err.message);
+            }
+        }
+    };
+
+    const fetchAdmins = () => {
+        axios.get("http://localhost:8000/api/admin/all")
+            .then((response) => {
+                setAllAdmins(response.data.admins || []);
+            })
+            .catch((err) => {
+                console.error("Error fetching admins:", err);
+            });
+    };
+    
+    
+
+        // Handle input change
+        const handleInputChange = (e) => {
+            const { name, value } = e.target;
+            setFormData({ ...formData, [name]: value });
+        };
+
+    const handleViewButton = (user) => {
+        setSelectedUserForView(user);
+        setShowViewModal(true);
+    };
+
+    const handleDeleteButton = (user) => {
+        setSelectedUserForDelete(user);
+        setShowDeleteModal(true);
+    };
+
+    const handleDeleteCancel = () => {
+        setShowDeleteModal(false);
+    };
+
+    // const handleDeleteConfirm = (admin) => {
+    //     axios.delete(`http://localhost:8000/api/admin/delete/${admin._id}`)
+    //         .then((response) => {
+    //             console.log(response.data);
+    //             setAllAdmins(allAdmins.filter((s) => s._id !== admin._id)); // Remove from current staff list
+    //             setShowDeleteModal(false);
+    //         })
+    //         .catch((error) => {
+    //             console.error("Error transferring staff to DeletedStaff schema:", error);
+    //         });
+    // };
+
+    // const handleDeleteConfirm = async (admin) => {
+    //     try {
+    //         // Ensure the ID is correctly passed in the URL
+    //         await axios.post(`http://localhost:8000/api/deletedadmin/new/${admin._id}`, {
+    //             da_id: admin.a_id,
+    //             da_fname: admin.a_fname,
+    //             da_lname: admin.a_lname,
+    //             da_email: admin.a_email,
+    //             da_username: admin.a_username,
+    //             da_password: admin.a_password // Ensure you handle passwords securely
+    //         });
+    
+    //         // Delete the admin from the current list
+    //         await axios.delete(`http://localhost:8000/api/admin/delete/${admin._id}`);
+        
+    //         // Update the state to remove the admin from the list
+    //         setAllAdmins(allAdmins.filter((s) => s._id !== admin._id)); // Remove from current admin list
+    //         setShowDeleteModal(false);
+    //     } catch (error) {
+    //         console.error("Error handling deletion:", error);
+    //     }
+    // };
+
+    const handleDeleteConfirm = async (admin) => {
+        try {
+            // Update the s_role to 'deleted-admin'
+            await axios.patch(`http://localhost:8000/api/admin/update/${admin._id}`, {
+                s_role: 'deleted-admin'
+            });
+            
+            // Update the state to remove the admin from the visible admin list
+            setAllAdmins(allAdmins.filter((s) => s._id !== admin._id)); // Remove from current admin list
+            setShowDeleteModal(false);
+        } catch (error) {
+            console.error("Error handling deletion:", error);
+        }
+    };
+    
+    
+    
+
+    return (
+        <>
+            <div className="box">
+                <div className="navbox">
+                    <NavigationBar />
+                </div>
+
+                <div className="nubox2">
+                    <TaskBar />
+
+                    <div className="nubox3">
+                        <div className="nubox4">
+                            <h2 className="newuser">ADMINS</h2>
+                            <input type="text" className="petsearch" placeholder="Search"/>
+                            <Button className="staddstbtn" onClick={handleAddAdmin}>
+                                <p className="staddsttxt">+ Add Admin</p>
+                            </Button>
+                        </div>
+                        <table className="nutable">
+                            <thead>
+                                <tr className="pltheader">
+                                    <th>Admin ID</th>
+                                    <th>Username</th>
+                                    <th>Last Name</th>
+                                    <th>First Name</th>
+                                    <th>Email</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {allAdmins
+                                .filter((admin) => admin.s_role === 'admin') // Filter for only admins
+                                .map((element) => (
+                                    <tr key={element._id}>
+                                        <td className="nutabletext">{element.a_id}</td>
+                                        <td className="nutabletext">{element.a_username}</td>
+                                        <td className="nutabletext">{element.a_lname}</td>
+                                        <td className="nutabletext">{element.a_fname}</td>
+                                        <td className="nutabletext">{element.a_email}</td>
+                                        <td>
+                                            <Button className="nudeclinebtn" onClick={() => handleDeleteButton(element)}>Delete</Button>
+                                        </td>
+                                    </tr>
+                                ))
+                            }
+                        </tbody>
+
+                        </table>
+
+                        {/* View Modal */}
+                        <Modal show={showViewModal} onHide={() => setShowViewModal(false)}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>View Admin Information</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                {selectedUserForView && (
+                                    <div className="nuview-modal-content">
+                                        <div className="nuleft-column"> 
+                                            <p>User ID: {selectedUserForView.s_id}</p>
+                                            <p>Username: {selectedUserForView.a_username}</p>
+                                            <p>Email: {selectedUserForView.s_email}</p>
+                                            <p>First Name: {selectedUserForView.firstName}</p>
+                                            <p>Last Name: {selectedUserForView.lastName}</p>
+                                            <p>Middle Name: {selectedUserForView.middleName}</p>
+                                        </div>
+                                        <div className="nuright-column">
+                                            <p>Address: {selectedUserForView.address}</p>
+                                            <p>Gender: {selectedUserForView.gender}</p>
+                                            <p>Date of Birth: {selectedUserForView.dateOfBirth}</p>
+                                            <p>Phone Number: {selectedUserForView.contactNumber}</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </Modal.Body>
+                        </Modal>
+
+                        {/* Add Admin Modal */}
+                        <Modal show={showAddAdminModal} onHide={() => setShowAddAdminModal(false)}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Select Staff to Add as Admin</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <Table striped bordered hover>
+                                    <thead>
+                                        <tr>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Position</th>
+                                            {/* <th>Action</th> */}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {allStaff && allStaff.filter(admin => admin.s_role !== 'admin').map(staff => (
+                                            <tr key={staff._id} onClick={() => handleStaffSelection(staff)} style={{ cursor: 'pointer' }}>
+                                                <td>{staff.s_fname}</td>
+                                                <td>{staff.s_lname}</td>
+                                                <td>{staff.s_position}</td>
+                                                {/* <td>
+                                                    <Button variant="primary" onClick={() => handleStaffSelection(staff)}>
+                                                        Select
+                                                    </Button>
+                                                </td> */}
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </Table>
+                            </Modal.Body>
+                        </Modal>
+
+
+
+                        {/* New Confirmation Modal */}
+                        <Modal show={showConfirmationModal} onHide={() => setShowConfirmationModal(false)}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Confirm Add Admin</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <p>Are you sure you want to add {selectedStaff?.s_fname} {selectedStaff?.s_lname} as an admin?</p>
+                                <p>Please ensure the email address below is correct before proceeding: <strong>Email: {formData.email}</strong></p>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={() => setShowConfirmationModal(false)}>
+                                    Cancel
+                                </Button>
+                                <Button variant="primary" onClick={handleConfirmAddAdmin}>
+                                    Confirm
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
+
+
+                    {/* STAFF SELECTION MODAL */}
+                    <Modal show={selectedStaff !== null} onHide={() => setSelectedStaff(null)}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Assign Admin Credentials</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <form onSubmit={handleConfirmation}>
+                                <div>
+                                    <label>First Name: {formData.firstName}</label>
+                                    <label>Middle Name: {formData.middleName}</label>
+                                    <label>Last Name: {formData.lastName}</label>
+                                    <label>Position: {formData.position}</label>
+                                    <label>Gender: {formData.gender}</label>
+                                    <label>Position: {formData.position}</label>
+                                    <label>Email: {formData.email}</label>
+                                    <label>Contact Number: {formData.contact}</label>
+                                    <label>Address: {formData.address}</label>
+                                    <label>Birthdate: {formData.birthdate}</label>
+                                </div>
+                                <Button variant="primary" type="submit">
+                                    Add Admin
+                                </Button>
+                            </form>
+                        </Modal.Body>
+                    </Modal>
+
+                    {/* Delete Modal */}
+                    <Modal show={showDeleteModal} onHide={handleDeleteCancel}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Confirm Admin Deletion</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <p>Are you sure you want to remove this user as an admin?</p>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={handleDeleteCancel}>
+                                Cancel
+                            </Button>
+                            <Button variant="danger" onClick={() => handleDeleteConfirm(selectedUserForDelete)}>
+                                Confirm Delete
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+};
+
+export default AdminList;
