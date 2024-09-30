@@ -128,7 +128,7 @@ const MyPosts = () => {
                                             <Button key={pet._id} className="pet-post" onClick={() => handleViewPost(pet)}>
                                                 <div className="mpimage-container">
                                                     {pet.pet_img && (
-                                                        <Image src={`data:image/jpeg;base64,${convertToBase64(pet.pet_img.data)}`} rounded className="clickable-image" />
+                                                        <Image src={`data:image/jpeg;base64,${convertToBase64(pet.pet_img.data)}`} rounded className="mpimage" />
                                                     )}
                                                 </div>
                                                     <p className="mpname">{pet.p_name}</p>
@@ -137,25 +137,6 @@ const MyPosts = () => {
                                         ))}
                             </div>
                         </div>
-                        {/* <Container fluid>
-                            <div className="mprow">
-                                <Col xs={10} className="text-center mt-4">
-                                    <div className="mprow2">
-                                        {pets && pets.map(pet => (
-                                            <div key={pet._id} className="pet-post">
-                                                <div className="image-container">
-                                                    {pet.pet_img && (
-                                                        <Image src={`data:image/jpeg;base64,${convertToBase64(pet.pet_img.data)}`} rounded className="clickable-image" />
-                                                    )}
-                                                </div>
-                                                <div className="mt-2">{pet.p_name}</div>
-                                                <div className="mt-2">{pet.p_age} years old, {pet.p_gender} {pet.p_type}</div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </Col>
-                            </div>
-                        </Container> */}
 
                         {/* Add Modal */}
                         <Modal show={showAddModal} onHide={() => setShowAddModal(false)}>

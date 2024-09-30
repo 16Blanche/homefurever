@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const multer = require('multer');
-const { type } = require('@testing-library/user-event/dist/type');
+const userEvent = require('@testing-library/user-event');
 const VerifiedSchema = new mongoose.Schema({
 
 

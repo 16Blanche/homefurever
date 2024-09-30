@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const StaffCounter = require('./staffCounter');
-const { type } = require('@testing-library/user-event/dist/type');
+const userEvent = require('@testing-library/user-event');
 
 const StaffSchema = new mongoose.Schema({
     s_id: { 

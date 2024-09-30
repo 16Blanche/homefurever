@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const UserCounter = require('./userCounter');
-const { type } = require('@testing-library/user-event/dist/type');
+const userEvent = require('@testing-library/user-event');
+
+
 
 const UserSchema = new mongoose.Schema({
     pending_id: { 

@@ -1567,17 +1567,16 @@
 
 .mpimage-container {
     width: auto;
-    height: 80%;
+    height: 3rem;
     display: inline-block;
     background-color: none;
     padding: 10px;
     border-radius: 20px;
-
 }
 
-.clickable-image {
-    width: 100%;
-    height: 100%;
+.mpimage {
+    width: auto;
+    height: 10rem;
     cursor: pointer;
 }
 
@@ -2814,7 +2813,24 @@
     padding: 1rem;
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     gap: 1rem
+}
+.left-button, .right-button {
+    background-color: #888888;
+    border: #d3d3d3;
+    border-radius: 100%;
+    color: white;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-content: center;
+    align-items: center;
+}
+.left-button:disabled, .right-button:disabled {
+    background-color: #d3d3d3; /* Disabled background color */
+    color: #888888; /* Disabled text color */
+    cursor: not-allowed; /* Shows 'not-allowed' cursor when hovering */
 }
 .adoptions-box2{
     width: 88%;
@@ -2864,7 +2880,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add box shadow */
 }
 .adoption-card{
-    width: 20%;
+    width: 18%;
     height: 100%;
     justify-content: center;
     align-items: center;
