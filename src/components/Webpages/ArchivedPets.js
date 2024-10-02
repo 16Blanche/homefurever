@@ -171,7 +171,7 @@ const ArchivedPets =()=>{
                         </div>
                         
                         
-                        <table className="pltable">
+                        <table className="ultable">
                             <thead>
                                 <tr className="pltheader">
                                     <th>Pet ID</th>
@@ -222,72 +222,6 @@ const ArchivedPets =()=>{
                                 )}
                             </Modal.Body>
                         </Modal>
-
-                        {/* Edit Modal */}
-                        {/* <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
-                            <Modal.Header closeButton>
-                                <Modal.Title>Edit Pet Information</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <Form onSubmit={handleEditSubmit}>
-                                    <Form.Group controlId="formName">
-                                        <Form.Label>Name</Form.Label>
-                                        <Form.Control type="text" name="name" defaultValue={selectedPet?.ap_name} required />
-                                    </Form.Group>
-                                    <Form.Group controlId="formType" className="mt-2">
-                                        <Form.Label>Type</Form.Label>
-                                        <Form.Control type="text" name="type" defaultValue={selectedPet?.ap_type} required />
-                                    </Form.Group>
-                                    <Form.Group controlId="formBreed" className="mt-2">
-                                        <Form.Label>Breed</Form.Label>
-                                        <Form.Control type="text" name="breed" defaultValue={selectedPet?.ap_breed} required />
-                                    </Form.Group>
-                                    <Form.Group controlId="formAge" className="mt-2">
-                                        <Form.Label>Age</Form.Label>
-                                        <Form.Control type="text" name="age" defaultValue={selectedPet?.ap_age} required />
-                                    </Form.Group>
-                                    <Form.Group controlId="formGender" className="mt-2">
-                                        <Form.Label>Gender</Form.Label>
-                                        <Form.Control type="text" name="gender" defaultValue={selectedPet?.ap_gender} required />
-                                    </Form.Group>
-                                    <Form.Group controlId="formWeight" className="mt-2">
-                                        <Form.Label>Weight(kg)</Form.Label>
-                                        <Form.Control type="text" name="weight" defaultValue={selectedPet?.ap_weight} required />
-                                    </Form.Group>
-                                    <Form.Group controlId="formMedicalHistory" className="mt-2">
-                                        <Form.Label>Medical History</Form.Label>
-                                        <Form.Control type="text" name="medicalhistory" defaultValue={selectedPet?.ap_medicalhistory} required />
-                                    </Form.Group>
-                                    <Form.Group controlId="formVaccines" className="mt-2">
-                                        <Form.Label>Vaccines</Form.Label>
-                                        <Form.Control type="text" name="vaccines" defaultValue={selectedPet?.ap_vaccines} required />
-                                    </Form.Group>
-                                    <Button variant="primary" type="submit" className="mt-3">Save Changes</Button>
-                                </Form>
-                            </Modal.Body>
-                        </Modal> */}
-
-                        {/* <DeleteModal
-                                show={showDeleteModal}
-                                onHide={handleDeleteCancel}
-                                onDelete={handleDeleteConfirm}
-                        /> */}
-
-                        {/* <Modal show={showRestoreModal} onHide={() => setShowRestoreModal(false)}>
-                            <Modal.Header closeButton>
-                                <Modal.Title>Restore Pet</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <FormGroup>Are you sure you want to restore this pet?</FormGroup>
-                                <FormGroup>
-                                    <button onClick={handleRestoreSubmit} className="mt-3">Yes</button>
-                                    <button onClick={handleRestoreModalClose} className="mt-3">No</button>
-                                </FormGroup>
-                                
-                            </Modal.Body>
-                        </Modal> */}
-
-
                     </div>
                 </div>
             </div>

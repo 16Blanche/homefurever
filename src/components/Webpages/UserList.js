@@ -12,7 +12,6 @@ import './Homepage.css';
 import TaskBar from "./TaskBar";
 import NavigationBar from "./NavigationBar";
 import Modal from 'react-bootstrap/Modal';
-
 import AuthContext from '../../context/AuthContext';
 
 

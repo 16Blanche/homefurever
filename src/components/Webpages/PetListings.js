@@ -236,7 +236,7 @@ const PetListings =()=>{
                     <>
                         <Button className="plviewbtn" onClick={() => handleViewButton(row)}>View</Button>
                         <Button className="pleditbtn" onClick={() => handleEditButton(row)}>Edit</Button>
-                        <Button className="pldeletebtn" onClick={() => handleDeleteButton(row)}>Delete</Button>
+                        <Button className="pldeletebtn" onClick={() => handleArchiveModalShow(row)}>Delete</Button>
                     </>
                 ),
             },

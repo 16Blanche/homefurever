@@ -5,15 +5,13 @@ import Image from 'react-bootstrap/Image';
 import PinkNavigationBar from "./PinkNavigationBar";
 import './Users.css';
 import AuthContext from '../../context/AuthContext';
-import { Progress } from 'rsuite'; // Import Progress from React Suite
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-import { StarFill, Star } from 'react-bootstrap-icons'; // Import star icons
-
+import { StarFill, Star } from 'react-bootstrap-icons';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import { Check, Close } from '@mui/icons-material'; // Optional:
+import { Check, Close } from '@mui/icons-material';
 
 const convertToBase64 = (buffer) => {
     try {
@@ -33,7 +31,7 @@ const AdoptionTracker = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [userProfileImage, setUserProfileImage] = useState(null);
-
+    const [userProfile, setUserProfile] = useState(null);
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
     const [rating, setRating] = useState(0);
     const [feedbackText, setFeedbackText] = useState('');
@@ -43,6 +41,47 @@ const AdoptionTracker = () => {
 
     const steps = ['Submitted', 'Accepted', 'Adoption Complete'];
 
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('No access token found.');
+                setLoading(false);
+                return;
+            }
+        
+            try {
+                const response = await axios.get('http://localhost:8000/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+        
+                setUserProfile(response.data.user);
+                if (response.data.user.profileImage && response.data.user.profileImage.data) {
+                    const userImageBase64 = convertToBase64(response.data.user.profileImage.data);
+                    setUserProfileImage(`data:image/jpeg;base64,${userImageBase64}`);
+                }
+            } catch (error) {
+                if (error.response) {
+                    console.error('Failed to fetch profile:', error.response.data.message || error.response.statusText);
+                    setError(error.response.data.message || 'Failed to fetch profile');
+                } else if (error.request) {
+                    console.error('Error fetching profile:', error.request);
+                    setError('No response received');
+                } else {
+                    console.error('Error fetching profile:', error.message);
+                    setError('Error fetching profile');
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserProfile();
+    }, []);
+    
     useEffect(() => {
         const fetchAdoptions = async () => {
             const token = localStorage.getItem('token');
@@ -74,7 +113,6 @@ const AdoptionTracker = () => {
                 setAdoptions(sortedAdoptions);
                 setLoading(false);
 
-                // Check if feedback exists for the first adoption if available
                 if (sortedAdoptions.length > 0) {
                     const firstAdoptionId = sortedAdoptions[0]._id;
                     const firstPetId = sortedAdoptions[0].p_id._id;
@@ -110,33 +148,14 @@ const AdoptionTracker = () => {
         setSelectedAdoption(adoption);
         fetchPetById(adoption.p_id._id);
         
-        // Check feedback existence for the selected adoption
         if (adoption._id) {
             checkFeedbackExists(adoption._id);
-        }
-    };
-    
-
-    const getProgressValue = (status) => {
-        switch (status) {
-            case 'rejected':
-            case 'failed':
-                return 0;
-            case 'pending':
-                return 33;
-            case 'accepted':
-                return 66;
-            case 'complete':
-                return 100;
-            default:
-                return 0;
         }
     };
 
     const getStatusMessage = (status, visitDate = '', visitTime = '') => {
         const formattedDate = visitDate ? new Date(visitDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
         
-            // Format the time
         const formatTime = (time) => {
             const [hours, minutes] = time.split(':');
             const date = new Date();
@@ -264,13 +283,13 @@ const AdoptionTracker = () => {
             <div className="trackerbox1">
                 <div className="trackerbox2">
                     {/* Display User Information */}
-                    {userProfileImage && (
+                    {userProfile && (
                         <div className="tracker-profile-box">
                             <div className="tracker-profile-imgbox">
                                 <Image src={userProfileImage} alt="Profile" className="tracker-profile-img" />
                             </div>
                             <div className="tracker-profile-text">
-                                <p className="tracker-profile-uname">{adoptions.length > 0 ? `${adoptions[0].user.firstName} ${adoptions[0].user.lastName}` : ''}</p>
+                                <p className="tracker-profile-uname">{userProfile.firstName} {userProfile.lastName}</p>
                                 <p className="tracker-profile-petadopter">PET ADOPTER</p>
                             </div>
                         </div>
