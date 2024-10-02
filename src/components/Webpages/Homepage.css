@@ -1249,6 +1249,7 @@
 .petlistbox4{
     display: flex;
     flex-direction: row;
+    margin-bottom: 2rem;
 }
 .petsearch{
     width: 25%;
@@ -1297,11 +1298,9 @@
     padding:0px;
 }
 .pltable{
-    width: 100%;
-    height: 4%;
-    margin-top: 30px;
-    table-layout: fixed;
-    border-collapse: collapse;
+    height: 46rem !important;
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Disable horizontal scrolling */
 }
 .pltheader{
     height: 10%;
@@ -1323,8 +1322,7 @@
     background-color: #f2f2f2;
 }
 .plviewbtn{
-    width: 18%;
-    height: 1%;
+
     color: rgb(59, 113, 184);
     font-weight: bold;
     text-align: center;
@@ -1335,7 +1333,7 @@
     margin-right: 5px;
 }
 .pleditbtn{
-    width: 18%;
+
     color: rgb(63, 199, 86);
     font-weight: bold;
     text-align: center;
@@ -1346,7 +1344,7 @@
     margin-right: 5px;
 }
 .pldeletebtn{
-    width: 18%;
+
     color: rgb(199, 63, 63);
     font-weight: bold;
     text-align: center;
@@ -1566,20 +1564,22 @@
 }
 
 .mpimage-container {
-    width: auto;
-    height: 80%;
+    width: 10rem;
+    height: 10rem;
     display: inline-block;
-    background-color: none;
     padding: 10px;
     border-radius: 20px;
-
+    overflow: hidden;
+    background-color: none;
 }
 
-.clickable-image {
+.mpimage {
     width: 100%;
     height: 100%;
-    cursor: pointer;
+    object-fit: cover; 
+
 }
+
 
 .pet-post {
     align-items: left;
@@ -1602,7 +1602,7 @@
 .mprow {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between; /* Add space between posts if needed */
+    justify-content:left; /* Add space between posts if needed */
   }
 
 .mprow2 {
@@ -1745,6 +1745,26 @@
     pointer-events: none; /* Disable clicking */
     background-color: #f0f0f0; /* Light gray background for past dates */
     color: #ccc; /* Gray text color */
+}
+.evtooltip {
+    position: absolute;
+    background-color: white;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-height: 100px; /* Set max height */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Add ellipsis for overflow */
+}
+
+/* Add this new class for the description to handle overflow */
+.tooltip-description {
+    display: block; /* Ensure the description takes up a new line */
+    overflow: hidden; /* Hide overflow */
+    white-space: nowrap; /* Prevent wrapping */
+    text-overflow: ellipsis; /* Add ellipsis */
 }
 
 
@@ -2119,19 +2139,30 @@
 }
 
 .evbutton-group {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-    margin-left: 15px;
-    padding:15px;
+    display: flex; /* Use Flexbox for alignment */
+    justify-content: flex-end; /* Aligns buttons to the right */
 }
-
+.evview{
+    width: 100%;
+    align-items:center;
+}
 .evneweventbtn {
     margin: 0 10px;
     background-color: #ff69b4;
     color: white;
 }
-
+.evtitlebtn{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: .5rem;
+}
+.evtitlegrp{
+    width: 90%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+}
 .evneweventbtn:hover {
     background-color: #ff69b4;
     color: white;
@@ -2185,28 +2216,31 @@
 }
 
 .evmodalbody {
+    overflow-wrap: break-word; /* Allows long words to break and wrap onto the next line */
+    word-wrap: break-word; /* Older browsers compatibility */
+    word-break: break-word; /* Breaks words when necessary */
+    max-width: 100%; /* Ensures the modal doesn't exceed the screen width */
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
 }
 
+/* Additional styles for the list items in the modal */
 .evmodalbody ul {
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
+    list-style: none; /* Remove bullet points */
 }
 
 .evmodalbody li {
-    margin-bottom: 10px;
+    padding: 5px; /* Add some padding */
+    border-bottom: 1px solid #ccc; /* Add a border to separate events */
+    overflow-wrap: break-word; /* Ensures text within list items also wraps */
+    max-width: 100%; /* Prevents overflow */
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: row;
 }
 
-.evmodalbody .button-group {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 8%;
-}
+
 
 
 /* ABOUT US */
@@ -2814,8 +2848,26 @@
     padding: 1rem;
     display: flex;
     flex-direction: row;
-    gap: 1rem
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
 }
+.left-button, .right-button {
+    background-color: #888888; /* Default button color */
+    color: #d3d3d3;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 100%;
+    border: none;
+    cursor: pointer;
+    align-items: center;
+}
+.left-button:disabled, .right-button:disabled {
+    background-color: #d3d3d3; /* Disabled background color */
+    color: #888888; /* Disabled text color */
+    cursor: not-allowed; /* Shows 'not-allowed' cursor when hovering */
+}
+
 .adoptions-box2{
     width: 88%;
     height: 100%;

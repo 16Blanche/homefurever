@@ -5,6 +5,7 @@ import TaskBar from "./TaskBar";
 import axios from "axios";
 import './Homepage.css';
 import { useNavigate } from "react-router-dom";
+import {ChevronLeft, ChevronRight} from 'react-bootstrap-icons';
 
 const convertToBase64 = (buffer) => {
     try {
@@ -37,7 +38,7 @@ const Adoptions = () => {
     // State for card visibility
     const [pendingStartIndex, setPendingStartIndex] = useState(0);
     const [activeStartIndex, setActiveStartIndex] = useState(0);
-    const cardsToShow = 4;
+    const cardsToShow = 5;
 
     // Fetch pending and active adoptions
     const fetchAdoptions = () => {
@@ -196,7 +197,18 @@ const Adoptions = () => {
                                 <h2 className="adoptions-title">Pending Adoptions</h2>
                                 <Button className="adoptions-feedbackbtn" onClick={() => navigate('/feedbacks')}>View Feedback</Button>
                             </div>
+
                             <div className="adoptions-box">
+                                {/* Previous Button always visible but disabled if at the start */}
+                                <div className="pagination-prev">
+                                    <Button 
+                                        className="left-button" 
+                                        onClick={handlePendingPrev} 
+                                        disabled={pendingStartIndex === 0}>
+                                        <ChevronLeft/>
+                                    </Button>
+                                </div>
+                                
                                 {pendingAdoptions.length > 0 ? (
                                     pendingAdoptions.slice(pendingStartIndex, pendingStartIndex + cardsToShow).map((adoption) => (
                                         <Card key={adoption._id} className="adoption-card" onClick={() => handleShowModal(adoption)}>
@@ -229,19 +241,33 @@ const Adoptions = () => {
                                 ) : (
                                     <p>No pending adoptions</p>
                                 )}
-                            </div>
-                            {pendingAdoptions.length > cardsToShow && (
-                                <div className="pagination-buttons">
-                                    <Button onClick={handlePendingPrev} disabled={pendingStartIndex === 0}>Previous</Button>
-                                    <Button onClick={handlePendingNext} disabled={pendingStartIndex + cardsToShow >= pendingAdoptions.length}>Next</Button>
+
+                                {/* Next Button always visible but disabled if no more pages */}
+                                <div className="pagination-next">
+                                    <Button 
+                                        className="right-button" 
+                                        onClick={handlePendingNext} 
+                                        disabled={pendingStartIndex + cardsToShow >= pendingAdoptions.length}>
+                                        <ChevronRight/>
+                                    </Button>
                                 </div>
-                            )}
+                            </div>
                         </div>
+
 
                         {/* Active Adoptions */}
                         <div className="adoptions-box3">
                             <h2 className="adoptions-title2">Active Adoptions</h2>
+
                             <div className="adoptions-box">
+                                {/* Previous Button always visible but disabled if at the start */}
+                                <Button 
+                                    className="left-button" 
+                                    onClick={handleActivePrev} 
+                                    disabled={activeStartIndex === 0}>
+                                    <ChevronLeft/>
+                                </Button>
+
                                 {activeAdoptions.length > 0 ? (
                                     activeAdoptions.slice(activeStartIndex, activeStartIndex + cardsToShow).map((adoption) => (
                                         <Card key={adoption._id} className="adoption-card" onClick={() => handleShowActiveModal(adoption)}>
@@ -274,14 +300,17 @@ const Adoptions = () => {
                                 ) : (
                                     <p>No active adoptions</p>
                                 )}
+
+                                {/* Next Button always visible but disabled if no more pages */}
+                                <Button 
+                                    className="right-button" 
+                                    onClick={handleActiveNext} 
+                                    disabled={activeStartIndex + cardsToShow >= activeAdoptions.length}>
+                                    <ChevronRight/>
+                                </Button>
                             </div>
-                            {activeAdoptions.length > cardsToShow && (
-                                <div className="pagination-buttons">
-                                    <Button onClick={handleActivePrev} disabled={activeStartIndex === 0}>Previous</Button>
-                                    <Button onClick={handleActiveNext} disabled={activeStartIndex + cardsToShow >= activeAdoptions.length}>Next</Button>
-                                </div>
-                            )}
                         </div>
+
 
                         {/* Modal for displaying full adoption details */}
                         {selectedAdoption && (

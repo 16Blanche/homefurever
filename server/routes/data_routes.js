@@ -71,7 +71,7 @@ module.exports = (app, upload) => {
     app.get('/api/pet/gender/:pgender',petController.findPetByGender);
     app.get('/api/pet/breed/:pbreed',petController.findPetByBreed);
     app.get('/api/pet/:id',petController.findPetById);
-    app.put('/api/pet/update/:pname',petController.updatePet);
+    app.put('/api/pet/update/:id',petController.updatePet);
     app.delete('/api/pet/delete/:pid',petController.findPetByIdDelete);
     app.post('/api/pet/restore/:id', petController.restorePetFromArchive);
     app.post('/api/pet/reset-counter', petController.resetCounter);

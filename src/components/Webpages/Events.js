@@ -11,6 +11,7 @@ import axios from 'axios';
 import NavigationBar from './NavigationBar';
 import TaskBar from './TaskBar';
 import './Homepage.css';
+import { PencilSquare, Trash } from 'react-bootstrap-icons';
 
 const Events = () => {
     const [events, setEvents] = useState([]);
@@ -21,7 +22,12 @@ const Events = () => {
     const [newEvent, setNewEvent] = useState({ title: '', description: '', date: '' });
     const [selectedDate, setSelectedDate] = useState('');
     const [dateEvents, setDateEvents] = useState([]);
-    const [isViewOnly, setIsViewOnly] = useState(false); // New state for view-only mode
+    const [isViewOnly, setIsViewOnly] = useState(false);
+    const [hoveredEvent, setHoveredEvent] = useState(null);
+    const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 }); 
+    const [tooltipWidth, setTooltipWidth] = useState(0);
+
+
 
     useEffect(() => {
         fetchEvents();
@@ -57,10 +63,12 @@ const Events = () => {
     const handleDateClick = (info) => {
         const today = new Date().setHours(0, 0, 0, 0); // Set time to midnight for comparison
         const selectedDate = new Date(info.dateStr).setHours(0, 0, 0, 0); // Set selected date to midnight
-
+    
         setSelectedDate(info.dateStr);
         fetchEventsByDate(info.dateStr);
-
+    
+        const formattedDate = new Date(info.dateStr).toISOString().slice(0, 16); // Format date for input
+    
         if (selectedDate < today) {
             setIsViewOnly(true); // Set view-only mode
         } else {
@@ -68,12 +76,13 @@ const Events = () => {
             setNewEvent({
                 title: '',
                 description: '',
-                date: info.dateStr // Set default date in proper format
+                date: formattedDate // Set formatted date in proper format
             });
         }
-
+    
         setShowDateModal(true); // Show the modal
     };
+    
 
     const validateEvent = () => {
         if (!newEvent.title || !newEvent.description || !newEvent.date) {
@@ -146,6 +155,23 @@ const Events = () => {
             console.error('Error deleting event:', error);
         }
     };
+    const handleMouseEnter = (info) => {
+        const eventRect = info.el.getBoundingClientRect(); 
+        setTooltipPosition({
+            top: eventRect.bottom + window.scrollY, // Adjusts the top position
+            left: eventRect.left + window.scrollX  // Adjusts the left position
+        });
+        
+        setTooltipWidth(eventRect.width); // Set tooltip width to match the event
+        setHoveredEvent(info.event); // Keep this line to store the hovered event
+    };
+    
+
+    
+    const handleMouseLeave = () => {
+        setHoveredEvent(null); // Clears the tooltip when the mouse leaves the event
+    };
+    
 
     return (
         <div className="box">
@@ -157,14 +183,34 @@ const Events = () => {
                 <div className="evbox3">
                     <h2 className="evtitle">Events</h2>
                     <FullCalendar
-                        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                        plugins={[dayGridPlugin, interactionPlugin]}
                         initialView="dayGridMonth"
                         events={events}
                         dateClick={handleDateClick}
+                        eventMouseEnter={handleMouseEnter} // Handles mouse hover over an event
+                        eventMouseLeave={handleMouseLeave} // Handles mouse leaving an event
                         height="90%"
                     />
                 </div>
             </div>
+
+            {hoveredEvent && (
+                <div
+                    className="evtooltip"
+                    style={{
+                        width: tooltipWidth,  // Use the calculated width
+                        top: tooltipPosition.top,
+                        left: tooltipPosition.left,
+                    }}
+                >
+                    <strong>{hoveredEvent.title}</strong> <br />
+                    <span className="tooltip-description">
+                        {hoveredEvent.extendedProps.description}
+                    </span> <br />
+                    {new Date(hoveredEvent.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
+            )}
+
 
             {/* Selected Date Modal */}
             <Modal show={showDateModal} onHide={() => setShowDateModal(false)}>
@@ -176,14 +222,19 @@ const Events = () => {
                         <ul>
                             {dateEvents.map(event => (
                                 <li key={event.id}>
-                                    <div>
-                                        <strong>{event.e_title}</strong> - {new Date(event.e_date).toLocaleTimeString()} <br />
+                                    <div className='evview'>
+                                        <div className='evtitlebtn'>
+                                            <div className='evtitlegrp'>
+                                                <strong>{event.e_title}</strong> - {new Date(event.e_date).toLocaleTimeString()} <br />
+                                            </div>
+                                            <div className="evbutton-group">
+                                                <Button variant="secondary" size="sm" onClick={() => handleEditEvent(event)}><PencilSquare/></Button>
+                                                <Button variant="danger" size="sm" onClick={() => handleDeleteEvent(event)}><Trash/></Button>
+                                            </div>
+                                        </div>
                                         {event.e_description}
                                     </div>
-                                    <div className="button-group">
-                                        <Button variant="secondary" size="sm" onClick={() => handleEditEvent(event)}>Edit</Button>
-                                        <Button variant="danger" size="sm" onClick={() => handleDeleteEvent(event)}>Delete</Button>
-                                    </div>
+
                                 </li>
                             ))}
                         </ul>
@@ -223,14 +274,15 @@ const Events = () => {
                             />
                         </Form.Group>
                         <Form.Group controlId="formEventDate">
-                            <Form.Label>Date</Form.Label>
-                            <Form.Control
-                                type="datetime-local"
-                                value={newEvent.date}
-                                onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
-                                min={new Date().toISOString().slice(0, 16)} // Set min to current date and time
-                            />
-                        </Form.Group>
+                        <Form.Label>Date</Form.Label>
+                        <Form.Control
+                            type="datetime-local"
+                            value={newEvent.date}
+                            onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+                            min={new Date().toISOString().slice(0, 16)} // Set min to current date and time
+                        />
+                    </Form.Group>
+
                     </Form>
                 </Modal.Body>
                 <Modal.Footer className="evmodalfooter">
