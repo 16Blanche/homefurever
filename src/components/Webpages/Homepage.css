@@ -1765,6 +1765,10 @@
     overflow: hidden; /* Hide overflow */
     white-space: nowrap; /* Prevent wrapping */
     text-overflow: ellipsis; /* Add ellipsis */
+    margin-bottom:-1rem;
+}
+.evhoverp{
+    margin-bottom: 0;
 }
 
 
@@ -2141,10 +2145,14 @@
 .evbutton-group {
     display: flex; /* Use Flexbox for alignment */
     justify-content: flex-end; /* Aligns buttons to the right */
+    align-items: center;
 }
 .evview{
-    width: 100%;
+    width: 30rem;
     align-items:center;
+}
+.evview p{
+    margin-bottom: .5rem;
 }
 .evneweventbtn {
     margin: 0 10px;
@@ -2155,13 +2163,23 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-bottom: .5rem;
+    margin-bottom: .7rem;
+    justify-content: space-between;
 }
 .evtitlegrp{
     width: 90%;
-    height: 100%;
+    height: 90%;
     display: flex;
     flex-direction: row;
+}
+.evtitlegrp h2{
+    font-weight: bold;
+    font-size: 1.6rem;
+    width: 95%;
+    margin: 0;
+}
+.evtitlegrp p{
+    font-size: 1.1rem;
 }
 .evneweventbtn:hover {
     background-color: #ff69b4;
@@ -2214,16 +2232,22 @@
     justify-content: flex-end;
     padding: 1rem;
 }
-
 .evmodalbody {
-    overflow-wrap: break-word; /* Allows long words to break and wrap onto the next line */
-    word-wrap: break-word; /* Older browsers compatibility */
-    word-break: break-word; /* Breaks words when necessary */
-    max-width: 100%; /* Ensures the modal doesn't exceed the screen width */
-    display: flex;
-    flex-direction: row;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    max-height: 45rem;
+    overflow-y: auto;
+    padding: 15px;
 }
-
+.evimg{
+    width: 30rem;
+    max-height: 25rem;
+    object-fit: cover;
+    align-self: center;
+    align-items: center;
+    margin-bottom: .7rem;
+}
 /* Additional styles for the list items in the modal */
 .evmodalbody ul {
     padding: 0; /* Remove default padding */
@@ -2916,7 +2940,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add box shadow */
 }
 .adoption-card{
-    width: 20%;
+    width: 17.5%;
     height: 100%;
     justify-content: center;
     align-items: center;

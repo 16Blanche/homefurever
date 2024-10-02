@@ -71,6 +71,10 @@ const BrowsePets = () => {
         navigate(`/pet/profile/${petId}`);
     };
 
+    const handleEventClick = () => {
+        navigate('/pet/events');
+    };
+
     const handleTypeChange = (event) => {
         setSelectedType(event.target.value);
     };
@@ -84,7 +88,7 @@ const BrowsePets = () => {
         axios.get('http://localhost:8000/api/events/all')  // Change the URL to match your API route
             .then((response) => {
                 const upcomingEvents = response.data.theEvent.filter(event => new Date(event.e_date) >= new Date());
-                setEvents(upcomingEvents.slice(0, 3)); // Show only 3 events
+                setEvents(upcomingEvents.slice(0, 2)); // Show only 3 events
             })
             .catch((err) => {
                 console.error('Error fetching events:', err);
@@ -223,7 +227,7 @@ const BrowsePets = () => {
                                 {events.map(event => {
                                     const { day, dayOfWeek, month, year, time } = formatDate(event.e_date);
                                     return (
-                                        <div className="bpeventscontainer" key={event._id}>
+                                        <Button onClick={handleEventClick} className="bpeventscontainer" key={event._id}>
                                             <div className="bpeventsline" />
                                             <div className="bpeventsimgbox">
                                                 <Image src={imgpholder} className="bpeventsimg"></Image>
@@ -239,7 +243,7 @@ const BrowsePets = () => {
                                                 <p>{event.e_description}</p>
                                             </div>
                                             
-                                        </div>
+                                        </Button>
                                     );
                                 })}
                         </div>

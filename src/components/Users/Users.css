@@ -448,12 +448,17 @@
   width: 100%;
   background-color: white;
   border-radius: .7rem;
+  border: none;
   align-content: flex-start;
   margin-bottom: 3%;
   opacity: 85%;
   display: flex;
   flex-direction: row;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add box shadow */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 0;
+}
+.bpeventscontainer:hover {
+  background-color: rgb(231, 231, 231);
 }
 .bpeventsline{
   background-color: #FF66C4;
@@ -464,9 +469,10 @@
 .bpeventsimg{
   width: 100%;
   height: 100%; 
+  object-fit: cover;
 }
 .bpeventsimgbox{
-  width: 20%;
+  width: 23%;
   height: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   justify-content: center;
@@ -482,27 +488,49 @@
   position:static;
 }
 .bpeventsbox5{
-  width: 40%;
+  width: 35%;
   height: 100%;
+  overflow: hidden; /* Ensure the overflow is hidden */
+  display: -webkit-box; /* Use flexbox for line clamping */
+  -webkit-box-orient: vertical; /* Set the box orientation to vertical */
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  line-clamp: 2; /* For browsers that support it */
 }
-.bpeventsbox5 h2{
-  font-size: 145%;
-  font-weight: bold;
-  margin-top: 1.4rem;
-  margin-bottom: 0;
-  text-align: left;
+.bpeventsbox5 h2 {
+  width: 90%; /* Set desired width */
+  font-size: 145%; /* Set font size */
+  font-weight: bold; /* Set font weight */
+  margin-top: 1.4rem; /* Top margin */
+  margin-bottom: 0; /* Bottom margin */
+  text-align: left; /* Align text to the left */
+  overflow: hidden; /* Hide overflow content */
+  white-space: nowrap; /* Prevent wrapping to the next line */
+  text-overflow: ellipsis; /* Show ellipsis for overflow text */
+  color: black;
 }
-.bpeventsbox5 p{
+
+
+.bpeventsbox5 p {
+  width: 90%;
+  height: 5rem;
   text-align: left;
+  margin: 0; /* Remove default margins */
+  max-height: 3em; /* Set maximum height for 2 lines */
+  overflow:hidden; /* Hide overflow */
+  text-overflow: ellipsis; /* Show ellipsis when text overflows */
+  line-height: 1.5; /* Set line height for calculation */
+  overflow-wrap: break-word;
+  line-clamp: 2;
+  color: black;
 }
 .bpeventsbox4{ 
   height: auto;
-  width: 17%;
+  width: 25%;
   display: 'flex';
   flex-direction: column;
   margin-top: 1.4rem;
   margin-bottom: auto;
-  margin-right: 1rem;
+
   justify-content: center;
   text-align: left;
 }
@@ -510,12 +538,14 @@
   font-weight: bold;
   margin-bottom: .3rem;
   font-size: 130%;
-  margin-top: .2rem
+  margin-top: .2rem;
+  color: black;
 }
 .bpeventsbox4 h4{
   font-size: 100%;
   margin-bottom: .2rem;
   margin-bottom: .3rem;
+  color: black;
 }
 .bpeventsbox4 p{
   font-size: 100%;
@@ -2024,7 +2054,8 @@ margin-right: 200px;
 .ueventsbox{
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
+  overflow: hidden;
   background-image: url('./assets/dogsbg.png');
   background-size: cover;
   background-position: center;
@@ -2063,7 +2094,7 @@ margin-right: 200px;
   margin-top: 2%;
 }
 .ueventscontainer{
-  height: 23%;
+  height: 10rem !important;
   width: 100%;
   background-color: white;
   border-radius: .7rem;
@@ -2072,6 +2103,11 @@ margin-right: 200px;
   opacity: 85%;
   display: flex;
   flex-direction: row;
+  padding: 0;
+  border: none;
+}
+.ueventscontainer:hover{
+  background-color: rgb(231, 231, 231);
 }
 .ueventsupcoming{
   font-weight: bold;
@@ -2094,6 +2130,7 @@ margin-right: 200px;
   margin-bottom: auto;
   justify-content: center;
   text-align: left;
+  color: black;
 }
 .ueventsbox4 h2{
   font-weight: bold;
@@ -2110,15 +2147,18 @@ margin-right: 200px;
   font-size: 110%;
   color: #545454;
 }
-.ueventsimg{
-  width: 100%;
+.ueventsimg {
+  width: 20%;
   height: 100%; 
+  object-fit: cover;
 }
-.ueventsimgbox{
+
+.ueventsimgbox {
   width: 20%;
   height: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   justify-content: center;
+  overflow: hidden; /* Prevents overflow from box-shadow or image */
 }
 .ueventsday{
   width: 15%;
@@ -2133,6 +2173,7 @@ margin-right: 200px;
 .ueventsbox5{
   width: 43%;
   height: 100%;
+  color: black;
 }
 .ueventsbox5 h2{
   font-size: 200%;
@@ -2140,9 +2181,18 @@ margin-right: 200px;
   margin-top: 1.4rem;
   text-align: left;
 }
-.ueventsbox5 p{
+.ueventsbox5 p {
   text-align: left;
+  overflow: hidden; /* Hide overflow */
+  text-overflow: ellipsis; /* Show ellipsis when text overflows */
+  white-space: normal; /* Allow multiple lines */
+  line-height: 1.5; /* Line height for spacing */
+  max-height: 3em; /* Set max height for two lines */
+  overflow-wrap: break-word; /* Break words if necessary */
+  display: block; /* Ensures it remains block element */
 }
+
+
 .pagination-container {
   display: flex;
   justify-content: center;
@@ -2177,4 +2227,41 @@ margin-right: 200px;
   color: #aaa;
   cursor: not-allowed;
 }
+.ueventsmodal .modal-dialog {
+  max-width: 50rem; /* Set your desired width */
+  width: 100%; /* Ensure it takes the full width you set */
+}
+.ueventsmodal .modal-body{
+  padding: 2rem;
+}
+.uevents-imagecontainer{
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  justify-content: center;
+}
+.uevents-image{
+  width: auto;
+  max-height: 30rem;
+}
+.uevents-modetails p{
+  font-size: 1.1rem;
+  text-align: left;
+  overflow: hidden;
+  white-space: normal;
+  line-height: 1.5;
+  overflow-wrap: break-word;
+  display: block;
 
+}
+.uevents-modetails h1{
+  font-size: 1.1rem;
+  font-weight: normal;
+  margin-top: 1rem;
+}
+.uevents-modetails h2{
+  font-size: 1.1rem;
+  font-weight: normal;
+}

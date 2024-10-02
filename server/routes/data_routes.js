@@ -89,7 +89,7 @@ module.exports = (app, upload) => {
     app.get('/api/store/all',storeController.findAllItems);
 
     // api links for events
-    app.post('/api/events/new',eventController.newEvent);
+    app.post('/api/events/new', upload.single('e_image'), eventController.newEvent);
     app.get('/api/events/all',eventController.findAllEvents);
     app.get('/api/events/date/:date', eventController.findEventsByDate);
     app.delete('/api/events/delete/:id',eventController.findEventByIdDelete);
