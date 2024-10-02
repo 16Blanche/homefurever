@@ -3,6 +3,9 @@ import { Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import PinkNavigationBar from './PinkNavigationBar';
 import './Users.css';
+import Image from 'react-bootstrap/Image';
+
+
 const NearbyServices = () => {
   const navigate = useNavigate();
 
@@ -76,7 +79,7 @@ const NearbyServices = () => {
                             <div className='clinicsContainer'>
                                 {clinics.map((clinic, index) => (
                                     <div className='clinicBox' key={index} onClick={() => handleServiceClick(clinic.name)}>
-                                        <img src={clinic.imageUrl} alt={clinic.name} />
+                                        <Image src={clinic.imageUrl} alt={clinic.name} />
                                         <div className='clinicInfo'>
                                             <h5>{clinic.name}</h5>
                                             <p>{clinic.address}</p>

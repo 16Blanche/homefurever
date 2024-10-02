@@ -2598,6 +2598,61 @@
     margin-top: 30px;
     margin-bottom: 30px;
 }
+.nearbymodal{
+    display: flex;
+    flex-direction: column;
+}
+.service-box {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border: none; /* Remove default button border */
+    width: 100%; /* Make sure it takes full width */
+    text-align: left; /* Align text to the left */
+}
+
+.service-box:hover {
+    background-color: #e0e0e0; /* Change color on hover */
+}
+
+.image-container {
+    flex: 0 0 100px; /* Fixed width for image */
+    margin-right: 10px;
+}
+
+.image-container img {
+    width: 100%;
+    border-radius: 5px;
+}
+
+.service-info {
+    flex: 1;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 10px;
+}
+
+.edit-button,
+.delete-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px; /* Adjust size as needed */
+    margin: 0; /* Remove default margin */
+}
+
+.edit-button:hover,
+.delete-button:hover {
+    color: #007bff; /* Change color on hover */
+}
 
 
 /* PET GROOMING */

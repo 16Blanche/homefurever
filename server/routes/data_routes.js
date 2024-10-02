@@ -11,6 +11,7 @@ const dashboardController = require("../controllers/summary_controller");
 const emailController = require("../controllers/email_controller");
 const barangayController =require("../controllers/barangay_controller");
 const adoptionController = require("../controllers/adoption_controller");
+const nearbyController = require("../controllers/nearby_controller");
 const { authenticateJWT, isSuperAdmin, isAdminOrSuperAdmin, isPendingUser, isVerifiedUser} = require('../middlewares/auth');
 
 module.exports = (app, upload) => {
@@ -104,4 +105,7 @@ module.exports = (app, upload) => {
     // api links for barangay
     app.post('/api/barangay/new', barangayController.newBarangayInfo);
     app.get('/api/barangay/all', barangayController.findAllInfo);
+
+    // api links for nearby services
+    app.post('/api/service/new', upload.single('ns_image'), nearbyController.createNearbyService);
 };

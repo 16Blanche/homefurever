@@ -27,6 +27,7 @@ const BrowsePets = () => {
     const navigate = useNavigate();
 
     const [events, setEvents] = useState([]);
+    const [clinics, setClinics] = useState([]);
 
     useEffect(() => {
         axios.get("http://localhost:8000/api/pet/all")
@@ -75,6 +76,10 @@ const BrowsePets = () => {
         navigate('/pet/events');
     };
 
+    const handleServiceClick = () => {
+        navigate('/nearbyservices');
+    };
+
     const handleTypeChange = (event) => {
         setSelectedType(event.target.value);
     };
@@ -104,6 +109,15 @@ const BrowsePets = () => {
         const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         return { day, dayOfWeek, month, year, time };
     };
+
+    useEffect(() => {
+        // Here you would typically fetch clinic data from an API
+        // For now, we are using hardcoded data
+        setClinics([
+            { name: "Cruz Veterinary Clinic", address:"123 Vet St, Pasay City", imageUrl: "https://images1-fabric.practo.com/cruz-veterinary-clinic-metro-manila-1453276872-569f3ec88f97e.jpg" },
+            { name: "PetVet Clinic", address:"456 Vet Ave, Pasay City", imageUrl: "https://lh6.googleusercontent.com/proxy/fgDWstxUTMSlHg7aY-HKxB0Bw3YUZfbrXgVzGzThK86jsU__lkbTMy5sGWvrliMtBLs5zzm9GlVbm5NYeHhHQuissGXYZ1P5Ixr_1JonDzPPZNrNuGsYI8uzQc7cu5woGg8DLLMzkauR41DC7-DhPGxv8h5Tgo8Yt0tG6FQm4bOc=w408-h725-k-no" }
+        ]);
+    }, []);
 
     return (
         <>
@@ -246,6 +260,23 @@ const BrowsePets = () => {
                                         </Button>
                                     );
                                 })}
+                            <h2 className="bpbox7title2">Nearby Services</h2>
+                            <div className='availableClinics'>
+                                {clinics.length > 0 && (
+                                    <div className='bpclinicsContainer'>
+                                        {clinics.map((clinic, index) => (
+                                            <div className='bpclinicBox' key={index} onClick={handleServiceClick}>
+                                                <div className="bpeventsline" />
+                                                <Image src={clinic.imageUrl} alt={clinic.name} />
+                                                <div className='bpclinicInfo'>
+                                                    <h5>{clinic.name}</h5>
+                                                    <p>{clinic.address}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                 </div>
             </div>
