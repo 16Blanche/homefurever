@@ -443,17 +443,29 @@
   text-align: left;
   margin-bottom: 5%;
 }
+.bpbox7title2{
+  font-size: 180%;
+  font-weight: bold;
+  color: #545454;
+  text-align: left;
+  margin-bottom: 5%;
+  margin-top: 5%;
+}
 .bpeventscontainer{
   height: 8rem;
   width: 100%;
   background-color: white;
   border-radius: .7rem;
+  border: none;
   align-content: flex-start;
-  margin-bottom: 3%;
-  opacity: 85%;
+  margin-bottom: 4%;
   display: flex;
   flex-direction: row;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add box shadow */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 0;
+}
+.bpeventscontainer:hover {
+  background-color: rgb(231, 231, 231);
 }
 .bpeventsline{
   background-color: #FF66C4;
@@ -464,9 +476,10 @@
 .bpeventsimg{
   width: 100%;
   height: 100%; 
+  object-fit: cover;
 }
 .bpeventsimgbox{
-  width: 20%;
+  width: 23%;
   height: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   justify-content: center;
@@ -482,27 +495,49 @@
   position:static;
 }
 .bpeventsbox5{
-  width: 40%;
+  width: 35%;
   height: 100%;
+  overflow: hidden; /* Ensure the overflow is hidden */
+  display: -webkit-box; /* Use flexbox for line clamping */
+  -webkit-box-orient: vertical; /* Set the box orientation to vertical */
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  line-clamp: 2; /* For browsers that support it */
 }
-.bpeventsbox5 h2{
-  font-size: 145%;
-  font-weight: bold;
-  margin-top: 1.4rem;
-  margin-bottom: 0;
-  text-align: left;
+.bpeventsbox5 h2 {
+  width: 90%; /* Set desired width */
+  font-size: 145%; /* Set font size */
+  font-weight: bold; /* Set font weight */
+  margin-top: 1.4rem; /* Top margin */
+  margin-bottom: 0; /* Bottom margin */
+  text-align: left; /* Align text to the left */
+  overflow: hidden; /* Hide overflow content */
+  white-space: nowrap; /* Prevent wrapping to the next line */
+  text-overflow: ellipsis; /* Show ellipsis for overflow text */
+  color: black;
 }
-.bpeventsbox5 p{
+
+
+.bpeventsbox5 p {
+  width: 90%;
+  height: 5rem;
   text-align: left;
+  margin: 0; /* Remove default margins */
+  max-height: 3em; /* Set maximum height for 2 lines */
+  overflow:hidden; /* Hide overflow */
+  text-overflow: ellipsis; /* Show ellipsis when text overflows */
+  line-height: 1.5; /* Set line height for calculation */
+  overflow-wrap: break-word;
+  line-clamp: 2;
+  color: black;
 }
 .bpeventsbox4{ 
   height: auto;
-  width: 17%;
+  width: 25%;
   display: 'flex';
   flex-direction: column;
   margin-top: 1.4rem;
   margin-bottom: auto;
-  margin-right: 1rem;
+
   justify-content: center;
   text-align: left;
 }
@@ -510,17 +545,62 @@
   font-weight: bold;
   margin-bottom: .3rem;
   font-size: 130%;
-  margin-top: .2rem
+  margin-top: .2rem;
+  color: black;
 }
 .bpeventsbox4 h4{
   font-size: 100%;
   margin-bottom: .2rem;
   margin-bottom: .3rem;
+  color: black;
 }
 .bpeventsbox4 p{
   font-size: 100%;
   color: #545454;
 }
+.bpclinicsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  
+}
+.bpclinicBox {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  height: 8rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 0;
+}
+.bpclinicBox:hover {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.bpclinicBox img {
+  width: 23%;
+  height:100%;
+  border-radius: 4px;
+  margin-right: 10px;
+  object-fit: cover;
+}
+.bpclinicInfo {
+  display: flex;
+  flex-direction: column;
+  margin-left: .7rem;
+}
+.bpclinicInfo h5{
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: left;
+}
+.bpclinicInfo p{
+  margin-left: 0;
+  text-align: left;
+}
+
 
 
 /* PET PROFILE */
@@ -1356,29 +1436,38 @@ margin-right: 200px;
   margin: 0px;
 }
 .nearbybtns { 
-  flex: 1; /* Allow buttons to grow equally */
-  margin: .2rem; /* Optional: Adds space between buttons */
-  text-align: center; /* Center text in the button */
-  border: none; /* Remove border if needed */
-  cursor: pointer; /* Change cursor to pointer */
+  flex: 1;
+  margin: .2rem;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+}
+.availableClinics {
+  display: flex;
+  flex-direction: column;
 }
 .clinicsContainer {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Space between clinic boxes */
-  margin-top: 10px;
+  gap: .5rem !important;
+  height: 23rem !important;
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 .clinicBox {
   display: flex;
-  align-items: center; /* Align items vertically */
-  background-color: white; /* Background color for clinic box */
-  border: 1px solid #ccc; /* Light border around the box */
-  border-radius: 8px; /* Rounded corners */
-  padding: 10px; /* Padding around the content */
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: box-shadow 0.3s; /* Smooth transition for hover effect */
-  width: 88%; /* Optional: Set width to fill the container */
+  align-items: center;
+  background-color: white;
+  border: 1px solid #ccc; 
+  border-radius: 8px;
+  padding: 10px; 
+  cursor: pointer;
+  transition: box-shadow 0.3s;
+  width: 100% !important;
+  max-height: 7rem !important;
 }
 
 .clinicBox:hover {
@@ -1386,16 +1475,20 @@ margin-right: 200px;
 }
 
 .clinicBox img {
-  width: 6rem; /* Fixed width for the image */
-  height:4.5rem; /* Fixed height for the image */
-  border-radius: 4px; /* Optional: Rounded image corners */
-  margin-right: 10px; /* Space between image and text */
-  object-fit: cover; /* Ensures the image covers the area without distortion */
+  width: 6rem; 
+  height:4.5rem; 
+  border-radius: 4px;
+  margin-right: 10px;
+  object-fit: cover;
 }
 
 .clinicInfo {
   display: flex;
   flex-direction: column; /* Stack name and address vertically */
+  width: 20rem;
+}
+.clinicInfo p{
+  margin-bottom: 0;
 }
 
 
@@ -1773,34 +1866,53 @@ margin-right: 200px;
   flex-direction: row;
   height: 15%;
 }
-.tracker-profile-img{
-  max-width: 100%;
-  height: auto;
-  border-radius: 100%;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.301); /* Add box shadow */
+.tracker-profile-imgbox {
+  width: 30%; /* Set the width of the box */
+  height: 0; /* Set height to 0 to maintain aspect ratio */
+  padding-bottom: 30%; /* Maintain a square aspect ratio */
+  position: relative; /* Position relative for absolute positioning of the image */
+  overflow: hidden; /* Hide overflow to keep the circular shape */
+  border-radius: 50%; /* Ensure the container is circular */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Round shadow on the container */
 }
-.tracker-profile-imgbox{
-  width: 30%;
-  height: auto;
+
+.tracker-profile-img {
+  position: absolute; /* Position the image absolutely within the box */
+  top: 50%; /* Center the image vertically */
+  left: 50%; /* Center the image horizontally */
+  width: 100%; /* Scale image to 100% of the container */
+  height: 100%; /* Scale image to 100% of the container */
+  transform: translate(-50%, -50%); /* Offset the image to center */
+  border-radius: 50%; /* Make the image circular */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Optional shadow on the image itself */
+  object-fit: cover; /* Ensure the image covers the area while maintaining aspect ratio */
 }
+
+
 .tracker-myadoptions{
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
+
 .tracker-adoption-box {
-  width: 85%;
-  height: 10%;
+  width: 100%;
+  height: auto; /* Use auto to allow flexibility */
   display: flex;
   flex-direction: row;
-  background-color: rgb(255, 255, 255); /* Fully opaque background */
+  background-color: rgb(255, 255, 255);
   border-radius: 10px;
-  position: absolute;
-  z-index: 1;
   color: black;
   padding: 2%;
-  border: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add box shadow */
+  border: white; /* This doesn't have any effect; consider removing */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+.tracker-adoption-container{
+  max-height: 27rem; /* Set your desired height */
+  overflow-y: auto; /* Allow vertical scrolling */
+  padding: 10px; /* Optional: Add padding for better appearance */
+  border-radius: 10px; /* Match the button's radius */
 }
 .tracker-profile-pettext{
   width: auto;
@@ -1809,9 +1921,7 @@ margin-right: 200px;
   text-align: left;
   margin-left: 4%;
 }
-.tracker-pet-button{
-  padding-bottom: 25%;
-}
+
 .tracker-adoption-header{
   display: flex;
   flex-direction: column;
@@ -2024,7 +2134,8 @@ margin-right: 200px;
 .ueventsbox{
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
+  overflow: hidden;
   background-image: url('./assets/dogsbg.png');
   background-size: cover;
   background-position: center;
@@ -2063,7 +2174,7 @@ margin-right: 200px;
   margin-top: 2%;
 }
 .ueventscontainer{
-  height: 23%;
+  height: 10rem !important;
   width: 100%;
   background-color: white;
   border-radius: .7rem;
@@ -2072,6 +2183,11 @@ margin-right: 200px;
   opacity: 85%;
   display: flex;
   flex-direction: row;
+  padding: 0;
+  border: none;
+}
+.ueventscontainer:hover{
+  background-color: rgb(231, 231, 231);
 }
 .ueventsupcoming{
   font-weight: bold;
@@ -2094,6 +2210,7 @@ margin-right: 200px;
   margin-bottom: auto;
   justify-content: center;
   text-align: left;
+  color: black;
 }
 .ueventsbox4 h2{
   font-weight: bold;
@@ -2110,15 +2227,18 @@ margin-right: 200px;
   font-size: 110%;
   color: #545454;
 }
-.ueventsimg{
-  width: 100%;
+.ueventsimg {
+  width: 20%;
   height: 100%; 
+  object-fit: cover;
 }
-.ueventsimgbox{
+
+.ueventsimgbox {
   width: 20%;
   height: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   justify-content: center;
+  overflow: hidden; /* Prevents overflow from box-shadow or image */
 }
 .ueventsday{
   width: 15%;
@@ -2133,6 +2253,7 @@ margin-right: 200px;
 .ueventsbox5{
   width: 43%;
   height: 100%;
+  color: black;
 }
 .ueventsbox5 h2{
   font-size: 200%;
@@ -2140,9 +2261,18 @@ margin-right: 200px;
   margin-top: 1.4rem;
   text-align: left;
 }
-.ueventsbox5 p{
+.ueventsbox5 p {
   text-align: left;
+  overflow: hidden; /* Hide overflow */
+  text-overflow: ellipsis; /* Show ellipsis when text overflows */
+  white-space: normal; /* Allow multiple lines */
+  line-height: 1.5; /* Line height for spacing */
+  max-height: 3em; /* Set max height for two lines */
+  overflow-wrap: break-word; /* Break words if necessary */
+  display: block; /* Ensures it remains block element */
 }
+
+
 .pagination-container {
   display: flex;
   justify-content: center;
@@ -2177,4 +2307,41 @@ margin-right: 200px;
   color: #aaa;
   cursor: not-allowed;
 }
+.ueventsmodal .modal-dialog {
+  max-width: 50rem; /* Set your desired width */
+  width: 100%; /* Ensure it takes the full width you set */
+}
+.ueventsmodal .modal-body{
+  padding: 2rem;
+}
+.uevents-imagecontainer{
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  justify-content: center;
+}
+.uevents-image{
+  width: auto;
+  max-height: 30rem;
+}
+.uevents-modetails p{
+  font-size: 1.1rem;
+  text-align: left;
+  overflow: hidden;
+  white-space: normal;
+  line-height: 1.5;
+  overflow-wrap: break-word;
+  display: block;
 
+}
+.uevents-modetails h1{
+  font-size: 1.1rem;
+  font-weight: normal;
+  margin-top: 1rem;
+}
+.uevents-modetails h2{
+  font-size: 1.1rem;
+  font-weight: normal;
+}

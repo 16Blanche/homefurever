@@ -11,6 +11,7 @@ const dashboardController = require("../controllers/summary_controller");
 const emailController = require("../controllers/email_controller");
 const barangayController =require("../controllers/barangay_controller");
 const adoptionController = require("../controllers/adoption_controller");
+const nearbyController = require("../controllers/nearby_controller");
 const { authenticateJWT, isSuperAdmin, isAdminOrSuperAdmin, isPendingUser, isVerifiedUser} = require('../middlewares/auth');
 
 module.exports = (app, upload) => {
@@ -71,7 +72,7 @@ module.exports = (app, upload) => {
     app.get('/api/pet/gender/:pgender',petController.findPetByGender);
     app.get('/api/pet/breed/:pbreed',petController.findPetByBreed);
     app.get('/api/pet/:id',petController.findPetById);
-    app.put('/api/pet/update/:pname',petController.updatePet);
+    app.put('/api/pet/update/:id',petController.updatePet);
     app.delete('/api/pet/delete/:pid',petController.findPetByIdDelete);
     app.post('/api/pet/restore/:id', petController.restorePetFromArchive);
     app.post('/api/pet/reset-counter', petController.resetCounter);
@@ -89,7 +90,7 @@ module.exports = (app, upload) => {
     app.get('/api/store/all',storeController.findAllItems);
 
     // api links for events
-    app.post('/api/events/new',eventController.newEvent);
+    app.post('/api/events/new', upload.single('e_image'), eventController.newEvent);
     app.get('/api/events/all',eventController.findAllEvents);
     app.get('/api/events/date/:date', eventController.findEventsByDate);
     app.delete('/api/events/delete/:id',eventController.findEventByIdDelete);
@@ -104,4 +105,11 @@ module.exports = (app, upload) => {
     // api links for barangay
     app.post('/api/barangay/new', barangayController.newBarangayInfo);
     app.get('/api/barangay/all', barangayController.findAllInfo);
+
+    // api links for nearby services
+    app.post('/api/service/new', upload.single('ns_image'), nearbyController.createNearbyService);
+    app.put('/api/service/update/:id', upload.single('ns_image'), nearbyController.editNearbyService);
+    app.get('/api/service/all', nearbyController.getAllNearbyServices);
+    app.get('/api/service/:id', nearbyController.getNearbyServiceById);
+    app.delete('/api/service/delete/:id', nearbyController.deleteNearbyService);
 };

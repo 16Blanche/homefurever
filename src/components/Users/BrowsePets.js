@@ -14,6 +14,15 @@ const convertToBase64 = (buffer) => {
     );
 };
 
+const getRandomEvents = (array) => {
+    return array.sort(() => Math.random() - 0.5);
+};
+
+const getRandomServices = (services, count) => {
+    const shuffled = [...services].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+};
+
 const BrowsePets = () => {
     const [selectedPet, setSelectedPet] = useState(null);
     const [showViewPostModal, setShowViewPostModal] = useState(false);
@@ -27,6 +36,9 @@ const BrowsePets = () => {
     const navigate = useNavigate();
 
     const [events, setEvents] = useState([]);
+    const [clinics, setClinics] = useState([]);
+    const [services, setServices] = useState([]);
+    const [randomServices, setRandomServices] = useState([]);
 
     useEffect(() => {
         axios.get("http://localhost:8000/api/pet/all")
@@ -40,6 +52,26 @@ const BrowsePets = () => {
                 console.error(err);
                 setLoading(false);
             });
+    }, []);
+    
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/api/service/all');
+                
+                console.log('Fetched services:', response.data); // Check if data is being fetched correctly
+
+                const fetchedServices = response.data;
+                setServices(fetchedServices);
+
+                // Select two random services
+                const randomTwo = getRandomServices(fetchedServices, 2);
+                setRandomServices(randomTwo);
+            } catch (error) {
+                console.error('Error fetching services:', error);
+            }
+        };
+        fetchServices();
     }, []);
 
     useEffect(() => {
@@ -58,7 +90,6 @@ const BrowsePets = () => {
         setFilteredPets(updatedPets);
     }, [selectedType, searchQuery, pets]);
 
-    // Pagination logic
     const indexOfLastPet = currentPage * petsPerPage;
     const indexOfFirstPet = indexOfLastPet - petsPerPage;
     const currentPets = filteredPets.slice(indexOfFirstPet, indexOfLastPet);
@@ -71,6 +102,14 @@ const BrowsePets = () => {
         navigate(`/pet/profile/${petId}`);
     };
 
+    const handleEventClick = () => {
+        navigate('/pet/events');
+    };
+
+    const handleServiceClick = () => {
+        navigate('/nearbyservices');
+    };
+
     const handleTypeChange = (event) => {
         setSelectedType(event.target.value);
     };
@@ -79,17 +118,19 @@ const BrowsePets = () => {
         setSearchQuery(event.target.value);
     };
 
-    // Fetch upcoming events
+
     useEffect(() => {
-        axios.get('http://localhost:8000/api/events/all')  // Change the URL to match your API route
+        axios.get('http://localhost:8000/api/events/all')
             .then((response) => {
                 const upcomingEvents = response.data.theEvent.filter(event => new Date(event.e_date) >= new Date());
-                setEvents(upcomingEvents.slice(0, 3)); // Show only 3 events
+                const shuffledEvents = getRandomEvents(upcomingEvents);
+                setEvents(shuffledEvents.slice(0, 2)); // Display 2 random events
             })
             .catch((err) => {
                 console.error('Error fetching events:', err);
             });
     }, []);
+    
 
     const formatDate = (eventDate) => {
         const date = new Date(eventDate);
@@ -223,10 +264,17 @@ const BrowsePets = () => {
                                 {events.map(event => {
                                     const { day, dayOfWeek, month, year, time } = formatDate(event.e_date);
                                     return (
-                                        <div className="bpeventscontainer" key={event._id}>
+                                        <Button onClick={handleEventClick} className="bpeventscontainer" key={event._id}>
                                             <div className="bpeventsline" />
                                             <div className="bpeventsimgbox">
-                                                <Image src={imgpholder} className="bpeventsimg"></Image>
+                                            <Image 
+                                                src={event.e_image && event.e_image.data 
+                                                    ? `data:image/jpeg;base64,${convertToBase64(event.e_image.data)}` 
+                                                    : imgpholder // Fallback if e_image is not available
+                                                } 
+                                                className="bpeventsimg" 
+                                                alt={event.e_title} 
+                                            />
                                             </div>
                                             <p className="bpeventsday">{day}</p>
                                             <div className="bpeventsbox4">
@@ -239,9 +287,34 @@ const BrowsePets = () => {
                                                 <p>{event.e_description}</p>
                                             </div>
                                             
-                                        </div>
+                                        </Button>
                                     );
                                 })}
+                            <h2 className="bpbox7title2">Nearby Services</h2>
+                            <div className='availableClinics'>
+                            {randomServices.length > 0 ? (
+                                <div className='bpclinicsContainer'>
+                                    {randomServices.map((service, index) => (
+                                        <div className='bpclinicBox' key={index} onClick={handleServiceClick}>
+                                            <div className="bpeventsline" />
+                                            <Image 
+                                                src={service.ns_image && service.ns_image.data 
+                                                    ? `data:image/jpeg;base64,${convertToBase64(service.ns_image.data)}` 
+                                                    : imgpholder
+                                                } 
+                                                alt={service.ns_name} 
+                                            />
+                                            <div className='bpclinicInfo'>
+                                                <h5>{service.ns_name}</h5>
+                                                <p>{service.ns_address}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p>No nearby services available</p> // Fallback if no services are fetched
+                            )}
+                        </div>
                         </div>
                 </div>
             </div>

@@ -1,22 +1,36 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom"; 
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import PinkNavigationBar from "./PinkNavigationBar";
 import "./Users.css";
 import imgpholder from "./assets/vaccination.png";
 import Image from 'react-bootstrap/Image';
+import { Button } from "react-bootstrap";
+import Modal from 'react-bootstrap/Modal';
+
+const convertToBase64 = (buffer) => {
+    try {
+        return btoa(
+            new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
+        );
+    } catch (error) {
+        console.error('Error converting to Base64:', error);
+        return '';
+    }
+};
 
 const UserEvents = () => {
     const [events, setEvents] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const eventsPerPage = 3; // Number of events per page
-    const [loading, setLoading] = useState(true); // Loading state
+    const eventsPerPage = 3;
+    const [loading, setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
 
-    // Fetch all events on component mount
     useEffect(() => {
-        axios.get('http://localhost:8000/api/events/all')  // Update the URL if necessary
+        axios.get('http://localhost:8000/api/events/all')
             .then((response) => {
-                setEvents(response.data.theEvent || []);  // Ensure 'theEvent' exists
+                setEvents(response.data.theEvent || []);
                 setLoading(false);
             })
             .catch((err) => {
@@ -25,11 +39,9 @@ const UserEvents = () => {
             });
     }, []);
 
-    // Function to format event dates
     const formatDate = (eventDate) => {
         const date = new Date(eventDate);
 
-        // Extract date components
         const day = date.getDate();
         const dayOfWeek = date.toLocaleString('default', { weekday: 'long' });
         const month = date.toLocaleString('default', { month: 'short' });
@@ -39,33 +51,37 @@ const UserEvents = () => {
         return { day, dayOfWeek, month, year, time };
     };
 
-    // Filter out past events and keep only upcoming ones
     const upcomingEvents = events.filter(event => {
         const eventDate = new Date(event.e_date);
         const currentDate = new Date();
-        // Normalize dates by setting the time to 00:00:00 to compare only dates
         eventDate.setHours(0, 0, 0, 0);
         currentDate.setHours(0, 0, 0, 0);
-        return eventDate >= currentDate; // Events today or in the future
+        return eventDate >= currentDate;
     });
 
-    // Calculate total pages
     const totalPages = Math.ceil(upcomingEvents.length / eventsPerPage) || 1;
 
-    // Ensure currentPage is within valid range
     useEffect(() => {
         if (currentPage > totalPages) {
             setCurrentPage(1);
         }
     }, [currentPage, totalPages]);
 
-    // Get current events for the page
     const indexOfLastEvent = currentPage * eventsPerPage;
     const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
     const currentEvents = upcomingEvents.slice(indexOfFirstEvent, indexOfLastEvent);
 
-    // Function to change page
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    const handleEventClick = (event) => {
+        setSelectedEvent(event);
+        setShowModal(true);
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
+        setSelectedEvent(null);
+    };
 
     return (
         <div className="box">
@@ -85,20 +101,25 @@ const UserEvents = () => {
                 <div className="ueventsbox3">
                     <p className="ueventsupcoming">Upcoming Events</p>
 
-                    {/* Loading Indicator */}
                     {loading ? (
                         <p className="loading">Loading events...</p>
                     ) : upcomingEvents.length > 0 ? (
                         <>
-                            {/* Display Current Events */}
+
                             {currentEvents.map((event) => {
                                 const { day, dayOfWeek, month, year, time } = formatDate(event.e_date);
                                 return (
-                                    <div className="ueventscontainer" key={event._id}>
+                                    <Button onClick={() => handleEventClick(event)} className="ueventscontainer" key={event._id}>
                                         <div className="ueventsline2" />
-                                        <div className="ueventsimgbox">
-                                            <Image src={imgpholder} className="ueventsimg" alt="Event" />
-                                        </div>
+                                        <Image
+                                            className="ueventsimg"
+                                            src={
+                                                event.e_image && event.e_image.data
+                                                ? `data:image/jpeg;base64,${convertToBase64(event.e_image.data)}`
+                                                : imgpholder
+                                            }
+                                            alt={imgpholder}
+                                            />
                                         <p className="ueventsday">{day}</p>
                                         <div className="ueventsbox4">
                                             <h2>{dayOfWeek}</h2>
@@ -109,9 +130,41 @@ const UserEvents = () => {
                                             <h2>{event.e_title}</h2>
                                             <p>{event.e_description}</p>
                                         </div>
-                                    </div>
+                                    </Button>
                                 );
                             })}
+
+                            {/* Modal for Event Details */}
+                            <Modal className="ueventsmodal" show={showModal} onHide={closeModal}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>{selectedEvent?.e_title}</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body >
+                                    {selectedEvent && (
+                                        <div>
+                                            <div className="uevents-imagecontainer">
+                                                <Image 
+                                                    src={selectedEvent.e_image && selectedEvent.e_image.data
+                                                        ? `data:image/jpeg;base64,${convertToBase64(selectedEvent.e_image.data)}`
+                                                        : imgpholder}
+                                                    alt="Event Image"
+                                                    className="uevents-image" 
+                                                />
+                                            </div>
+                                            <div className="uevents-modetails">
+                                                <h1><strong>Date:</strong> {formatDate(selectedEvent.e_date).day} {formatDate(selectedEvent.e_date).month} {formatDate(selectedEvent.e_date).year}</h1>
+                                                <h2><strong>Time:</strong> {formatDate(selectedEvent.e_date).time}</h2>
+                                                <p>{selectedEvent.e_description}</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={closeModal}>
+                                        Close
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
 
                             {/* Pagination Controls */}
                             {totalPages > 1 && (
@@ -146,7 +199,6 @@ const UserEvents = () => {
                             )}
                         </>
                     ) : (
-                        // Message when there are no upcoming events
                         <p className="no-upcoming-events">There are no upcoming events.</p>
                     )}
                 </div>

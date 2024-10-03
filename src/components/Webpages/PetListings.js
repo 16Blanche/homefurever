@@ -15,7 +15,7 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import DeleteModal from "./DeleteModal";
 import React, { useContext } from "react";
-
+import DataTable from 'react-data-table-component';
 import AuthContext from '../../context/AuthContext';
 
 
@@ -73,7 +73,6 @@ const PetListings =()=>{
     const handleEditSubmit = (e) => {
         e.preventDefault();
         const updatedPet = {
-            ...selectedPet,
             p_name: e.target.elements.name.value,
             p_type: e.target.elements.type.value,
             p_breed: e.target.elements.breed.value,
@@ -82,16 +81,22 @@ const PetListings =()=>{
             p_weight: e.target.elements.weight.value,
             p_medicalhistory: e.target.elements.medicalhistory.value,
             p_vaccines: e.target.elements.vaccines.value,
-        };
+        };    
     
         console.log("Updated Pet Data:", updatedPet); // Log updatedPet for debugging
     
-        axios.put(`http://localhost:8000/api/pet/update/${selectedPet.p_name}`, updatedPet)
+        axios.put(`http://localhost:8000/api/pet/update/${selectedPet._id}`, updatedPet)
             .then(response => {
                 console.log("Update Response:", response); // Log response for debugging
-                setAllPets(prevPets => prevPets.map(pet => pet.p_name === updatedPet.p_name ? updatedPet : pet));
-                setShowEditModal(false);
-                setSelectedPet(null);
+                
+                // Update the local state without refreshing the page
+                setAllPets(prevPets => 
+                    prevPets.map(pet => 
+                        pet._id === selectedPet._id ? { ...pet, ...updatedPet } : pet
+                    )
+                );
+                setShowEditModal(false); // Close the modal after the update
+                setSelectedPet(null); // Clear the selected pet
             })
             .catch(err => {
                 console.error("There was an error updating the pet!", err);
@@ -100,6 +105,8 @@ const PetListings =()=>{
                 }
             });
     };
+    
+    
     
       const handleDeleteButton = (pet) => {
         setSelectedPetForDelete(pet);
@@ -196,7 +203,44 @@ const PetListings =()=>{
                 console.log(err);
             });
     }, [pname]); // Include pname in dependency array to re-fetch data when it changes
- 
+
+    const columns = [
+            {
+                name: 'Pet ID',
+                selector: row => row.p_id,
+                sortable: true,
+            },
+            {
+                name: 'Pet Name',
+                selector: row => row.p_name,
+                sortable: true,
+            },
+            {
+                name: 'Species',
+                selector: row => row.p_type,
+                sortable: true,
+            },
+            {
+                name: 'Gender',
+                selector: row => row.p_gender,
+                sortable: true,
+            },
+            {
+                name: 'Status',
+                selector: row => row.p_status,
+                sortable: true,
+            },
+            {
+                name: 'Actions',
+                cell: row => (
+                    <>
+                        <Button className="plviewbtn" onClick={() => handleViewButton(row)}>View</Button>
+                        <Button className="pleditbtn" onClick={() => handleEditButton(row)}>Edit</Button>
+                        <Button className="pldeletebtn" onClick={() => handleArchiveModalShow(row)}>Delete</Button>
+                    </>
+                ),
+            },
+        ];
 
     return(
         <>
@@ -227,38 +271,17 @@ const PetListings =()=>{
                             <Button className="plbtntext" onClick={PostsClick}>My Posts</Button>
                         </form>
                         </div>
-                        
-                        
-                        <table className="pltable">
-                            <thead>
-                                <tr className="pltheader">
-                                    <th className="pltheadertext">Pet ID</th>
-                                    <th className="pltheadertext">Pet Name</th>
-                                    <th className="pltheadertext">Species</th>
-                                    <th className="pltheadertext">Gender</th>
-                                    <th className="pltheadertext">Status</th>
-                                    <th className="pltheadertext">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {allPets.map((element,index)=>{
-                        return (<tr key={element._id}>
-
-                                    <td>{element.p_id}</td>
-                                    <td>{element.p_name}</td>
-                                    <td>{element.p_type}</td>
-                                    <td>{element.p_gender}</td>
-                                    <td>{element.p_status}</td>
-                                    <td>
-                                        <Button className="plviewbtn" onClick={() => handleViewButton(element)}>View</Button>
-                                        <Button className="pleditbtn" onClick={() => handleEditButton(element)}>Edit</Button>
-                                        <Button className="pldeletebtn" onClick={() => handleArchiveModalShow(element)}>Archive</Button>
-                                    </td>
- 
-                                </tr>)    
-                    })}    
-                            </tbody>
-                        </table>
+                        <div className="pltable">
+                            <DataTable
+                                columns={columns}
+                                data={allPets}
+                                paginationPerPage={13}
+                                paginationRowsPerPageOptions={[5, 10, 13]}
+                                pagination
+                                highlightOnHover
+                                onRowClicked={handleViewButton}
+                            />
+                        </div>
 
                         {/* View Modal */}
                         <Modal show={showViewModal} onHide={() => setShowViewModal(false)}>

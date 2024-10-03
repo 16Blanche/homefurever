@@ -1,17 +1,23 @@
 const Event = require('../models/events_model');
 
 const newEvent = async (req, res) => {
-    const { 
-        e_title, e_description, e_date
-    } = req.body;
+    const { e_title, e_description, e_date, e_location } = req.body;
+    
+    // Get the image as a buffer
+    const e_image = req.file ? req.file.buffer : null;
 
     try {
+        if (!e_image) {
+            return res.status(400).json({ error: 'Image upload failed' });
+        }
 
         // Create a new event instance
         const event = new Event({
             e_title,
+            e_location,
             e_description,
-            e_date
+            e_date,
+            e_image // Save the image as a buffer
         });
 
         // Save the event to the database

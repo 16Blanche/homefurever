@@ -5,8 +5,7 @@ import TaskBar from "./TaskBar";
 import axios from "axios";
 import './Homepage.css';
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft } from 'react-bootstrap-icons';
-import { ChevronRight } from 'react-bootstrap-icons';
+import {ChevronLeft, ChevronRight} from 'react-bootstrap-icons';
 
 const convertToBase64 = (buffer) => {
     try {
@@ -97,14 +96,14 @@ const Adoptions = () => {
     };
 
     const handleRejectConfirmation = () => {
-        axios.patch(`http://localhost:8000/api/adoption/decline/${selectedAdoption._id}`, { reason: rejectionReason })
+        axios.patch(`http://localhost:8000/api/adoption/decline/${selectedAdoption._id}`, { rejection_reason: rejectionReason })
             .then(() => {
                 setPendingAdoptions(prev => prev.filter(adopt => adopt._id !== selectedAdoption._id));
                 setShowRejectModal(false);
                 setSelectedAdoption(null);
                 setRejectionReason('');
                 alert('Adoption rejected successfully.');
-                fetchAdoptions();  // Re-fetch data without refreshing the whole page
+                fetchAdoptions();
             })
             .catch(err => console.error("Error rejecting adoption:", err));
     };
@@ -192,129 +191,98 @@ const Adoptions = () => {
                     <TaskBar />
                     <div className="adoptions-box2">
                         
-                    {/* Pending Adoptions */}
-                    <div className="adoptions-box3">
-                        <div className="adoptions-titlenbtn">
-                            <h2 className="adoptions-title">Pending Adoptions</h2>
-                            <Button className="adoptions-feedbackbtn" onClick={() => navigate('/feedbacks')}>View Feedback</Button>
-                        </div>
-
-                        <div className="adoptions-box">
-                            {/* Previous Button always visible but disabled if at the start */}
-                            <div className="pagination-prev">
-                                <Button 
-                                    className="left-button" 
-                                    onClick={handlePendingPrev} 
-                                    disabled={pendingStartIndex === 0}>
-                                    <ChevronLeft/>
-                                </Button>
+                        {/* Pending Adoptions */}
+                        <div className="adoptions-box3">
+                            <div className="adoptions-titlenbtn">
+                                <h2 className="adoptions-title">Pending Adoptions</h2>
+                                <Button className="adoptions-feedbackbtn" onClick={() => navigate('/feedbacks')}>View Feedback</Button>
                             </div>
-
-                            {pendingAdoptions.length > 0 ? (
-                                pendingAdoptions.slice(pendingStartIndex, pendingStartIndex + cardsToShow).map((adoption) => (
-                                    <Card key={adoption._id} className="adoption-card" onClick={() => handleShowModal(adoption)}>
-                                        <Card.Body>
-                                            <Image 
-                                                src={adoption.p_id.pet_img && adoption.p_id.pet_img.data 
-                                                    ? `data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img.data)}` 
-                                                    : 'fallback-image-url'} 
-                                                alt={adoption.p_id.p_name} 
-                                                fluid
-                                                className="adoptions-pimg"
-                                            />
-                                            <Card.Text className="adoptions-text">
-                                                <div>
-                                                    <strong>Adopter:</strong> {adoption.v_id.v_fname} {adoption.v_id.v_lname}
-                                                </div>
-                                                <div>
-                                                    <strong>Pet Name:</strong> {adoption.p_id.p_name}
-                                                </div>
-                                                <div>
-                                                    <strong>Pet Type:</strong> {adoption.p_id.p_type}
-                                                </div>
-                                                <div>
-                                                    <strong>Home Type:</strong> {adoption.home_type}
-                                                </div>
-                                            </Card.Text>
-                                        </Card.Body>
-                                    </Card>
-                                ))
-                            ) : (
-                                <p>No pending adoptions</p>
-                            )}
-
-                            {/* Next Button always visible but disabled if no more pages */}
-                            <div className="pagination-next">
-                                <Button 
-                                    className="right-button" 
-                                    onClick={handlePendingNext} 
-                                    disabled={pendingStartIndex + cardsToShow >= pendingAdoptions.length}>
-                                    <ChevronRight/>
-                                </Button>
+                            <div className="adoptions-box">
+                                {pendingAdoptions.length > 0 ? (
+                                    pendingAdoptions.slice(pendingStartIndex, pendingStartIndex + cardsToShow).map((adoption) => (
+                                        <Card key={adoption._id} className="adoption-card" onClick={() => handleShowModal(adoption)}>
+                                            <Card.Body>
+                                                <Image 
+                                                    src={adoption.p_id.pet_img && adoption.p_id.pet_img.data 
+                                                        ? `data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img.data)}` 
+                                                        : 'fallback-image-url'} 
+                                                    alt={adoption.p_id.p_name} 
+                                                    fluid
+                                                    className="adoptions-pimg"
+                                                />
+                                                <Card.Text className="adoptions-text">
+                                                    <div>
+                                                        <strong>Adopter:</strong> {adoption.v_id.v_fname} {adoption.v_id.v_lname}
+                                                    </div>
+                                                    <div>
+                                                        <strong>Pet Name:</strong> {adoption.p_id.p_name}
+                                                    </div>
+                                                    <div>
+                                                        <strong>Pet Type:</strong> {adoption.p_id.p_type}
+                                                    </div>
+                                                    <div>
+                                                        <strong>Home Type:</strong> {adoption.home_type}
+                                                    </div>
+                                                </Card.Text>
+                                            </Card.Body>
+                                        </Card>
+                                    ))
+                                ) : (
+                                    <p>No pending adoptions</p>
+                                )}
                             </div>
-                        </div>
-                    </div>
-
-
-
-
-                    {/* Active Adoptions */}
-                    <div className="adoptions-box3">
-                        <h2 className="adoptions-title2">Active Adoptions</h2>
-
-                        <div className="adoptions-box">
-                            {/* Previous Button always visible but disabled if at the start */}
-                            <Button 
-                                className="left-button" 
-                                onClick={handleActivePrev} 
-                                disabled={activeStartIndex === 0}>
-                                <ChevronLeft/>
-                            </Button>
-
-                            {activeAdoptions.length > 0 ? (
-                                activeAdoptions.slice(activeStartIndex, activeStartIndex + cardsToShow).map((adoption) => (
-                                    <Card key={adoption._id} className="adoption-card" onClick={() => handleShowActiveModal(adoption)}>
-                                        <Card.Body>
-                                            <Image 
-                                                src={adoption.p_id.pet_img && adoption.p_id.pet_img.data 
-                                                    ? `data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img.data)}` 
-                                                    : 'fallback-image-url'} 
-                                                alt={adoption.p_id.p_name} 
-                                                fluid
-                                                className="adoptions-pimg"
-                                            />
-                                            <Card.Text className="adoptions-text">
-                                                <div>
-                                                    <strong>Adopter:</strong> {adoption.v_id.v_fname} {adoption.v_id.v_lname}
-                                                </div>
-                                                <div>
-                                                    <strong>Pet Name:</strong> {adoption.p_id.p_name}
-                                                </div>
-                                                <div>
-                                                    <strong>Pet Type:</strong> {adoption.p_id.p_type}
-                                                </div>
-                                                <div>
-                                                    <strong>Home Type:</strong> {adoption.home_type}
-                                                </div>
-                                            </Card.Text>
-                                        </Card.Body>
-                                    </Card>
-                                ))
-                            ) : (
-                                <p>No active adoptions</p>
+                            {pendingAdoptions.length > cardsToShow && (
+                                <div className="pagination-buttons">
+                                    <Button onClick={handlePendingPrev} disabled={pendingStartIndex === 0}>Previous</Button>
+                                    <Button onClick={handlePendingNext} disabled={pendingStartIndex + cardsToShow >= pendingAdoptions.length}>Next</Button>
+                                </div>
                             )}
-
-                            {/* Next Button always visible but disabled if no more pages */}
-                            <Button 
-                                className="right-button" 
-                                onClick={handleActiveNext} 
-                                disabled={activeStartIndex + cardsToShow >= activeAdoptions.length}>
-                                <ChevronRight/>
-                            </Button>
                         </div>
-                    </div>
 
-
+                        {/* Active Adoptions */}
+                        <div className="adoptions-box3">
+                            <h2 className="adoptions-title2">Active Adoptions</h2>
+                            <div className="adoptions-box">
+                                {activeAdoptions.length > 0 ? (
+                                    activeAdoptions.slice(activeStartIndex, activeStartIndex + cardsToShow).map((adoption) => (
+                                        <Card key={adoption._id} className="adoption-card" onClick={() => handleShowActiveModal(adoption)}>
+                                            <Card.Body>
+                                                <Image 
+                                                    src={adoption.p_id.pet_img && adoption.p_id.pet_img.data 
+                                                        ? `data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img.data)}` 
+                                                        : 'fallback-image-url'} 
+                                                    alt={adoption.p_id.p_name} 
+                                                    fluid
+                                                    className="adoptions-pimg"
+                                                />
+                                                <Card.Text className="adoptions-text">
+                                                    <div>
+                                                        <strong>Adopter:</strong> {adoption.v_id.v_fname} {adoption.v_id.v_lname}
+                                                    </div>
+                                                    <div>
+                                                        <strong>Pet Name:</strong> {adoption.p_id.p_name}
+                                                    </div>
+                                                    <div>
+                                                        <strong>Pet Type:</strong> {adoption.p_id.p_type}
+                                                    </div>
+                                                    <div>
+                                                        <strong>Home Type:</strong> {adoption.home_type}
+                                                    </div>
+                                                </Card.Text>
+                                            </Card.Body>
+                                        </Card>
+                                    ))
+                                ) : (
+                                    <p>No active adoptions</p>
+                                )}
+                            </div>
+                            {activeAdoptions.length > cardsToShow && (
+                                <div className="pagination-buttons">
+                                    <Button onClick={handleActivePrev} disabled={activeStartIndex === 0}>Previous</Button>
+                                    <Button onClick={handleActiveNext} disabled={activeStartIndex + cardsToShow >= activeAdoptions.length}>Next</Button>
+                                </div>
+                            )}
+                        </div>
 
                         {/* Modal for displaying full adoption details */}
                         {selectedAdoption && (

@@ -2,7 +2,15 @@ const mongoose = require('mongoose');
 
 const EventSchema = new mongoose.Schema({
 
+e_image:{
+    type: Buffer
+},
+
 e_title: {
+    type: String
+},
+
+e_location:{
     type: String
 },
 
