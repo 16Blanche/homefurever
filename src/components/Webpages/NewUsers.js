@@ -3,18 +3,13 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import React from "react";
 import { useEffect, useState } from "react";
 import Button from 'react-bootstrap/Button';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import Container from 'react-bootstrap/Container';
-import Image from 'react-bootstrap/Image';
-import TheImage from './assets/mainbg.png';
 import './Homepage.css';
 import TaskBar from "./TaskBar";
 import NavigationBar from "./NavigationBar";
 import Modal from 'react-bootstrap/Modal';
 import DeleteModal from "./DeleteModal";
+import DataTable from 'react-data-table-component';
 
-// Define the convertToBase64 function before using it
 const convertToBase64 = (buffer) => {
     return btoa(
         new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
@@ -67,12 +62,12 @@ const NewUsers = () => {
         axios.get("http://localhost:8000/api/user/username/" + pusername)
             .then((response) => {
                 console.log("Fetched User Data:", response.data.theUser);
-                setSelectedUserForView(response.data.theUser); // Update selected user data
+                setSelectedUserForView(response.data.theUser); 
             })
             .catch((err) => {
                 console.log(err);
             });
-    }, [pusername]); // Include pusername in dependency array to re-fetch data when it changes
+    }, [pusername]); 
 
     const handleDeleteButton = (user) => {
         setSelectedUserForDelete(user);
@@ -99,9 +94,47 @@ const NewUsers = () => {
         setShowLargeIDModal(true);
     };
 
+    const columns = [
+        {
+            name: 'User ID',
+            selector: row => row.pending_id,
+            sortable: true,
+        },
+        {
+            name: 'Username',
+            selector: row => row.p_username,
+            sortable: true,
+        },
+        {
+            name: 'Last Name',
+            selector: row => row.p_lname,
+            sortable: true,
+        },
+        {
+            name: 'First Name',
+            selector: row => row.p_fname,
+            sortable: true,
+        },
+        {
+            name: 'Middle Initial',
+            selector: row => row.p_mname,
+            sortable: true,
+        },
+        {
+            name: 'Actions',
+            cell: row => (
+                <>
+                    <Button className="nuviewbtn" onClick={() => handleViewButton(row)}>View</Button>
+                    <Button className="nuapprovebtn" onClick={() => handleApprove(row._id)}>Approve</Button>
+                    <Button className="nudeclinebtn" onClick={() => handleDeleteButton(row)}>Decline</Button>
+                </>
+            ),
+        },
+    ];
+
     return (
         <>
-            <div className="box">
+            <div className="nubox">
                 <div className="navbox">
                     <NavigationBar />
                 </div>
@@ -113,36 +146,17 @@ const NewUsers = () => {
                         <div className="nubox4">
                             <h2 className="newuser">PENDING USERS</h2>
                         </div>
-                        <table className="nutable">
-                            <thead>
-                                <tr className="pltheader">
-                                    <th>User ID</th>
-                                    <th>Username</th>
-                                    <th>Last Name</th>
-                                    <th>First Name</th>
-                                    <th>Middle Initial</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {allUsers.map((element, index) => {
-                                    return (
-                                        <tr key={element._id}>
-                                            <th className="nutabletext">{element.pending_id}</th>
-                                            <th className="nutabletext">{element.p_username}</th>
-                                            <th className="nutabletext">{element.p_lname}</th>
-                                            <th className="nutabletext">{element.p_fname}</th>
-                                            <th className="nutabletext">{element.p_mname}</th>
-                                            <th>
-                                                <Button className="nuviewbtn" onClick={() => handleViewButton(element)}>View</Button>
-                                                <Button className="nuapprovebtn" onClick={() => handleApprove(element._id)}>Approve</Button>
-                                                <Button className="nudeclinebtn" onClick={() => handleDeleteButton(element)}>Decline</Button>
-                                            </th>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+                        <div className="nutable">
+                            <DataTable
+                                columns={columns}
+                                data={allUsers}
+                                paginationPerPage={13}
+                                paginationRowsPerPageOptions={[5, 10, 13]}
+                                pagination
+                                highlightOnHover
+                                onRowClicked={handleViewButton}
+                            />
+                        </div>
 
                         {/* View Modal */}
                         <Modal show={showViewModal} onHide={() => setShowViewModal(false)} className="nucustom-modal">

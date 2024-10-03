@@ -2,18 +2,19 @@ import React, { useEffect, useState, useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
+import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
 import Image from 'react-bootstrap/Image';
 import Dropdown from 'react-bootstrap/Dropdown';
 import TheLogo from './assets/logo.png';
 import UserPh from './assets/userph.jpg';
 import './Homepage.css';
-
 import AuthContext from '../../context/AuthContext';
 
 const NavigationBar = () => {
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
+    const { logout } = useContext(AuthContext);
 
     const notifications = [
         {
@@ -48,7 +49,10 @@ const NavigationBar = () => {
     //     }
     // 
     // };
-    
+    const handleLogout = async () => {
+        await logout();
+        navigate('/login'); 
+    };
 
     return (
         <>
@@ -96,6 +100,9 @@ const NavigationBar = () => {
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>
+                    <Button className="navlink-container" onClick={handleLogout}>
+                            SIGN OUT
+                    </Button>
 
                     {/* <div className="navlink-container">
                         <NavLink to="/admin/account" className="navlink">Account</NavLink>

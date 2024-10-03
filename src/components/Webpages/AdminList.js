@@ -11,6 +11,7 @@ import AuthContext from '../../context/AuthContext';
 import './Homepage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import DataTable from 'react-data-table-component';
 
 const AdminList = () => {
     const navigate = useNavigate();
@@ -40,8 +41,8 @@ const AdminList = () => {
     
     
     const generatePassword = () => {
-        const randomBytes = CryptoJS.lib.WordArray.random(16); // Generates 16 random bytes
-        return randomBytes.toString(CryptoJS.enc.Hex); // Converts to hex string
+        const randomBytes = CryptoJS.lib.WordArray.random(16); 
+        return randomBytes.toString(CryptoJS.enc.Hex); 
     };
 
     const handlePasswordToggle = () => {
@@ -57,7 +58,7 @@ const AdminList = () => {
     });
 
     const handleConfirmation = (e) => {
-        e.preventDefault(); // Prevent form submission
+        e.preventDefault(); 
         setShowConfirmationModal(true);
     }
     
@@ -90,15 +91,18 @@ const AdminList = () => {
             });
     }, []);
 
-useEffect(() => {
-    axios.get("http://localhost:8000/api/admin/all")
-        .then((response) => {
-            setAllAdmins(response.data.admins || []);
-        })
-        .catch((err) => {
-            console.error("Error fetching admins:", err);
-        });
-}, []);
+    useEffect(() => {
+        axios.get("http://localhost:8000/api/admin/all")
+            .then((response) => {
+                const admins = response.data.admins || [];
+                const filteredAdmins = admins.filter(admin => admin.a_role === 'admin');
+                setAllAdmins(filteredAdmins);
+            })
+            .catch((err) => {
+                console.error("Error fetching admins:", err);
+            });
+    }, []);
+    
 
 
     useEffect(() => {
@@ -114,7 +118,7 @@ useEffect(() => {
     }, [pusername]);
 
     const handleAddAdmin = () => {
-        setShowAddAdminModal(true); // Open the staff selection modal
+        setShowAddAdminModal(true); 
     };
 
     const handleStaffSelection = (staff) => {
@@ -134,7 +138,7 @@ useEffect(() => {
             username: '',
             password: ''
         });
-        setShowAddAdminModal(false); // Close staff selection modal
+        setShowAddAdminModal(false); 
     };
 
     const handleConfirmAddAdmin = async () => {
@@ -145,7 +149,7 @@ useEffect(() => {
             ...formData,
             username: generatedUsername,
             password: generatedPassword,
-            s_id: selectedStaff.s_id // Include s_id here
+            s_id: selectedStaff.s_id 
         };
     
         setFormData(updatedFormData);
@@ -164,13 +168,12 @@ useEffect(() => {
                     email: updatedFormData.email,
                     username: generatedUsername,
                     password: generatedPassword,
-                    s_id: updatedFormData.s_id // Send s_id to backend
+                    s_id: updatedFormData.s_id
                 });
     
                 console.log("Admin added:", response.data);
-                setShowConfirmationModal(false); // Close confirmation modal after adding admin
-    
-                // Send email with generated credentials
+                setShowConfirmationModal(false); 
+
                 await axios.post("http://localhost:8000/api/send-email", {
                     to: updatedFormData.email,
                     subject: "Your Admin Credentials",
@@ -196,9 +199,6 @@ useEffect(() => {
             });
     };
     
-    
-
-        // Handle input change
         const handleInputChange = (e) => {
             const { name, value } = e.target;
             setFormData({ ...formData, [name]: value });
@@ -255,22 +255,52 @@ useEffect(() => {
 
     const handleDeleteConfirm = async (admin) => {
         try {
-            // Update the s_role to 'deleted-admin'
             await axios.patch(`http://localhost:8000/api/admin/update/${admin._id}`, {
                 s_role: 'deleted-admin'
             });
-            
-            // Update the state to remove the admin from the visible admin list
-            setAllAdmins(allAdmins.filter((s) => s._id !== admin._id)); // Remove from current admin list
+
+            setAllAdmins(allAdmins.filter((s) => s._id !== admin._id));
             setShowDeleteModal(false);
         } catch (error) {
             console.error("Error handling deletion:", error);
         }
     };
     
-    
-    
-
+    const columns = [
+        {
+            name: 'User ID',
+            selector: row => row.a_id,
+            sortable: true,
+        },
+        {
+            name: 'Username',
+            selector: row => row.a_username,
+            sortable: true,
+        },
+        {
+            name: 'Last Name',
+            selector: row => row.a_lname,
+            sortable: true,
+        },
+        {
+            name: 'First Name',
+            selector: row => row.a_fname,
+            sortable: true,
+        },
+        {
+            name: 'Email',
+            selector: row => row.a_email,
+            sortable: true,
+        },
+        {
+            name: 'Actions',
+            cell: row => (
+                <>
+                    <Button className="nudeclinebtn" onClick={() => handleDeleteButton(row)}>Delete</Button>
+                </>
+            ),
+        },
+    ];
     return (
         <>
             <div className="box">
@@ -289,36 +319,17 @@ useEffect(() => {
                                 <p className="staddsttxt">+ Add Admin</p>
                             </Button>
                         </div>
-                        <table className="nutable">
-                            <thead>
-                                <tr className="pltheader">
-                                    <th>Admin ID</th>
-                                    <th>Username</th>
-                                    <th>Last Name</th>
-                                    <th>First Name</th>
-                                    <th>Email</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {allAdmins
-                                .filter((admin) => admin.s_role === 'admin') // Filter for only admins
-                                .map((element) => (
-                                    <tr key={element._id}>
-                                        <td className="nutabletext">{element.a_id}</td>
-                                        <td className="nutabletext">{element.a_username}</td>
-                                        <td className="nutabletext">{element.a_lname}</td>
-                                        <td className="nutabletext">{element.a_fname}</td>
-                                        <td className="nutabletext">{element.a_email}</td>
-                                        <td>
-                                            <Button className="nudeclinebtn" onClick={() => handleDeleteButton(element)}>Delete</Button>
-                                        </td>
-                                    </tr>
-                                ))
-                            }
-                        </tbody>
-
-                        </table>
+                        <div className="nutable">
+                        <DataTable
+                                columns={columns}
+                                data={allAdmins}
+                                paginationPerPage={13}
+                                paginationRowsPerPageOptions={[5, 10, 13]}
+                                pagination
+                                highlightOnHover
+                                onRowClicked={handleViewButton}
+                            />
+                        </div>
 
                         {/* View Modal */}
                         <Modal show={showViewModal} onHide={() => setShowViewModal(false)}>

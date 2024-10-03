@@ -16,7 +16,7 @@ import Feedbacks from './assets/feedbacks.png'
 import MyPosts from './assets/myposts.png'
 import Events from './assets/eventsicon.png'
 import AnimalPopulation from './assets/animalpopulation.png'
-import AuthContext from '../../context/AuthContext'; // Make sure the path to AuthContext is correct
+import AuthContext from '../../context/AuthContext';
 import './Homepage.css';
 
 const TaskBar=()=>{
@@ -38,7 +38,7 @@ const TaskBar=()=>{
         <>
         <div className="taskbar">
 
-                    <div className="empty">
+                    <div className="adminempty">
                         <Image require src={TheLogo} className="tblogo"></Image>
                         <h1 className="tbadmin">Admin</h1>
                     </div>
@@ -99,11 +99,11 @@ const TaskBar=()=>{
                         </Button>
                     </div>
 
-                    <div >
+                    {/* <div >
                         <Button className="tbsignout" onClick={handleLogout}>
                             SIGN OUT
                         </Button>
-                    </div>
+                    </div> */}
 
                 </div>
         </>

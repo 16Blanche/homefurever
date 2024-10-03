@@ -3,19 +3,13 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import React, { useContext } from "react";
 import Button from 'react-bootstrap/Button';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import Container from 'react-bootstrap/Container';
-import Image from 'react-bootstrap/Image';
-import TheImage from './assets/mainbg.png'
 import './Homepage.css';
 import TaskBar from "./TaskBar";
 import NavigationBar from "./NavigationBar";
 import Modal from 'react-bootstrap/Modal';
 import AuthContext from '../../context/AuthContext';
+import DataTable from 'react-data-table-component';
 
-
-// Define the convertToBase64 function before using it
 const convertToBase64 = (buffer) => {
     return btoa(
         new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
@@ -56,9 +50,9 @@ const UserList=()=>{
         const { user, newRole } = roleChangeRequest;
         try {
             await axios.put(`http://localhost:8000/api/user/${user._id}/role`, { v_role: newRole });
-            // Update the user's role in the state
+
             setAllUsers(allUsers.map(u => u._id === user._id ? { ...u, v_role: newRole } : u));
-            setShowConfirmModal(false); // Close the confirmation modal
+            setShowConfirmModal(false); 
         } catch (err) {
             console.error('Error updating role:', err);
         }
@@ -80,14 +74,14 @@ const UserList=()=>{
             axios.get("http://localhost:8000/api/verified/" + vusername)
                 .then((response) => {
                     console.log("Fetched Pet Data:", response.data.theUser);
-                    setSelectedUserForView(response.data.theUser); // Update selected pet data
+                    setSelectedUserForView(response.data.theUser); 
 
                 })
                 .catch((err) => {
                     console.log(err);
                 });
             }
-    }, [vusername]); // Include pusername in dependency array to re-fetch data when it changes
+    }, [vusername]); 
 
     
     const handleValidIDClick = () => {
@@ -108,10 +102,44 @@ const UserList=()=>{
         user.v_fname.toLowerCase().includes(searchQuery.toLowerCase()) ||
         user.v_mname.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
+    const columns = [
+        {
+            name: 'User ID',
+            selector: row => row.v_id,
+            sortable: true,
+        },
+        {
+            name: 'Username',
+            selector: row => row.v_username,
+            sortable: true,
+        },
+        {
+            name: 'Last Name',
+            selector: row => row.v_lname,
+            sortable: true,
+        },
+        {
+            name: 'First Name',
+            selector: row => row.v_fname,
+            sortable: true,
+        },
+        {
+            name: 'Middle Initial',
+            selector: row => row.v_mname,
+            sortable: true,
+        },
+        {
+            name: 'Actions',
+            cell: row => (
+                <>
+                    <Button className="ulviewbtn" onClick={() => handleViewButton(row)}>View</Button>
+                </>
+            ),
+        },
+    ];
     return (
         <>
-            <div className="box">
+            <div className="ulbox">
 
                 <div className="navbox">
                 <NavigationBar/>
@@ -130,37 +158,17 @@ const UserList=()=>{
                             </Button>
 
                         </div>
-                        <table className="ultable">
-                            <thead>
-                                <tr className="pltheader">
-                                    <th>User ID</th>
-                                    <th>Username</th>
-                                    <th>Last Name</th>
-                                    <th>First Name</th>
-                                    <th>Middle Initial</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead> 
-                            <tbody>
-                            {allUsers.map((element,index)=>{
-                        return (<tr key={element._id}>
-                                    <th className="ultabletext">{element.v_id}</th>
-                                    <th className="ultabletext">{element.v_username}</th>
-                                    <th className="ultabletext">{element.v_lname}</th>
-                                    <th className="ultabletext">{element.v_fname}</th>
-                                    <th className="ultabletext">{element.v_mname}</th>
-                                    <th>
-                                        <Button className="ulviewbtn" onClick={() => handleViewButton(element)}>View</Button>
-                                        {/* {element.v_role === 'admin' ? (
-                                                <Button className="ulrevertbtn" onClick={() => openConfirmModal(element, 'verified')}>Revert to Verified</Button>
-                                            ) : (
-                                                <Button className="uladminbtn" onClick={() => openConfirmModal(element, 'admin')}>Make Admin</Button>
-                                            )} */}
-                                    </th>
-                                </tr>)
-                                })}
-                            </tbody>
-                        </table>
+                        <div className="ultable">
+                            <DataTable
+                                columns={columns}
+                                data={allUsers}
+                                paginationPerPage={13}
+                                paginationRowsPerPageOptions={[5, 10, 13]}
+                                pagination
+                                highlightOnHover
+                                onRowClicked={handleViewButton}
+                            />
+                        </div>
 
                         {/* View Modal */}
                         <Modal show={showViewModal} onHide={() => setShowViewModal(false)} className="ulcustom-modal">

@@ -1,20 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Homepage from "./Homepage";
 import Button from 'react-bootstrap/Button';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import Container from 'react-bootstrap/Container';
 import "./Homepage.css";
-import Card from 'react-bootstrap/Card';
-import ListGroup from 'react-bootstrap/ListGroup';
 import NavigationBar from "./NavigationBar";
 import TaskBar from "./TaskBar";
 import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
-import DeleteModal from "./DeleteModal";
-import { FormGroup } from "react-bootstrap";
+import DataTable from 'react-data-table-component';
 
  
 const ArchivedPets =()=>{
@@ -65,11 +57,11 @@ const ArchivedPets =()=>{
             ap_vaccines: e.target.elements.vaccines.value,
         };
     
-        console.log("Updated Pet Data:", updatedPet); // Log updatedPet for debugging
+        console.log("Updated Pet Data:", updatedPet);
     
         axios.put(`http://localhost:8000/api/archived/update/${selectedPet.ap_name}`, updatedPet)
             .then(response => {
-                console.log("Update Response:", response); // Log response for debugging
+                console.log("Update Response:", response);
                 setAllPets(prevPets => prevPets.map(pet => pet.ap_name === updatedPet.ap_name ? updatedPet : pet));
                 setShowEditModal(false);
                 setSelectedPet(null);
@@ -77,7 +69,7 @@ const ArchivedPets =()=>{
             .catch(err => {
                 console.error("There was an error updating the pet!", err);
                 if (err.response) {
-                    console.error("Error Data:", err.response.data); // Log error response data
+                    console.error("Error Data:", err.response.data);
                 }
             });
     };
@@ -143,13 +135,49 @@ const ArchivedPets =()=>{
         axios.get("http://localhost:8000/api/archived/" + apname)
             .then((response) => {
                 console.log("Fetched Pet Data:", response.data.apets);
-                setSelectedPetForView(response.data.apets); // Update selected pet data
+                setSelectedPetForView(response.data.apets); 
 
             })
             .catch((err) => {
                 console.log(err);
             });
-    }, [apname]); // Include pname in dependency array to re-fetch data when it changes
+    }, [apname]); 
+
+    const columns = [
+        {
+            name: 'Pet ID',
+            selector: row => row.ap_id,
+            sortable: true,
+        },
+        {
+            name: 'Pet Name',
+            selector: row => row.ap_name,
+            sortable: true,
+        },
+        {
+            name: 'Species',
+            selector: row => row.ap_type,
+            sortable: true,
+        },
+        {
+            name: 'Gender',
+            selector: row => row.ap_gender,
+            sortable: true,
+        },
+        {
+            name: 'Status',
+            selector: row => row.ap_reason,
+            sortable: true,
+        },
+        {
+            name: 'Actions',
+            cell: row => (
+                <>
+                    <Button className="plviewbtn" onClick={() => handleViewButton(row)}>View</Button>
+                </>
+            ),
+        },
+    ];
  
 
     return(
@@ -171,34 +199,17 @@ const ArchivedPets =()=>{
                         </div>
                         
                         
-                        <table className="ultable">
-                            <thead>
-                                <tr className="pltheader">
-                                    <th>Pet ID</th>
-                                    <th>Pet Name</th>
-                                    <th>Species</th>
-                                    <th>Gender</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {allPets.map((element,index)=>{
-                        return (<tr key={element._id}>
-
-                                    <td>{element.ap_id}</td>
-                                    <td>{element.ap_name}</td>
-                                    <td>{element.ap_type}</td>
-                                    <td>{element.ap_gender}</td>
-                                    <td>
-                                        <Button className="plviewbtn" onClick={() => handleViewButton(element)}>View</Button>
-                                        {/* <Button className="pleditbtn" onClick={() => handleEditButton(element)}>Edit</Button>
-                                        <Button className="pldeletebtn" onClick={() => handleRestoreModalOpen(element)}>Restore</Button> */}
-                                    </td>
- 
-                                </tr>)    
-                    })}    
-                            </tbody>
-                        </table>
+                        <div className="pltable">
+                        <DataTable
+                                columns={columns}
+                                data={allPets}
+                                paginationPerPage={13}
+                                paginationRowsPerPageOptions={[5, 10, 13]}
+                                pagination
+                                highlightOnHover
+                                onRowClicked={handleViewButton}
+                            />
+                        </div>
 
                         {/* View Modal */}
                         <Modal show={showViewModal} onHide={() => setShowViewModal(false)}>

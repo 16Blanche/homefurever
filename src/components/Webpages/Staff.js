@@ -2,20 +2,13 @@ import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import React, { useEffect, useState, useContext } from "react";
 import Button from 'react-bootstrap/Button';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import Container from 'react-bootstrap/Container';
-import Image from 'react-bootstrap/Image';
-import TheImage from './assets/mainbg.png';
 import './Homepage.css';
 import TaskBar from "./TaskBar";
 import NavigationBar from "./NavigationBar";
 import Modal from 'react-bootstrap/Modal';
-import DeleteModal from "./DeleteModal";
-
+import DataTable from 'react-data-table-component';
 import AuthContext from '../../context/AuthContext';
 
-// Define the convertToBase64 function before using it
 const convertToBase64 = (buffer) => {
     return btoa(
         new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
@@ -44,7 +37,6 @@ const Staff = () => {
     const [showLargeIDModal, setShowLargeIDModal] = useState(false);
     const [showAddStaffModal, setShowAddStaffModal] = useState(false); // State for Add Staff Modal
 
-    // Form states
     const [formData, setFormData] = useState({
         s_fname: "",
         s_lname: "",
@@ -61,8 +53,8 @@ const Staff = () => {
 
     const handleViewButton = (staff) => {
         console.log("View Button Clicked");
-        setSelectedStaffForView(staff); // Set selected user data
-        setShowViewModal(true); // Open view modal
+        setSelectedStaffForView(staff); 
+        setShowViewModal(true); 
     };
 
     const handleUpdateButton = (staff) => {
@@ -78,7 +70,7 @@ const Staff = () => {
             s_birthdate: staff.s_birthdate,
             s_email: staff.s_email
         });
-        setShowUpdateStaffModal(true); // Open update modal
+        setShowUpdateStaffModal(true); 
     };
     
     
@@ -86,11 +78,11 @@ const Staff = () => {
         axios.get("http://localhost:8000/api/staff/all")
             .then((response) => {
                 console.log('API Response:', response.data);
-                setAllStaff(response.data.theStaff || []); // Use the correct key for the data
+                setAllStaff(response.data.theStaff || []); 
             })
             .catch((err) => {
                 console.log('Error fetching staff:', err);
-                setAllStaff([]); // Set to an empty array if there's an error
+                setAllStaff([]); 
             });
     }, []);
     
@@ -98,12 +90,12 @@ const Staff = () => {
         axios.get("http://localhost:8000/api/staff/id/" + id)
             .then((response) => {
                 console.log("Fetched User Data:", response.data.theStaff);
-                setSelectedStaffForView(response.data.theStaff); // Update selected user data
+                setSelectedStaffForView(response.data.theStaff); 
             })
             .catch((err) => {
                 console.log(err);
             });
-    }, [id]); // Include id in dependency array to re-fetch data when it changes
+    }, [id]); 
 
     const handleDeleteButton = (user) => {
         setSelectedUserForDelete(user);
@@ -117,7 +109,7 @@ const Staff = () => {
             })
             .then((response) => {
                 console.log(response.data);
-                setAllStaff(allStaff.filter((s) => s._id !== staff._id)); // Remove from current staff list
+                setAllStaff(allStaff.filter((s) => s._id !== staff._id)); 
                 setShowDeleteModal(false);
             })
             .catch((error) => {
@@ -134,16 +126,16 @@ const Staff = () => {
     };
 
     const handleAddStaff = () => {
-        setFormData(initialFormData); // Reset form data for adding
-        setFormErrors({}); // Clear any previous errors
-        setShowAddStaffModal(true); // Open Add Staff Modal
+        setFormData(initialFormData); 
+        setFormErrors({}); 
+        setShowAddStaffModal(true); 
     };
     
 
     const handleAddStaffModalClose = () => {
-        setFormData(initialFormData); // Reset form data on modal close
-        setFormErrors({}); // Clear errors
-        setShowAddStaffModal(false); // Close Add Staff Modal
+        setFormData(initialFormData); 
+        setFormErrors({}); 
+        setShowAddStaffModal(false); 
     };
 
     const initialFormData = {
@@ -158,14 +150,11 @@ const Staff = () => {
         s_email: ""
     };
     
-
-    // Handle input change
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    // Validate the form
     const validateForm = () => {
         const errors = {};
 
@@ -211,7 +200,6 @@ const Staff = () => {
         return Object.keys(errors).length === 0;
     };
 
-    // Handle form submission
     const handleFormSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
@@ -219,7 +207,7 @@ const Staff = () => {
                 .then((response) => {
                     console.log("Staff added:", response.data);
                     setAllStaff([...allStaff, response.data.savedStaff]);
-                    handleAddStaffModalClose(); // Close modal if form is valid
+                    handleAddStaffModalClose(); 
                 })
                 .catch((err) => {
                     console.error("There was an error adding the staff!", err);
@@ -233,19 +221,11 @@ const Staff = () => {
             axios.put(`http://localhost:8000/api/staff/update/${selectedStaffForUpdate._id}`, formData)
                 .then((response) => {
                     console.log("Staff updated:", response.data);
-    
-                    // Update the staff list with the newly updated staff member
                     const updatedStaffList = allStaff.map(staff =>
                         staff._id === selectedStaffForUpdate._id ? response.data.theUpdateStaff : staff
                     );
-    
-                    // Set the updated staff list in state
-                    setAllStaff(updatedStaffList);
-    
-                    // Close the modal if the update is successful
+                    setAllStaff(updatedStaffList);   
                     setShowUpdateStaffModal(false);
-    
-                    // Display a confirmation message
                     alert('Staff updated successfully!');
                 })
                 .catch((err) => {
@@ -254,9 +234,6 @@ const Staff = () => {
         }
     };
     
-    
-    
-
     const handleAdmins = () => {
         if (user) {
           navigate('/admins');
@@ -272,6 +249,44 @@ const Staff = () => {
           navigate('/login');
         }
       };
+
+      const columns = [
+        {
+            name: 'User ID',
+            selector: row => row.s_id,
+            sortable: true,
+        },
+        {
+            name: 'Last Name',
+            selector: row => row.s_lname,
+            sortable: true,
+        },
+        {
+            name: 'First Name',
+            selector: row => row.s_fname,
+            sortable: true,
+        },
+        {
+            name: 'Middle Initial',
+            selector: row => row.s_mname,
+            sortable: true,
+        },
+        {
+            name: 'Position',
+            selector: row => row.s_position,
+            sortable: true,
+        },
+        {
+            name: 'Actions',
+            cell: row => (
+                <>
+                    <Button className="nuviewbtn" onClick={() => handleViewButton(row)}>View</Button>
+                    <Button className="nuapprovebtn" onClick={() => handleUpdateButton(row)}>Edit</Button>
+                    <Button className="nudeclinebtn" onClick={() => handleDeleteButton(row)}>Delete</Button>
+                </>
+            ),
+        },
+    ];
 
     return (
         <>
@@ -297,46 +312,17 @@ const Staff = () => {
                                 <p className="staddsttxt">Staff Activity</p>
                             </Button>
                         </div>
-                        <table className="nutable">
-                            <thead>
-                                <tr className="pltheader">
-                                    <th>Staff ID</th>
-                                    <th>Last Name</th>
-                                    <th>First Name</th>
-                                    <th>Middle Name</th>
-                                    <th>Position</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {allStaff && allStaff.length > 0 ? (
-                                    allStaff.map((element, index) => {
-                                        console.log('Staff Element:', element); // Debugging line
-                                        return (
-                                            <tr key={element._id}>
-                                                <th className="nutabletext">{element.s_id}</th>
-                                                <th className="nutabletext">{element.s_lname}</th>
-                                                <th className="nutabletext">{element.s_fname}</th>
-                                                <th className="nutabletext">{element.s_mname}</th>
-                                                <th className="nutabletext">{element.s_position}</th>
-                                                <th>
-                                                    <Button className="nuviewbtn" onClick={() => handleViewButton(element)}>View</Button>
-                                                    <Button className="nuapprovebtn" onClick={() => handleUpdateButton(element)}>Edit</Button>
-                                                    <Button className="nudeclinebtn" onClick={() => handleDeleteButton(element)}>Delete</Button>
-                                                </th>
-                                            </tr>
-                                        );
-                                    })
-                                ) : (
-                                    <tr>
-                                        <td colSpan="5">No staff members found.</td>
-                                    </tr>
-                                )}
-                            </tbody>
-
-
-                        </table>
-
+                        <div className="nutable">
+                            <DataTable
+                                columns={columns}
+                                data={allStaff}
+                                paginationPerPage={13}
+                                paginationRowsPerPageOptions={[5, 10, 13]}
+                                pagination
+                                highlightOnHover
+                                onRowClicked={handleViewButton}
+                            />
+                        </div>
                         {/* View Modal */}
                         <Modal show={showViewModal} onHide={() => setShowViewModal(false)} className="nucustom-modal">
                             <Modal.Header closeButton>

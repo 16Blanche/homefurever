@@ -1,14 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Homepage from "./Homepage";
 import Button from 'react-bootstrap/Button';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import Container from 'react-bootstrap/Container';
 import "./Homepage.css";
-import Card from 'react-bootstrap/Card';
-import ListGroup from 'react-bootstrap/ListGroup';
 import NavigationBar from "./NavigationBar";
 import TaskBar from "./TaskBar";
 import Modal from 'react-bootstrap/Modal';
