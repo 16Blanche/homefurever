@@ -258,7 +258,7 @@ const AdoptionTracker = () => {
             case 'pending':
                 return 1; // Change this as per your status definitions, if 'pending' means step 1 is still active
             case 'accepted':
-                return 1; // Step 2 becomes active after acceptance
+                return 2; // Step 2 becomes active after acceptance
             case 'rejected':
                 return 1; // Indicates failure at step 2, does not proceed to step 3
             case 'complete':
@@ -302,7 +302,7 @@ const AdoptionTracker = () => {
                             <p className="tracker-myadoptionstxt">MY ADOPTIONS</p>
                         </div>
                     </div>
-
+                    <div className="tracker-adoption-container">
                     {adoptions.length > 0 ? (
                         adoptions.map((adoption) => (
                             <div key={adoption._id} className="tracker-pet-button">
@@ -332,6 +332,7 @@ const AdoptionTracker = () => {
                     ) : (
                         <p>No adoptions found</p>
                     )}
+                    </div>
 
                     {/* <div className="tracker-pet-button">
                         <Button className="tracker-adoption-box">

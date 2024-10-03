@@ -2643,19 +2643,20 @@
     cursor: pointer;
   }
   .nearbyaddbtn {
-    margin-top: 1rem;
     margin-bottom: 1.5rem;
     align-self:center;
     background-color: #f851b8;
     border: #f851b8;
     width: 100%;
+    margin-top: -1rem;
 }
-  .availableClinics {
+  .nearavailableClinics {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+
 }
-  .clinicsContainer {
+  .nearclinicsContainer {
     display: flex;
     flex-direction: column;
     gap: .5rem !important;
@@ -2663,8 +2664,9 @@
     flex-grow: 1;
     overflow-y: auto;
     margin-top: 0 !important;
+    margin-bottom: 2rem !important;
   }
-  .clinicBox {
+  .nearclinicBox {
     display: flex;
     align-items: center;
     background-color: white;
@@ -2677,11 +2679,11 @@
     max-height: 7.5rem !important;
   } 
   
-  .clinicBox:hover {
+  .nearclinicBox:hover {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   }
   
-  .clinicBox img {
+  .nearclinicBox img {
     width: 6rem; 
     height:4.5rem; 
     border-radius: 4px;
@@ -2689,12 +2691,12 @@
     object-fit: cover;
   }
   
-  .clinicInfo {
+  .nearclinicInfo {
     display: flex;
     flex-direction: column; /* Stack name and address vertically */
     width: 20rem;
   }
-  .clinicInfo p{
+  .nearclinicInfo p{
     margin-bottom: 0;
   }
   .nearbybox5{
@@ -2714,7 +2716,7 @@
     align-self: center;
     border-radius: 2rem;
   }
-  .clinic-buttons{
+  .nearclinic-buttons{
     display: flex;
     flex-direction: row;
     align-self: self-start;
@@ -3089,6 +3091,7 @@
     height: 9rem;
     border-radius: 1rem;
     margin-top: .5rem;
+    object-fit: cover;
 }
 .adoptions-text{
     text-align: center;

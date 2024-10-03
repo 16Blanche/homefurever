@@ -1436,29 +1436,38 @@ margin-right: 200px;
   margin: 0px;
 }
 .nearbybtns { 
-  flex: 1; /* Allow buttons to grow equally */
-  margin: .2rem; /* Optional: Adds space between buttons */
-  text-align: center; /* Center text in the button */
-  border: none; /* Remove border if needed */
-  cursor: pointer; /* Change cursor to pointer */
+  flex: 1;
+  margin: .2rem;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+}
+.availableClinics {
+  display: flex;
+  flex-direction: column;
 }
 .clinicsContainer {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Space between clinic boxes */
-  margin-top: 10px;
+  gap: .5rem !important;
+  height: 23rem !important;
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 .clinicBox {
   display: flex;
-  align-items: center; /* Align items vertically */
-  background-color: white; /* Background color for clinic box */
-  border: 1px solid #ccc; /* Light border around the box */
-  border-radius: 8px; /* Rounded corners */
-  padding: 10px; /* Padding around the content */
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: box-shadow 0.3s; /* Smooth transition for hover effect */
-  width: 88%; /* Optional: Set width to fill the container */
+  align-items: center;
+  background-color: white;
+  border: 1px solid #ccc; 
+  border-radius: 8px;
+  padding: 10px; 
+  cursor: pointer;
+  transition: box-shadow 0.3s;
+  width: 100% !important;
+  max-height: 7rem !important;
 }
 
 .clinicBox:hover {
@@ -1466,16 +1475,20 @@ margin-right: 200px;
 }
 
 .clinicBox img {
-  width: 6rem; /* Fixed width for the image */
-  height:4.5rem; /* Fixed height for the image */
-  border-radius: 4px; /* Optional: Rounded image corners */
-  margin-right: 10px; /* Space between image and text */
-  object-fit: cover; /* Ensures the image covers the area without distortion */
+  width: 6rem; 
+  height:4.5rem; 
+  border-radius: 4px;
+  margin-right: 10px;
+  object-fit: cover;
 }
 
 .clinicInfo {
   display: flex;
   flex-direction: column; /* Stack name and address vertically */
+  width: 20rem;
+}
+.clinicInfo p{
+  margin-bottom: 0;
 }
 
 
@@ -1853,35 +1866,53 @@ margin-right: 200px;
   flex-direction: row;
   height: 15%;
 }
-.tracker-profile-img{
-  max-width: 100%;
-  height: auto;
-  border-radius: 100%;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.301); /* Add box shadow */
-  object-fit: cover;
+.tracker-profile-imgbox {
+  width: 30%; /* Set the width of the box */
+  height: 0; /* Set height to 0 to maintain aspect ratio */
+  padding-bottom: 30%; /* Maintain a square aspect ratio */
+  position: relative; /* Position relative for absolute positioning of the image */
+  overflow: hidden; /* Hide overflow to keep the circular shape */
+  border-radius: 50%; /* Ensure the container is circular */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Round shadow on the container */
 }
-.tracker-profile-imgbox{
-  width: 30%;
-  height: auto;
+
+.tracker-profile-img {
+  position: absolute; /* Position the image absolutely within the box */
+  top: 50%; /* Center the image vertically */
+  left: 50%; /* Center the image horizontally */
+  width: 100%; /* Scale image to 100% of the container */
+  height: 100%; /* Scale image to 100% of the container */
+  transform: translate(-50%, -50%); /* Offset the image to center */
+  border-radius: 50%; /* Make the image circular */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Optional shadow on the image itself */
+  object-fit: cover; /* Ensure the image covers the area while maintaining aspect ratio */
 }
+
+
 .tracker-myadoptions{
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
+
 .tracker-adoption-box {
-  width: 85%;
-  height: 10%;
+  width: 100%;
+  height: auto; /* Use auto to allow flexibility */
   display: flex;
   flex-direction: row;
-  background-color: rgb(255, 255, 255); /* Fully opaque background */
+  background-color: rgb(255, 255, 255);
   border-radius: 10px;
-  position: absolute;
-  z-index: 1;
   color: black;
   padding: 2%;
-  border: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add box shadow */
+  border: white; /* This doesn't have any effect; consider removing */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+.tracker-adoption-container{
+  max-height: 27rem; /* Set your desired height */
+  overflow-y: auto; /* Allow vertical scrolling */
+  padding: 10px; /* Optional: Add padding for better appearance */
+  border-radius: 10px; /* Match the button's radius */
 }
 .tracker-profile-pettext{
   width: auto;
@@ -1890,9 +1921,7 @@ margin-right: 200px;
   text-align: left;
   margin-left: 4%;
 }
-.tracker-pet-button{
-  padding-bottom: 25%;
-}
+
 .tracker-adoption-header{
   display: flex;
   flex-direction: column;

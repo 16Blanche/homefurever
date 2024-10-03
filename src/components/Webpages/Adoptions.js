@@ -96,14 +96,14 @@ const Adoptions = () => {
     };
 
     const handleRejectConfirmation = () => {
-        axios.patch(`http://localhost:8000/api/adoption/decline/${selectedAdoption._id}`, { reason: rejectionReason })
+        axios.patch(`http://localhost:8000/api/adoption/decline/${selectedAdoption._id}`, { rejection_reason: rejectionReason })
             .then(() => {
                 setPendingAdoptions(prev => prev.filter(adopt => adopt._id !== selectedAdoption._id));
                 setShowRejectModal(false);
                 setSelectedAdoption(null);
                 setRejectionReason('');
                 alert('Adoption rejected successfully.');
-                fetchAdoptions();  // Re-fetch data without refreshing the whole page
+                fetchAdoptions();
             })
             .catch(err => console.error("Error rejecting adoption:", err));
     };
@@ -199,7 +199,6 @@ const Adoptions = () => {
                             </div>
 
                             <div className="adoptions-box">
-                                {/* Previous Button always visible but disabled if at the start */}
                                 <div className="pagination-prev">
                                     <Button 
                                         className="left-button" 
@@ -242,7 +241,6 @@ const Adoptions = () => {
                                     <p>No pending adoptions</p>
                                 )}
 
-                                {/* Next Button always visible but disabled if no more pages */}
                                 <div className="pagination-next">
                                     <Button 
                                         className="right-button" 
@@ -260,7 +258,6 @@ const Adoptions = () => {
                             <h2 className="adoptions-title2">Active Adoptions</h2>
 
                             <div className="adoptions-box">
-                                {/* Previous Button always visible but disabled if at the start */}
                                 <Button 
                                     className="left-button" 
                                     onClick={handleActivePrev} 
@@ -301,7 +298,6 @@ const Adoptions = () => {
                                     <p>No active adoptions</p>
                                 )}
 
-                                {/* Next Button always visible but disabled if no more pages */}
                                 <Button 
                                     className="right-button" 
                                     onClick={handleActiveNext} 

@@ -135,13 +135,11 @@ const approveAdoption = async (req, res) => {
     }
 };
 
-// Admin rejects an adoption application (status -> 'declined')
 const declineAdoption = async (req, res) => {
     try {
         const adoptionId = req.params.id;
         const { rejection_reason } = req.body;
 
-        // Update the adoption form with 'declined' status and rejection reason
         const adoption = await Adoption.findByIdAndUpdate(adoptionId, { 
             status: 'rejected',
             rejection_reason 

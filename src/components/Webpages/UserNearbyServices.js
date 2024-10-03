@@ -4,6 +4,7 @@ import NavigationBar from './NavigationBar';
 import axios from 'axios';
 import Image from 'react-bootstrap/Image';
 import { PencilSquare, Trash } from 'react-bootstrap-icons';
+import './Homepage.css';
 
 
 const convertToBase64 = (buffer) => {
@@ -19,7 +20,7 @@ const convertToBase64 = (buffer) => {
 
 const NearbyServices = () => {
     const [services, setServices] = useState([]);
-    const [activeButton, setActiveButton] = useState(null);
+    const [activeButton, setActiveButton] = useState('veterinary');
     const [clinics, setClinics] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -95,6 +96,7 @@ const NearbyServices = () => {
             setImage('');
             setType('');
             setShowModal(false);
+            window.location.reload();
         } catch (error) {
             console.error('Error adding service:', error);
         }
@@ -105,6 +107,10 @@ const NearbyServices = () => {
             try {
                 const response = await axios.get('http://localhost:8000/api/service/all');
                 setServices(response.data);
+                
+                // Set the initial clinics to 'veterinary' services
+                const veterinaryClinics = response.data.filter(service => service.ns_type === 'veterinary');
+                setClinics(veterinaryClinics);
             } catch (error) {
                 console.error('Error fetching services:', error);
             }
@@ -216,29 +222,29 @@ const NearbyServices = () => {
                         <Button className='nearbybtns' style={{ backgroundColor: activeButton === 'hotel' ? 'white' : '#d2d2d5', color: activeButton === 'hotel' ? 'black' : 'white' }} onClick={() => handleFilter('hotel')} >Pet Hotels</Button>
                         <Button className='nearbybtns' style={{ backgroundColor: activeButton === 'grooming' ? 'white' : '#d2d2d5', color: activeButton === 'grooming' ? 'black' : 'white' }} onClick={() => handleFilter('grooming')}>Grooming</Button>
                     </div>
-                    <div className='availableClinics'>
+                    <div className='nearavailableClinics'>
                         {clinics.length > 0 ? ( // Check if clinics array has elements
-                            <div className='clinicsContainer'>
+                            <div className='nearclinicsContainer'>
                                 {clinics.map((clinic, index) => (
-                                    <div className='clinicBox' key={index} onClick={() => handleBoxClick(clinic.ns_pin)}>
+                                    <div className='nearclinicBox' key={index} onClick={() => handleBoxClick(clinic.ns_pin)}>
                                         <Image 
                                             src={clinic.ns_image && clinic.ns_image.data
                                                 ? `data:image/jpeg;base64,${convertToBase64(clinic.ns_image.data)}`
                                                 : 'fallback-image-url'} 
                                             alt={clinic.ns_name} 
                                         />
-                                        <div className='clinicInfo'>
+                                        <div className='nearclinicInfo'>
                                             <h5>{clinic.ns_name}</h5>
                                             <p>{clinic.ns_address}</p>
                                         </div>
-                                        <div className="clinic-buttons">
+                                        <div className="nearclinic-buttons">
                                             <Button className="nearbyedit" onClick={() => handleEditClick(clinic)}><PencilSquare /></Button>
                                             <Button className="nearbydelete" onClick={() => handleDelete(clinic._id)}><Trash /></Button>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                        ) : ( // Render this when clinics array is empty
+                        ) : (
                             <p style={{alignSelf:'center', justifySelf:'center'}}>There are no locations available for this category.</p>
                         )}
                     </div>
