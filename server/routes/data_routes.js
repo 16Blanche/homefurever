@@ -108,4 +108,8 @@ module.exports = (app, upload) => {
 
     // api links for nearby services
     app.post('/api/service/new', upload.single('ns_image'), nearbyController.createNearbyService);
+    app.put('/api/service/update/:id', upload.single('ns_image'), nearbyController.editNearbyService);
+    app.get('/api/service/all', nearbyController.getAllNearbyServices);
+    app.get('/api/service/:id', nearbyController.getNearbyServiceById);
+    app.delete('/api/service/delete/:id', nearbyController.deleteNearbyService);
 };
