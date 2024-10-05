@@ -1,5 +1,5 @@
 .pnavbox{
-    height: 5% !important;
+  height: 5.4% !important;
 }
 
 .box{
@@ -12,32 +12,31 @@
 }
 
 /*PINK NAVBAR*/
-.pinknavbar{
-  height: auto;
+#user-nav .pinknavbar {
+  height: 5%;
   width: 100%;
   background-color: #FF66C4 !important;
   text-decoration: none !important;
   color: white !important;
   display: flex;
-  justify-content: center;
-  padding: 20;
+  justify-content: space-between; /* Align logo and links on opposite sides */
+  padding: 20px;
   position: fixed;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add box shadow */
 }
-.plogo{
+#user-nav .plogo{
   height:35px;
   width: auto;
   padding: 0;
   margin: 0;
-  margin-right: -20px;
-  margin-left: 50px;
+  margin-left: 2rem;
 }
-.pnav-link {
+#user-nav .pnav-link {
  color: white;
   text-decoration: none;
   font-size: 16px;
 }
-.pnavtitle{
+#user-nav .pnavtitle{
   align-items: left;
   font-size: 30px;
   font-weight: bold;
@@ -45,44 +44,51 @@
   margin-right: 450px; 
   background-color:black;
 }
-.pnavlink-container{
-  margin-right: 50px; 
-  margin-left: -20px;
-  justify-content: center;
+#user-nav .pnavlink-container{
+  margin-right: 3rem;
+  justify-content:end;
   align-items: center;
-  text-align: center;
+  text-align: right;
   color: white !important;
   text-decoration: none;
 }
 
-.pnavcontainer{
-  width: 100%;
+#user-nav .pnavcontainer{
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-left: 50px;
-  padding: 0px;
-  text-align: center;
-  text-decoration: none;
+  align-items:flex-end;
+  justify-content: flex-end;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  margin-left: 50rem;
+  text-align: right;
+  align-content: flex-end;
 }
-.pnavlink {
+#user-nav .pnavlink {
   color: white;
   text-decoration: none;
   font-size: 16px;
+  max-width: 12rem;
+  text-align: center;
+  display: inline-block;
+  transition: font-weight 0.2s; 
+  align-self:flex-end;
 }
 
-.pnavlink:hover {
+#user-nav .pnavlink:hover {
   color: black;
 }
 
-.pnavlink.active {
+#user-nav .pnavlink.active {
   color: #fff;
   font-weight: bold;
 }
 
-.pnavbox{
-  height: 5%;
+#user-nav .pnavbox{
+  height: 5% !important;
 }
+
+/* ABOUT US */
 
 .aboutusbox{
   width: 100%;

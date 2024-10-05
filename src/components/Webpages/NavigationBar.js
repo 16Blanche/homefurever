@@ -37,25 +37,13 @@ const NavigationBar = () => {
         },
 
     ];
-
-    // const handleHome = () => {
-    //     console.log('User:', user); // Debugging output
-    //     if (user) {
-    //         console.log('Navigating to Home');
-    //         navigate('/home');
-    //     } else {
-    //         console.log('Navigating to Login');
-    //         navigate('/login');
-    //     }
-    // 
-    // };
     const handleLogout = async () => {
         await logout();
         navigate('/login'); 
     };
 
     return (
-        <>
+        <div>
             <Navbar className="navbar">
                 <Image src={TheLogo} className="logo" />
                 <Container className="navcontainer">
@@ -100,18 +88,14 @@ const NavigationBar = () => {
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>
-                    <Button className="navlink-container" onClick={handleLogout}>
+                    <Button className="navlink-signout" onClick={handleLogout}>
                             SIGN OUT
                     </Button>
-
-                    {/* <div className="navlink-container">
-                        <NavLink to="/admin/account" className="navlink">Account</NavLink>
-                    </div> */}
                     <Nav className="me-auto">
                     </Nav>
                 </Container>
             </Navbar>
-        </>
+        </div>
     );
 }
 

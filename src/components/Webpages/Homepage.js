@@ -17,51 +17,141 @@ import classNames from "classnames";
 import TaskBar from "./TaskBar";
 import NavigationBar from "./NavigationBar";
 import AnimalGraph from "./assets/animalgraph.png";
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
 
- 
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const Homepage=()=>{
-    const [summary, setSummary] = useState({ 
-        catCount: 0, 
-        dogCount: 0,
-        adoptedCatCount: 0, 
-        adoptedDogCount: 0,
-        pendingCount: 0,
-        verifiedCount: 0
-    });
+const Homepage = () => {
+  const [summary, setSummary] = useState({ 
+    catCount: 0, 
+    dogCount: 0,
+    adoptedCatCount: 0, 
+    adoptedDogCount: 0,
+    pendingCount: 0,
+    verifiedCount: 0
+  });
 
-    const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [barangayData, setBarangayData] = useState({}); 
+  const [events, setEvents] = useState([]); 
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [adoptedResponse, availableResponse, pendingResponse, verifiedResponse] = await Promise.all([
-                    axios.get('http://localhost:8000/api/dashboard/adopted'),
-                    axios.get('http://localhost:8000/api/dashboard/pets'),
-                    axios.get('http://localhost:8000/api/dashboard/pending'),
-                    axios.get('http://localhost:8000/api/dashboard/verified')
-                ]);
-                setSummary({
-                    adoptedCatCount: adoptedResponse.data.adoptedCatCount,
-                    adoptedDogCount: adoptedResponse.data.adoptedDogCount,
-                    catCount: availableResponse.data.catCount,
-                    dogCount: availableResponse.data.dogCount,
-                    pendingCount: pendingResponse.data.pendingCount,
-                    verifiedCount: verifiedResponse.data.verifiedCount
-                });
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+  useEffect(() => {
+    const fetchSummaryData = async () => {
+      try {
+        const [
+          adoptedResponse, 
+          availableResponse, 
+          pendingResponse, 
+          verifiedResponse, 
+          barangayResponse, 
+          eventsResponse 
+        ] = await Promise.all([
+          axios.get('http://localhost:8000/api/dashboard/adopted'),
+          axios.get('http://localhost:8000/api/dashboard/pets'),
+          axios.get('http://localhost:8000/api/dashboard/pending'),
+          axios.get('http://localhost:8000/api/dashboard/verified'),
+          axios.get('http://localhost:8000/api/barangay/all'), 
+          axios.get('http://localhost:8000/api/events/all') 
+        ]);
 
-        fetchData();
-    }, []);
+        const barangayCounts = {};
+        barangayResponse.data.theInfo.forEach(row => {
+          const barangay = row.b_barangay;
+          if (barangayCounts[barangay]) {
+            barangayCounts[barangay] += 1;
+          } else {
+            barangayCounts[barangay] = 1;
+          }
+        });
 
-    if (loading) {
-        return <p>Loading...</p>;
+        const sortedBarangays = Object.entries(barangayCounts)
+          .sort((a, b) => b[1] - a[1]) 
+          .slice(0, 20); 
+
+        const topBarangayLabels = sortedBarangays.map(([barangay]) => barangay);
+        const topBarangayCounts = sortedBarangays.map(([, count]) => count);
+
+        setBarangayData({ labels: topBarangayLabels, counts: topBarangayCounts });
+
+        setSummary({
+          adoptedCatCount: adoptedResponse.data.adoptedCatCount,
+          adoptedDogCount: adoptedResponse.data.adoptedDogCount,
+          catCount: availableResponse.data.catCount,
+          dogCount: availableResponse.data.dogCount,
+          pendingCount: pendingResponse.data.pendingCount,
+          verifiedCount: verifiedResponse.data.verifiedCount
+        });
+
+        const today = new Date();
+        const upcomingEvents = eventsResponse.data.theEvent
+          .filter(event => {
+            const eventDate = new Date(event.e_date); 
+            eventDate.setHours(0, 0, 0, 0); 
+            return eventDate >= today;
+          })
+          .sort((a, b) => new Date(a.e_date) - new Date(b.e_date)) 
+          .slice(0, 3); 
+
+        setEvents(upcomingEvents);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Call the fetch function
+    fetchSummaryData();
+  }, []);
+  
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  const barangayLabels = Object.keys(barangayData);
+  const barangayCounts = Object.values(barangayData); 
+
+  const chartData = {
+    labels: barangayData.labels, 
+    datasets: [
+      {
+        label: 'Number of Animals per Barangay',
+        data: barangayData.counts,
+        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1,
+      }
+    ]
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Number of Animals'
+        }
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Barangay'
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top'
+      }
     }
+  };
+
 
 
     return (
@@ -110,16 +200,23 @@ const Homepage=()=>{
                                 <h2 className="box4title">Events</h2>
                                 <div className="box4content">
                                     <div className="box4text">
-                                        <p className="frtext">Free Vaccines</p>
-                                        <p className="frtext">Fundraising Event</p>
-                                        <p className="frtext">Senior Pet Adoption</p>
+                                    {events.length > 0 ? (
+                                        events.map((event, index) => (
+                                        <p className="frtext" key={index}>
+                                            {event.e_title}
+                                        </p>
+
+                                        ))
+                                    ) : (
+                                        <p className="frtext">No Upcoming Events</p>
+                                    )}
+                                        
                                     </div>
                                     <div className="box4imgbox">
-                                    <Image require src={EventsImg} className="box4img"></Image>
+                                        <Image require src={EventsImg} className="box4img"></Image>
                                     </div>
                                 </div>
                             </div>
-
                             <div className="pinkbox">
                                 <h2 className="box4title">Users</h2>
                                 <div className="box4content">                                
@@ -137,11 +234,12 @@ const Homepage=()=>{
                         </div>
 
                         <div className="brgybox">
-                            <div className="brgygraph">
-                                <h1 className="graphtitle">Animal Population in Pasay City</h1>
-                                <Image require src={AnimalGraph} className="graphimg"></Image>
+                        <div className="brgygraph">
+                            <h1 className="graphtitle">Animal Population in Pasay City</h1>
+                            <div className="graph-container">
+                            <Bar data={chartData} options={chartOptions} />
                             </div>
-
+                        </div>
                         </div>
 
                     </div>

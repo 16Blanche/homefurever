@@ -1,3 +1,4 @@
+import './Users.css';
 import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
 import React from "react";
 import Button from 'react-bootstrap/Button';
@@ -6,7 +7,6 @@ import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image';
 import TheImage from './assets/mainbg.png'
-import './Users.css';
 import TheLogo from './assets/logo.png'
 import Dropdown from 'react-bootstrap/Dropdown';
 import UserPh from './assets/userph.jpg';
@@ -24,7 +24,7 @@ const PinkNavigationBar=()=>{
     ];
 
     return (
-        <>
+        <div id="user-nav">
             <Navbar className="pinknavbar">
             <Image require src={TheLogo} className="plogo"></Image>
                 <Container className="pnavcontainer">
@@ -80,7 +80,7 @@ const PinkNavigationBar=()=>{
                     </Nav>
                 </Container>
             </Navbar>
-        </>
+        </div>
     )
 }
 

@@ -15,7 +15,7 @@ import Attachment from './assets/attachment.png';
 const Chatroom = () => {
     return (
         <>
-            <div className="box">
+            <div className="ulbox">
                 <div className="navbox">
                     <NavigationBar />
                 </div>
