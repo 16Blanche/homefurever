@@ -27,6 +27,34 @@ const newBarangayInfo = async (req, res) => {
     }
 };
 
+const updateBarangayInfo = async (req, res) => {
+    const { id } = req.params; // Extract the ID from the request parameters
+    const updateData = req.body; // Get the data to update from the request body
+  
+    try {
+      // Log the ID and update data for debugging
+      console.log('Update Request - ID:', id, 'Update Data:', updateData);
+  
+      // Find the barangay by ID and update with new data
+      const updatedBarangay = await Barangay.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+  
+      if (!updatedBarangay) {
+        return res.status(404).json({ message: 'Barangay not found' });
+      }
+  
+      // Log the updated barangay data
+      console.log('Barangay successfully updated:', updatedBarangay);
+  
+      res.status(200).json({ updatedBarangay, status: 'Successfully updated' });
+    } catch (error) {
+      console.error('Error updating barangay info:', error);
+      res.status(500).json({ message: 'Something went wrong', error });
+    }
+  };
+  
+  
+  
+  
 const findAllInfo = (req, res) => {
     Barangay.find()
         .then((allDaInfo) => {
@@ -50,5 +78,6 @@ const resetCounter = async (req, res) => {
 module.exports = {
     newBarangayInfo,
     findAllInfo,
-    resetCounter
+    resetCounter,
+    updateBarangayInfo
 }

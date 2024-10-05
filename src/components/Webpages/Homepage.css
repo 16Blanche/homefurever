@@ -1711,6 +1711,12 @@
 
 
 /* EVENTS */
+.eventsbox{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
 .evbox2{
     width: 100%;
     height: 94.5%;
@@ -1736,6 +1742,7 @@
     font-weight: bold;
     text-align: left;
     padding: 0px;
+    font-size: 2.8rem !important;
 }
 .neweventbox{
     width: 7%;
@@ -1938,6 +1945,13 @@
 }
 
 /* STAFF */
+.staffbox{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color:  #F6F4F4;
+}
 .staddstbtn {
     width: 8%;
     height: 30px;
@@ -2808,75 +2822,14 @@
 
   }
 
-
-  /* BARANGAY */
-  .animal-population-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    margin-left: 20px;
-}
-
-.barangay-map-container{
-    display: flex;
-    flex-direction: row;
-    padding: 20px;
-    margin-right: 30px;
-
-}
-
-.barangay-list {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    text-align: left;
-}
-
-.barangay-list-2 {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    text-align: left;
-    margin-top: 43px;
-}
-
-.animal-header{
-    text-align: left;
-    padding: 20px;
-    font-weight: bold;margin-top: 20px;
-}
-.barangay-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    margin: 5px 0;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    cursor: pointer;
-    text-align: left;
-    width: 90%;
-}
-
-.barangay-item:hover {
-    background-color: #e0e0e0;
-}
-
-.edit-icon {
-    cursor: pointer;
-}
-
-.map-container {
-    flex: 1;
-    padding-left: 20px;
-    margin-top: 46px;
-}
-.barangay-subtitle{
-    font-size: 18px;
-}
-
-
 /* BARANGAY TABLE */
+.barangay-box{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color:  #F6F4F4;
+}
 .barangay-list-container {
     display: flex;
     flex-direction: column;
@@ -2885,25 +2838,24 @@
 }
 
 .barangay-search-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    width: 50%;
-    height: 30%;
-    margin-bottom: 20px;
+    width: 5rem;
+    height: 1.8rem;
+    align-self: flex-end;
+    margin-bottom: .8rem;
+}
+.barangay-header{
+    font-weight: bold;
+    text-align: left;
+    font-size: 32px;
 }
 
-.barangay-search-bar input {
-    flex: 1;
-    padding: 10px;
-    margin-right: 10px;
-    border: 1px solid #ccc;
-    border-radius: 15px;
-    border-color: black;
-    height: 50%;
+.barangay-listp{
+    align-self:flex-end;
+    font-size: 1.2rem;
+    margin-left: 2rem;
+    margin-bottom: .6rem;
+    margin-right: .5rem;
 }
-
 .barangay-add-btn {
     width: 9%;
     height: 30px;
@@ -2915,7 +2867,7 @@
     display: flex;
     justify-content: left;
     border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add some shadow */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
 }
 
 .barangay-add-btn:hover{
@@ -2935,22 +2887,7 @@
 .barangay-table {
     width: 100%;
     border-collapse: collapse;
-    padding: 20px;
     margin-top: 30px;
-}
-
-.barangay-table th, .barangay-table td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: left;
-}
-
-.barangay-table th {
-    background-color: #FF83CD;
-}
-
-.barangay-table tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
 }
 
 .barangay-header{
@@ -3001,6 +2938,13 @@
 }
 
 /*ADMIN LIST*/
+.adminbox{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color:  #F6F4F4;
+}
 .password-input-group {
     position: relative;
 }
@@ -3029,6 +2973,13 @@
 }
 
 /* ADOPTIONS */
+.adoptionsmainbox{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color:  #F6F4F4;
+}
 .adoptions-box{
     width: 100%;
     height: 21rem !important;
@@ -3041,6 +2992,7 @@
     gap: 1rem;
     align-items: center;
     justify-content: space-between;
+    background-color: white;
 }
 .left-button, .right-button {
     background-color: #888888; /* Default button color */
@@ -3071,6 +3023,7 @@
     display: flex;
     flex-direction: column;
     align-items: start;
+
 }
 .adoptions-box4{
     height: 100%;
@@ -3080,13 +3033,13 @@
     margin-top: 1rem;
 }
 .adoptions-title2{
-    font-size: 220%;
+    font-size: 32px;
     font-weight: bold;
     margin-bottom: 1%;
     margin-top: 2%;
 }
 .adoptions-title{
-    font-size: 220%;
+    font-size: 32px;
     font-weight: bold;
     margin-bottom: 1%;
     font-family: 'Inter', sans-serif;

@@ -290,7 +290,7 @@ const Staff = () => {
 
     return (
         <>
-            <div className="box">
+            <div className="staffbox">
                 <div className="navbox">
                     <NavigationBar />
                 </div>

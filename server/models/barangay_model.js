@@ -11,11 +11,11 @@ const BarangaySchema = new mongoose.Schema({
     type: Number,
     validate: {
       validator: function(value) {
-        return value >= 1 && value <= 201; // Custom validation function
+        return value >= 1 && value <= 201;
       },
       message: 'b_barangay must be between 1 and 201'
     },
-    required: true // Optional: enforce that this field is required
+    required: true
   },
 
   b_ownername: {

@@ -199,14 +199,14 @@ const Events = () => {
     
 
     return (
-        <div className="box">
+        <div className="eventsbox">
             <div className="navbox">
                 <NavigationBar />
             </div>
             <div className="evbox2">
                 <TaskBar />
                 <div className="evbox3">
-                    <h2 className="evtitle">Events</h2>
+                    <h2 className="evtitle">EVENTS</h2>
                     <FullCalendar
                         plugins={[dayGridPlugin, interactionPlugin]}
                         initialView="dayGridMonth"

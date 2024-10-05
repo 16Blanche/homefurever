@@ -303,7 +303,7 @@ const AdminList = () => {
     ];
     return (
         <>
-            <div className="box">
+            <div className="adminbox">
                 <div className="navbox">
                     <NavigationBar />
                 </div>

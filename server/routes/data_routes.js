@@ -105,6 +105,7 @@ module.exports = (app, upload) => {
     // api links for barangay
     app.post('/api/barangay/new', barangayController.newBarangayInfo);
     app.get('/api/barangay/all', barangayController.findAllInfo);
+    app.put('/api/barangay/update/:id', barangayController.updateBarangayInfo);
 
     // api links for nearby services
     app.post('/api/service/new', upload.single('ns_image'), nearbyController.createNearbyService);

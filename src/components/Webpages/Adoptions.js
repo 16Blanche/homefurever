@@ -183,7 +183,7 @@ const Adoptions = () => {
 
     return (
         <>
-            <div className="box">
+            <div className="adoptionsmainbox">
                 <div className="navbox">
                     <NavigationBar />
                 </div>
@@ -194,7 +194,7 @@ const Adoptions = () => {
                         {/* Pending Adoptions */}
                         <div className="adoptions-box3">
                             <div className="adoptions-titlenbtn">
-                                <h2 className="adoptions-title">Pending Adoptions</h2>
+                                <h2 className="adoptions-title">PENDING ADOPTIONS</h2>
                                 <Button className="adoptions-feedbackbtn" onClick={() => navigate('/feedbacks')}>View Feedback</Button>
                             </div>
 
@@ -255,7 +255,7 @@ const Adoptions = () => {
 
                         {/* Active Adoptions */}
                         <div className="adoptions-box3">
-                            <h2 className="adoptions-title2">Active Adoptions</h2>
+                            <h2 className="adoptions-title2">ACTIVE ADOPTIONS</h2>
 
                             <div className="adoptions-box">
                                 <Button 

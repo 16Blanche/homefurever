@@ -29,8 +29,8 @@ const TaskBar=()=>{
     };
 
     const handleLogout = async () => {
-        await logout(); // Make sure to wait for logout completion
-        navigate('/login'); // Navigate after logout
+        await logout();
+        navigate('/login');
     };
     
      
@@ -93,7 +93,7 @@ const TaskBar=()=>{
                     </div>
 
                     <div className="buttonbox">
-                        <Button className="button" onClick={() => handleNavigation('/barangay/population')}>
+                        <Button className="button" onClick={() => handleNavigation('/barangay/table')}>
                             <Image require src={AnimalPopulation} className="tbicon"></Image>
                             <p className="tbbtntext">Animal Population</p>
                         </Button>
