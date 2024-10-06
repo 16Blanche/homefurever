@@ -41,22 +41,22 @@ const AdminSchema = new mongoose.Schema({
     },
     s_role: {
         type: String,
-        default: 'admin'
+        default: 'pending-admin'
     }
 });
 
 AdminSchema.pre('save', function(next) {
     const doc = this;
     AdminCounter.findByIdAndUpdate(
-        'adminId', // Use 'userId' as the identifier in the counter collection
-        { $inc: { seq: 1 } }, // Increment the sequence by 1
-        { new: true, upsert: true } // Options: return updated counter or create if it doesn't exist
+        'adminId',
+        { $inc: { seq: 1 } }, 
+        { new: true, upsert: true } 
     ).then(function(counter) {
-        doc.pending_id = counter.seq; // Assign the new sequence number to the pending_id field
+        doc.pending_id = counter.seq; 
         next();
     }).catch(function(err) {
         console.error('Error during counter increment:', err);
-        next(err); // Pass error to next middleware
+        next(err);
     });
 });
 

@@ -27,21 +27,21 @@ const newAdmin = async (req, res) => {
             a_birthdate: birthdate,
             a_email: email,
             a_username: username,
-            a_password: password
+            a_password: password,
+            s_role: 'pending-admin'
         });
 
         const savedAdmin = await newAdmin.save();
 
-        // Now, update the corresponding Staff's s_role to 'admin'
+        // Now, update the corresponding Staff's s_role to 'pending-admin'
         if (s_id) {
             const updatedStaff = await Staff.findOneAndUpdate(
                 { s_id: s_id },
-                { s_role: 'pending-admin' },
+                { s_role: 'admin' }, // Enforce 'pending-admin' role
                 { new: true }
             );
 
             if (!updatedStaff) {
-                // Optionally, handle the case where staff is not found
                 return res.status(404).json({ message: 'Staff member not found to update s_role.' });
             }
         }
@@ -54,15 +54,22 @@ const newAdmin = async (req, res) => {
 };
 
 
+
 const findAllAdmins = (req, res) => {
+    console.log("Fetching all admins from the database..."); // Log when the function is called
+
     Admin.find()
         .then((allDaAdmin) => {
-            res.json({ admins: allDaAdmin });
+            console.log("All admins retrieved from database:", allDaAdmin); // Log the retrieved data
+            res.json({ admins: allDaAdmin }); // Send the data back to the frontend
         })
         .catch((err) => {
+            console.error("Error finding admins in database:", err.message); // Log error message
+            console.error("Full error object:", err); // Log the entire error object for more details
             res.status(500).json({ message: 'Something went wrong', error: err });
         });
 };
+
 
 const findAdminByUname = (req, res) => {
     Admin.findOne({a_username:req.params.ausername})

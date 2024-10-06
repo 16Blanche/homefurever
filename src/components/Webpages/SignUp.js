@@ -94,8 +94,9 @@ const SignUp = () => {
         })
         .then((response) => {
             console.log(response.data);
-            setShowModal(false); // Close modal after submission
-            navigate("/login"); // Redirect to login page
+            setShowModal(false);
+            window.alert("Sign up successful! You may now log in to your account.");
+            navigate("/login");
         })
         .catch((err) => {
             console.log(err);
@@ -249,11 +250,33 @@ const SignUp = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <p>Your privacy is important to us. This statement outlines how we collect, use, and protect your information when you sign up for our service.</p>
+                    <p>Here's a summary of how we handle your information:</p>
+                    <h4>What We Collect:</h4>
                     <ul>
-                        <li>We collect your name, email, and other details for account management.</li>
-                        <li>We ensure your data is secure and only use it for app functionality.</li>
-                        <li>You have the right to access, update, or delete your data.</li>
+
+                        <li>Basic info like name, email, phone, and address.</li>
+                        <li>Additional details about your preferences and usage of our app.</li>
                     </ul>
+                    <h4>How We Use It:</h4>
+                    <ul>
+                        <li>To manage your account and deliver our services.</li>
+                        <li>To personalize your experience and send relevant updates.</li>
+                        <li>To analyze trends and improve our app.</li>
+                    </ul>
+                    <h4>Security & Sharing:</h4>
+                    <ul>
+                        <li>We keep your data secure and don't sell it to third parties.</li>
+                        <li>Trusted partners may access your info to support our services.</li>
+                    </ul>
+                    <h4>Your Rights:</h4>
+                    <ul>
+                        <li>You can access, correct, or delete your data anytime.</li>
+                    </ul>
+                    <h4>Contact Us:</h4>
+                    <ul>
+                        <li>For questions or concerns, reach out to us.</li>
+                    </ul>
+                    <p>By signing up, you acknowledge our privacy practices.</p>
                     <Form.Check 
                         type="checkbox"
                         label="I accept the Data Privacy Policy"

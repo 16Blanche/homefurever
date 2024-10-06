@@ -610,40 +610,85 @@
 
 
 /* PET PROFILE */
-
+.ppbox{
+  width: 100%;
+  min-height: 100vh;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #F6F4F4;
+}
 .pppet-image {
     width: auto; 
-    height: 300px;
-    border-radius: 10px; 
-    margin-bottom: .5%;
+    height: 17rem;
+    border-radius: 0;
   }
+.pp-image-wrapper{
+  width: 92%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.pppagebtn{
+  width: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pagination-button-left,
+.pagination-button-right {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  color: #fff;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  align-items: center;
+  display: flex;
+}
   .ppbox2{
     display: flex;
     flex-direction: column;
-    width: 37%;
+    width: 40%;
     height: 90%;
     padding: 40px;
     margin-top: 2%;
     align-items: center;
-    border: 2px solid #b8b7b7; 
     border-radius: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add box shadow */
-    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.95);
+
 
 }
 .ppbox3{
   display: flex;
   justify-content: center;
   height: 100%;
-  background-image: url('./assets/petbg.png');
+  background-image: url('./assets/bgimage.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   
 }
+.ppbox4{
+  display: flex;
+  flex-direction: column;
+  width: 22%;
+  height: 90%;
+  padding: 40px;
+  margin-top: 2%;
+  margin-left: 5%;
+  align-items: center;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.95);
+}
   .pph1 {
     font-weight: bold;
-    font-size: 270%;
+    font-size: 2.2rem;
     margin-top: 0%;
     margin-bottom: 3%;
   }
@@ -668,14 +713,16 @@
     background-color: rgb(255, 110, 195);
     color: white;
     border: 1px solid rgb(255, 110, 195);
-    border-radius: 15px;
+    border-radius: 10px;
     font-weight: bold;
     text-decoration: none;
-    font-size: 125%;
-    width: 17%;
-    height: 6%;
+    font-size: 1.1rem;
+    width: 15%;
+    height: 5%;
     margin-top: 9%;
+    margin-right: 5%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    align-self: flex-end;
   }
   
   .pet-description {
@@ -684,16 +731,73 @@
   }
   
   .additional-info {
-    display: grid;
-    grid-template-columns: auto auto auto;
-    gap: 10px;
-    width: auto;
-    margin-top: 4%;
-    text-align: left;
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin-top: 1.5rem;
 }
+.addinfo-text{
+  width: 40%;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 10px;
+  text-align: left;
+  margin-top: 1rem;
+  height: auto;
+}
+.addinfo-text2{
+  width: 40%;
+  height: auto;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 10px;
+  text-align: left;
+  margin-top: 1.2rem;
+  margin-left: 12%;
+  align-self: flex-start;
+}
+.addinfo-text h4{
+  margin: 0;
+  font-size: 1.1rem;
+  color: #545454;
+}
+.addinfo-text2 h4{
+  margin: 0;
+  font-size: 1.1rem;
+  color: #545454;
+}
+.addinfo-pet{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  margin-top: 1rem;
 
+}
+.addinfo-desc{
+  width: 100%;
+  text-align: left;
+}
+.addinfo-desc p{
+  text-align: justify;
+  color: #545454;
+  padding-left: .5rem;
+  padding-top: .5rem;
+  margin: 0;
+}
+.pp-img-container{
+  width: 40rem;
+  background-color: #ebebeb;
+}
 .pph4 {
     margin: 0;
+    font-size: 1.2rem;
+    color: #545454;
+}
+.ppp {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #545454;
 }
 
 /* ADOPT PAGE */

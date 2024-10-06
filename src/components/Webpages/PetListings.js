@@ -11,6 +11,7 @@ import DeleteModal from "./DeleteModal";
 import React, { useContext } from "react";
 import DataTable from 'react-data-table-component';
 import AuthContext from '../../context/AuthContext';
+import { Image } from "react-bootstrap";
 
 
 // Define the convertToBase64 function before using it
@@ -285,13 +286,20 @@ const PetListings =()=>{
                             <Modal.Body>
                                 {selectedPetForView && (
                                     <>
-                                        {selectedPetForView.pet_img && (
-                                        <img
-                                            src={`data:image/jpeg;base64,${convertToBase64(selectedPetForView.pet_img.data)}`}
-                                            alt="Pet Image"
-                                            className="ulimg-preview"
-                                        />
+                                        {/* Display Multiple Pet Images if Available */}
+                                        {selectedPetForView.pet_img && selectedPetForView.pet_img.length > 0 && (
+                                            selectedPetForView.pet_img.map((img, index) => (
+                                                <Image
+                                                    key={index}
+                                                    src={`data:image/jpeg;base64,${convertToBase64(img.data)}`} // Use convertToBase64 function to convert image buffer to base64
+                                                    alt={`Pet Image ${index + 1}`}
+                                                    className="ulimg-preview"
+                                                    style={{ marginBottom: '10px', maxWidth: '100%' }} // Adjust styling as needed
+                                                />
+                                            ))
                                         )}
+                                        
+                                        {/* Display Pet Information */}
                                         <p>Pet ID: {selectedPetForView.p_id}</p>
                                         <p>Pet Name: {selectedPetForView.p_name}</p>
                                         <p>Species: {selectedPetForView.p_type}</p>
@@ -300,11 +308,12 @@ const PetListings =()=>{
                                         <p>Gender: {selectedPetForView.p_gender}</p>
                                         <p>Weight: {selectedPetForView.p_weight}</p>
                                         <p>Medical History: {selectedPetForView.p_medicalhistory}</p>
-                                        <p>Vaccines: {selectedPetForView.p_vaccines}</p>
+                                        <p>Vaccines: {selectedPetForView.p_vaccines.join(", ")}</p> {/* Join vaccines array into a string */}
                                     </>
                                 )}
                             </Modal.Body>
                         </Modal>
+
 
                         {/* Edit Modal */}
                         <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>

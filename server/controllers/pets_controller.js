@@ -3,19 +3,20 @@ const Archived = require('../models/archivedpets_model');
 const Counter = require('../models/counter');
  
 const newPet = async (req, res) => {
-    const { 
-        p_name, p_type, p_gender, p_age, p_breed, 
-        p_weight, p_medicalhistory, p_vaccines 
-    } = req.body;
-    
-    const pet_img = req.file ? req.file.buffer : null;
+    console.log("Request body:", req.body); // Log request body
+    console.log("Files received:", req.files); // Log uploaded files
+
+    const { p_name, p_type, p_gender, p_age, p_breed, p_weight, p_medicalhistory, p_vaccines } = req.body;
+
+    // Verify if files are received correctly
+    const pet_img = req.files ? req.files.map(file => file.buffer) : [];
+    console.log("Extracted image buffers:", pet_img);
 
     try {
-        if (!pet_img) {
-            return res.status(400).json({ error: 'Image upload failed' });
+        if (pet_img.length === 0) {
+            return res.status(400).json({ error: 'No images uploaded' });
         }
 
-        // Create a new pet instance
         const pet = new Pet({
             p_name,
             p_type,
@@ -28,14 +29,17 @@ const newPet = async (req, res) => {
             pet_img
         });
 
-        // Save the pet to the database
         const savedPet = await pet.save();
         res.status(201).json({ savedPet, status: "successfully inserted" });
     } catch (err) {
         console.error("Error creating pet:", err);
-        res.status(500).json({ message: 'Something went wrong', error: err });
+        res.status(500).json({ message: 'Something went wrong', error: err.message });
     }
 };
+
+
+
+
 
 const findAllPet = (req, res) => {
     Pet.find()
@@ -59,16 +63,24 @@ const findPetsForAdoption = (req, res) => {
 
 const updatePetStatus = (req, res) => {
     const petId = req.params.id;
-    const { p_status } = req.body;
+    const { p_status, p_description } = req.body;
 
-    Pet.findByIdAndUpdate(petId, { p_status }, { new: true })
-        .then((updatedPet) => {
-            res.status(200).json(updatedPet);
-        })
-        .catch((err) => {
-            res.status(500).json({ error: err.message });
-        });
+    Pet.findByIdAndUpdate(
+        petId,
+        { 
+            p_status: p_status, 
+            p_description: p_description 
+        },
+        { new: true }
+    )
+    .then((updatedPet) => {
+        res.status(200).json(updatedPet);
+    })
+    .catch((err) => {
+        res.status(500).json({ error: err.message });
+    });
 };
+
  
 const findPetByName = (req, res) => {
     Pet.findOne({p_name:req.params.pname})

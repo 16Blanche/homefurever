@@ -65,7 +65,7 @@ module.exports = (app, upload) => {
     // app.put('/api/user/:id/role', authenticateJWT, isSuperAdmin, userController.updateUserRole);
 
     // api links for pets
-    app.post('/api/pet/new', upload.single('pet_img'), petController.newPet);
+    app.post('/api/pet/new', upload.array('pet_img', 10), petController.newPet);
     app.get('/api/pet/all',petController.findAllPet);
     app.get('/api/pet/name/:pname',petController.findPetByName);
     app.get('/api/pet/type/:ptype',petController.findPetByType);

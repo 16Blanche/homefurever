@@ -212,14 +212,14 @@ const Adoptions = () => {
                                     pendingAdoptions.slice(pendingStartIndex, pendingStartIndex + cardsToShow).map((adoption) => (
                                         <Card key={adoption._id} className="adoption-card" onClick={() => handleShowModal(adoption)}>
                                             <Card.Body>
-                                                <Image 
-                                                    src={adoption.p_id.pet_img && adoption.p_id.pet_img.data 
-                                                        ? `data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img.data)}` 
-                                                        : 'fallback-image-url'} 
-                                                    alt={adoption.p_id.p_name} 
+                                            {adoption.p_id.pet_img && adoption.p_id.pet_img.length > 0 && (
+                                                <Image
+                                                    src={`data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img[0].data)}`} // Use first image
+                                                    alt={adoption.p_id.p_name}
                                                     fluid
                                                     className="adoptions-pimg"
                                                 />
+                                            )}
                                                 <Card.Text className="adoptions-text">
                                                     <div>
                                                         <strong>Adopter:</strong> {adoption.v_id.v_fname} {adoption.v_id.v_lname}
@@ -269,14 +269,14 @@ const Adoptions = () => {
                                     activeAdoptions.slice(activeStartIndex, activeStartIndex + cardsToShow).map((adoption) => (
                                         <Card key={adoption._id} className="adoption-card" onClick={() => handleShowActiveModal(adoption)}>
                                             <Card.Body>
-                                                <Image 
-                                                    src={adoption.p_id.pet_img && adoption.p_id.pet_img.data 
-                                                        ? `data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img.data)}` 
-                                                        : 'fallback-image-url'} 
-                                                    alt={adoption.p_id.p_name} 
+                                            {adoption.p_id.pet_img && adoption.p_id.pet_img.length > 0 && (
+                                                <Image
+                                                    src={`data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img[0].data)}`} // Use first image
+                                                    alt={adoption.p_id.p_name}
                                                     fluid
                                                     className="adoptions-pimg"
                                                 />
+                                            )}
                                                 <Card.Text className="adoptions-text">
                                                     <div>
                                                         <strong>Adopter:</strong> {adoption.v_id.v_fname} {adoption.v_id.v_lname}

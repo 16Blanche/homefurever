@@ -10,7 +10,6 @@ import NavigationBar from "./NavigationBar";
 import TaskBar from "./TaskBar";
 import './Homepage.css';
 
-// Define the convertToBase64 function before using it
 const convertToBase64 = (buffer) => {
     return btoa(
         new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
@@ -24,10 +23,10 @@ const MyPosts = () => {
     const [showViewModal, setShowViewModal] = useState(false);
     const [showViewPostModal, setShowViewPostModal] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
-    const [showConfirmRemoveModal, setShowConfirmRemoveModal] = useState(false); // Confirmation modal for remove action
+    const [showConfirmRemoveModal, setShowConfirmRemoveModal] = useState(false);
     const [allPets, setAllPets] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    const [description, setDescription] = useState(""); 
     useEffect(() => {
         axios.get("http://localhost:8000/api/pet/all")
             .then((response) => {
@@ -64,18 +63,24 @@ const MyPosts = () => {
         setSelectedPet(null);
     };
 
+    
+
     const handleConfirmPost = async () => {
         try {
-            await axios.put(`http://localhost:8000/api/pet/update-status/${selectedPet._id}`, { p_status: 'For Adoption' });
-            setShowConfirmModal(false);
-            setShowViewModal(false);
+            await axios.put(`http://localhost:8000/api/pet/update-status/${selectedPet._id}`, {
+                p_status: 'For Adoption',
+                p_description: description, 
+            });
+
             const updatedPets = allPets.map(pet =>
-                pet._id === selectedPet._id ? { ...pet, p_status: 'For Adoption' } : pet
+                pet._id === selectedPet._id ? { ...pet, p_status: 'For Adoption', p_description: description } : pet
             );
+
             setAllPets(updatedPets);
             setPets(updatedPets.filter(pet => pet.p_status === 'For Adoption'));
-            setShowConfirmModal(false); // Close Confirm Post modal
-            setShowAddModal(false); // Close Add Pet modal
+            setShowConfirmModal(false);
+            setShowViewModal(false);
+            setShowAddModal(false);
         } catch (err) {
             console.log(err);
         }
@@ -83,7 +88,7 @@ const MyPosts = () => {
 
     const handleRemove = () => {
         setShowViewModal(false);
-        setShowConfirmRemoveModal(true); // Show confirmation modal for remove action
+        setShowConfirmRemoveModal(true); 
     };
 
     const confirmRemove = async () => {
@@ -94,7 +99,7 @@ const MyPosts = () => {
             );
             setAllPets(updatedPets);
             setPets(updatedPets.filter(pet => pet.p_status === 'For Adoption'));
-            setShowConfirmRemoveModal(false); // Close confirmation modal after successful removal
+            setShowConfirmRemoveModal(false); 
             setShowViewPostModal(false);
         } catch (err) {
             console.log(err);
@@ -102,10 +107,8 @@ const MyPosts = () => {
     };
 
     const closeConfirmRemoveModal = () => {
-        setShowConfirmRemoveModal(false); // Close confirmation modal without removing pet
+        setShowConfirmRemoveModal(false); 
     };
-
-
 
     return (
         <>
@@ -127,9 +130,13 @@ const MyPosts = () => {
                                 {pets && pets.map(pet => (
                                             <Button key={pet._id} className="pet-post" onClick={() => handleViewPost(pet)}>
                                                 <div className="mpimage-container">
-                                                    {pet.pet_img && (
-                                                        <Image src={`data:image/jpeg;base64,${convertToBase64(pet.pet_img.data)}`} rounded className="mpimage" />
-                                                    )}
+                                                {pet.pet_img && pet.pet_img.length > 0 && (
+                                                    <Image
+                                                        src={`data:image/jpeg;base64,${convertToBase64(pet.pet_img[0].data)}`} 
+                                                        rounded
+                                                        className="mpimage"
+                                                    />
+                                                )}
                                                 </div>
                                                     <p className="mpname">{pet.p_name}</p>
                                                     <p className="mpdesc">{pet.p_age} years old, {pet.p_gender} {pet.p_type}</p>
@@ -175,10 +182,11 @@ const MyPosts = () => {
                             <Modal.Body>
                                 {selectedPet && (
                                     <>
-                                        {selectedPet.pet_img && (
-                                            <img
-                                                src={`data:image/jpeg;base64,${convertToBase64(selectedPet.pet_img.data)}`}
+                                        {selectedPet.pet_img && selectedPet.pet_img.length > 0 && (
+                                            <Image
+                                                src={`data:image/jpeg;base64,${convertToBase64(selectedPet.pet_img[0].data)}`} 
                                                 alt="Pet Image"
+                                                rounded
                                                 className="ulimg-preview"
                                             />
                                         )}
@@ -190,11 +198,21 @@ const MyPosts = () => {
                                         <p><strong>Breed:</strong> {selectedPet.p_breed}</p>
                                         <p><strong>Medical History:</strong> {selectedPet.p_medicalhistory}</p>
                                         <p><strong>Vaccines:</strong> {selectedPet.p_vaccines}</p>
+                                        {/* Input box for adding description */}
+                                        <p><strong>Description:</strong></p>
+                                        <textarea
+                                            className="form-control"
+                                            rows="3"
+                                            value={description}
+                                            onChange={(e) => setDescription(e.target.value)} 
+                                            placeholder="Enter description for the pet"
+                                        />
                                         <Button variant="success" onClick={handlePost} className="mt-3">Post</Button>
                                     </>
                                 )}
                             </Modal.Body>
                         </Modal>
+
 
                         {/* Confirm Post Modal */}
                         <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)}>
@@ -216,9 +234,9 @@ const MyPosts = () => {
                             <Modal.Body>
                                 {selectedPet && (
                                     <>
-                                        {selectedPet.pet_img && (
+                                        {selectedPet.pet_img && selectedPet.pet_img.length > 0 && (
                                             <Image
-                                                src={`data:image/jpeg;base64,${convertToBase64(selectedPet.pet_img.data)}`}
+                                                src={`data:image/jpeg;base64,${convertToBase64(selectedPet.pet_img[0].data)}`} 
                                                 alt="Pet Image"
                                                 rounded
                                                 className="ulimg-preview"
@@ -232,6 +250,7 @@ const MyPosts = () => {
                                         <p><strong>Breed:</strong> {selectedPet.p_breed}</p>
                                         <p><strong>Medical History:</strong> {selectedPet.p_medicalhistory}</p>
                                         <p><strong>Vaccines:</strong> {selectedPet.p_vaccines}</p>
+                                        <p><strong>Description:</strong> {selectedPet.p_description}</p>
                                     </>
                                 )}
                             </Modal.Body>

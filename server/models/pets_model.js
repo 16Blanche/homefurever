@@ -9,7 +9,7 @@
     },
 
     pet_img: {
-        type: Buffer
+        type: [Buffer]
     },
 
     p_name: {
@@ -47,6 +47,10 @@
     p_status:{
         type: String,
         default: 'none'
+    },
+
+    p_description:{
+        type: String
     }
     
 

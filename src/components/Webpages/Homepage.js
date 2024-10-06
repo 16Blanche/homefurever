@@ -197,7 +197,7 @@ const Homepage = () => {
                             </div>
 
                             <div className="greenbox">
-                                <h2 className="box4title">Events</h2>
+                                <h2 className="box4title">Upcoming Events</h2>
                                 <div className="box4content">
                                     <div className="box4text">
                                     {events.length > 0 ? (
@@ -235,7 +235,7 @@ const Homepage = () => {
 
                         <div className="brgybox">
                         <div className="brgygraph">
-                            <h1 className="graphtitle">Animal Population in Pasay City</h1>
+                            <h1 className="graphtitle">Top 20 Highest Animal Population in Pasay City</h1>
                             <div className="graph-container">
                             <Bar data={chartData} options={chartOptions} />
                             </div>

@@ -192,8 +192,13 @@ const BrowsePets = () => {
                                 {currentPets && currentPets.map(pet => (
                                     <Button key={pet._id} className="pet-post" onClick={() => handleViewProfile(pet._id)}>
                                         <div className="mpimage-container">
-                                            {pet.pet_img && (
-                                                <Image src={`data:image/jpeg;base64,${convertToBase64(pet.pet_img.data)}`} rounded className="clickable-image" loading="lazy"/>
+                                        {pet.pet_img && pet.pet_img.length > 0 && (
+                                                <Image 
+                                                    src={`data:image/jpeg;base64,${convertToBase64(pet.pet_img[0].data)}`} // Display only the first image in pet_img array
+                                                    rounded 
+                                                    className="clickable-image" 
+                                                    loading="lazy"
+                                                />
                                             )}
                                         </div>
                                         <p className="mpname">{pet.p_name}</p>

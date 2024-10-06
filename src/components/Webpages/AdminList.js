@@ -190,14 +190,38 @@ const AdminList = () => {
     };
 
     const fetchAdmins = () => {
+        console.log("Fetching admin data from the API...");
+    
         axios.get("http://localhost:8000/api/admin/all")
             .then((response) => {
-                setAllAdmins(response.data.admins || []);
+                console.log("Admin data fetched from API response:", response.data);
+    
+                if (response.data && Array.isArray(response.data.admins)) {
+                    // Filter admins to only include those with s_role === 'admin'
+                    const filteredAdmins = response.data.admins.filter(admin => admin.s_role === 'admin');
+                    
+                    console.log("Number of admins with s_role 'admin' retrieved:", filteredAdmins.length);
+                    setAllAdmins(filteredAdmins); // Set state with only the filtered admins
+                } else {
+                    console.error("Unexpected response structure:", response.data);
+                }
             })
             .catch((err) => {
-                console.error("Error fetching admins:", err);
+                console.error("Error fetching admins:", err.message);
+                console.error("Full error object:", err);
             });
     };
+    
+    
+    useEffect(() => {
+        fetchAdmins(); // Fetch admins when the component mounts
+    }, []);
+
+    useEffect(() => {
+        console.log("allAdmins state updated:", allAdmins);
+    }, [allAdmins]);
+
+    
     
         const handleInputChange = (e) => {
             const { name, value } = e.target;
@@ -269,27 +293,27 @@ const AdminList = () => {
     const columns = [
         {
             name: 'User ID',
-            selector: row => row.a_id,
+            selector: row => row.a_id, // Correct: This matches the property from your backend
             sortable: true,
         },
         {
             name: 'Username',
-            selector: row => row.a_username,
+            selector: row => row.a_username, // Correct: This matches the property from your backend
             sortable: true,
         },
         {
             name: 'Last Name',
-            selector: row => row.a_lname,
+            selector: row => row.a_lname, // Correct: This matches the property from your backend
             sortable: true,
         },
         {
             name: 'First Name',
-            selector: row => row.a_fname,
+            selector: row => row.a_fname, // Correct: This matches the property from your backend
             sortable: true,
         },
         {
             name: 'Email',
-            selector: row => row.a_email,
+            selector: row => row.a_email, // Correct: This matches the property from your backend
             sortable: true,
         },
         {
@@ -301,6 +325,7 @@ const AdminList = () => {
             ),
         },
     ];
+    
     return (
         <>
             <div className="adminbox">
@@ -321,14 +346,14 @@ const AdminList = () => {
                         </div>
                         <div className="nutable">
                         <DataTable
-                                columns={columns}
-                                data={allAdmins}
-                                paginationPerPage={13}
-                                paginationRowsPerPageOptions={[5, 10, 13]}
-                                pagination
-                                highlightOnHover
-                                onRowClicked={handleViewButton}
-                            />
+                            columns={columns}
+                            data={allAdmins} // Make sure this is correctly passed
+                            paginationPerPage={13}
+                            paginationRowsPerPageOptions={[5, 10, 13]}
+                            pagination
+                            highlightOnHover
+                            onRowClicked={handleViewButton}
+                        />
                         </div>
 
                         {/* View Modal */}

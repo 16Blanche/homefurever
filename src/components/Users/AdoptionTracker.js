@@ -310,15 +310,16 @@ const AdoptionTracker = () => {
                                     className="tracker-adoption-box"
                                     onClick={() => handleAdoptionClick(adoption)}
                                 >
-                                    {adoption.p_id && adoption.p_id.pet_img && (
-                                        <div className="tracker-petimg-ph">
-                                            <Image
-                                                src={`data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img.data)}`}
-                                                className="tracker-petimg-preview"
-                                                alt={adoption.p_id.p_name}
-                                            />
-                                        </div>
-                                    )}
+                                {adoption.p_id && adoption.p_id.pet_img && adoption.p_id.pet_img.length > 0 && (
+                                    <div className="tracker-petimg-ph">
+                                        <Image
+                                            src={`data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img[0].data)}`} // Use the first image in the pet_img array
+                                            className="tracker-petimg-preview"
+                                            alt={adoption.p_id.p_name}
+                                        />
+                                    </div>
+                                )}
+
                                     
                                     <div className="tracker-profile-pettext">
                                         <p className="tracker-pprofile-name">{adoption.p_id ? adoption.p_id.p_name : 'Unknown'}</p>
@@ -353,13 +354,13 @@ const AdoptionTracker = () => {
                             </div>
 
                             <div className="tracker-pet-details">
-                                {selectedPet.pet_img && (
-                                    <Image
-                                        src={`data:image/jpeg;base64,${convertToBase64(selectedPet.pet_img.data)}`}
-                                        className="tracker-pet-img"
-                                        alt={selectedPet.p_name}
-                                    />
-                                )}
+                            {selectedPet.pet_img && selectedPet.pet_img.length > 0 && (
+                                <Image
+                                    src={`data:image/jpeg;base64,${convertToBase64(selectedPet.pet_img[0].data)}`} // Use the first image in the pet_img array
+                                    className="tracker-pet-img"
+                                    alt={selectedPet.p_name}
+                                />
+                            )}
                                 <div className="tracker-pet-info">
                                     <p className="tracker-pet-name">{selectedPet.p_name}</p>
                                     <p className="tracker-age">Age: {selectedPet.p_age}</p>

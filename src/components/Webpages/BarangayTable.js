@@ -20,6 +20,7 @@ const BarangayTable = () => {
   const [showImportModal, setShowImportModal] = useState(false);
   const [editingCell, setEditingCell] = useState(null);
   const [editValue, setEditValue] = useState(''); 
+  const [editError, setEditError] = useState(null);
   const [formData, setFormData] = useState({
     b_barangay: '',
     b_ownername: '',
@@ -61,20 +62,28 @@ const BarangayTable = () => {
   
   const handleEditSave = (row) => {
     if (!editingCell) return;
-
+  
+    // Validation: Check if the edit value is empty
+    if (editValue.trim() === '') {
+      setEditError('This field cannot be blank'); // Set validation error
+      return; // Prevent saving the empty value
+    }
+  
+    setEditError(null); // Clear validation error if any
+  
     if (editValue !== row[editingCell.columnName]) {
       const updatedBarangays = barangays.map((barangay) =>
         barangay._id === row._id ? { ...barangay, [editingCell.columnName]: editValue } : barangay
       );
-
+  
       setBarangays(updatedBarangays);
       setFilteredBarangays(updatedBarangays);
-
+  
       axios
         .put(`http://localhost:8000/api/barangay/update/${row._id}`, { [editingCell.columnName]: editValue })
         .then((response) => {
           console.log('PUT request successful. Response from backend:', response.data);
-
+  
           const updatedBarangay = response.data.updatedBarangay;
           setBarangays((prevBarangays) =>
             prevBarangays.map((barangay) => (barangay._id === row._id ? updatedBarangay : barangay))
@@ -87,9 +96,10 @@ const BarangayTable = () => {
           console.error('Error updating data with axios.put:', error);
         });
     }
-
-    setEditingCell(null); 
+  
+    setEditingCell(null);
   };
+  
     
     
     
@@ -97,7 +107,7 @@ const BarangayTable = () => {
     
   const EditableCell = ({ row, columnName }) => {
     const isEditing = editingCell?.rowId === row._id && editingCell?.columnName === columnName;
-
+  
     if (isEditing && columnName === 'b_petgender') {
       return (
         <select
@@ -113,24 +123,29 @@ const BarangayTable = () => {
         </select>
       );
     }
-  return isEditing ? (
-    <input
-      type="text"
-      value={editValue}
-      onChange={handleEditChange}
-      onBlur={() => handleEditSave(row)}
-      autoFocus
-      style={{ width: '100%' }}
-    />
-  ) : (
-    <span
-      onClick={() => handleCellClick(row, columnName)}
-      style={{ cursor: 'pointer' }}
-    >
-      {row[columnName]}
-    </span>
-  );
-};
+  
+    return isEditing ? (
+      <div>
+        <input
+          type="text"
+          value={editValue}
+          onChange={handleEditChange}
+          onBlur={() => handleEditSave(row)}
+          autoFocus
+          style={{ width: '100%' }}
+        />
+        {editError && <div style={{ color: 'red', marginTop: '5px' }}>{editError}</div>}
+      </div>
+    ) : (
+      <span
+        onClick={() => handleCellClick(row, columnName)}
+        style={{ cursor: 'pointer' }}
+      >
+        {row[columnName]}
+      </span>
+    );
+  };
+  
   
 
   const handleSubmit = (e) => {
@@ -390,6 +405,7 @@ const BarangayTable = () => {
                   name="b_petname"
                   value={formData.b_petname}
                   onChange={handleChange}
+                  required
                 />
 
             </Form.Group>
@@ -419,6 +435,7 @@ const BarangayTable = () => {
                   value={formData.b_petage}
                   onChange={handleChange}
                   className='b-age-inp'
+                  required
                 />
               </Form.Group>
             </Form.Group> 
@@ -430,6 +447,7 @@ const BarangayTable = () => {
                 name="b_color"
                 value={formData.b_color}
                 onChange={handleChange}
+                required
               />
               </Form.Group>
               <Form.Group controlId="b_address" >
@@ -439,6 +457,7 @@ const BarangayTable = () => {
                 name="b_address"
                 value={formData.b_address}
                 onChange={handleChange}
+                required
               />
               </Form.Group>
             </Form.Group>

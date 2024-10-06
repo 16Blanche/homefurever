@@ -16,7 +16,7 @@ const NewPet = () => {
     const [pbreed, setPbreed] = useState("");
     const [pmedicalhistory, setPmedicalhistory] = useState("");
     const [pvaccines, setPvaccines] = useState("");
-    const [pimg, setPimg] = useState(null);
+    const [pimg, setPimg] = useState([]);
 
     const [errors, setErrors] = useState({});
 
@@ -40,7 +40,7 @@ const NewPet = () => {
             setErrors(newErrors);
             return;
         }
-
+    
         const formData = new FormData();
         formData.append("p_name", pname);
         formData.append("p_type", ptype);
@@ -50,25 +50,31 @@ const NewPet = () => {
         formData.append("p_weight", pweight);
         formData.append("p_medicalhistory", pmedicalhistory);
         formData.append("p_vaccines", pvaccines);
-        formData.append("pet_img", pimg);
-
+    
+        pimg.forEach((img) => {
+            formData.append("pet_img", img);
+        });
+    
         axios.post("http://localhost:8000/api/pet/new", formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
         })
         .then((response) => {
-            console.log(response.data);
+            console.log("Response:", response.data);
             navigate("/pet/all");
         })
         .catch((err) => {
-            console.log(err);
+            console.error("Error during Axios request:", err.response ? err.response.data : err.message);
         });
     };
-
+    
     const handleFileChange = (e) => {
-        setPimg(e.target.files[0]);
+        const files = Array.from(e.target.files);
+        setPimg(files);
     };
+    
+    
 
     return (
         <>
@@ -230,10 +236,12 @@ const NewPet = () => {
 
 
                                     {/* File Input for Image Upload */}
-                                    <Form.Group className="npinptitle">Image</Form.Group>
+                                    <Form.Group className="npinptitle">Images</Form.Group>
                                     <Form.Group className="mb-3">
                                         <Form.Control
-                                            type="file"
+                                            type="file" 
+                                            name="pet_img" 
+                                            multiple 
                                             onChange={handleFileChange}
                                             isInvalid={errors.pimg}
                                         />
@@ -241,6 +249,7 @@ const NewPet = () => {
                                             <Form.Label>{errors.pimg}</Form.Label>
                                         </Form.Group>
                                     </Form.Group>
+
                                 </Form>
                             </div>
                         </div>
