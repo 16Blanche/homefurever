@@ -275,7 +275,7 @@ const BrowsePets = () => {
                                             <Image 
                                                 src={event.e_image && event.e_image.data 
                                                     ? `data:image/jpeg;base64,${convertToBase64(event.e_image.data)}` 
-                                                    : imgpholder // Fallback if e_image is not available
+                                                    : imgpholder 
                                                 } 
                                                 className="bpeventsimg" 
                                                 alt={event.e_title} 
@@ -317,7 +317,7 @@ const BrowsePets = () => {
                                     ))}
                                 </div>
                             ) : (
-                                <p>No nearby services available</p> // Fallback if no services are fetched
+                                <p>No nearby services available</p> 
                             )}
                         </div>
                         </div>
