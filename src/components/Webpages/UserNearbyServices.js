@@ -40,6 +40,8 @@ const NearbyServices = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [serviceToDelete, setServiceToDelete] = useState(null);
 
+    const [searchQuery, setSearchQuery] = useState('');
+
     const validate = () => {
         const newErrors = {};
         if (!name) newErrors.name = "Service name is required.";
@@ -107,8 +109,7 @@ const NearbyServices = () => {
             try {
                 const response = await axios.get('http://localhost:8000/api/service/all');
                 setServices(response.data);
-                
-                // Set the initial clinics to 'veterinary' services
+
                 const veterinaryClinics = response.data.filter(service => service.ns_type === 'veterinary');
                 setClinics(veterinaryClinics);
             } catch (error) {
@@ -147,6 +148,7 @@ const NearbyServices = () => {
                 service._id === currentService._id ? response.data.updatedService : service
             );
             setServices(updatedServices);
+            window.alert("Information successfully edited.");
             setShowEditModal(false);
             resetForm();
             window.location.reload();
@@ -203,6 +205,11 @@ const NearbyServices = () => {
         setImage(service.ns_image);
         setShowEditModal(true);
     };   
+
+    const filteredClinics = clinics.filter(clinic =>
+        clinic.ns_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        clinic.ns_address.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     
     return (
         <div className='nearbox1'>
@@ -216,38 +223,49 @@ const NearbyServices = () => {
                     <h3>Services</h3>
                     <h4>IN PASAY CITY</h4>
                 
+                    <div className="nearby-search-container">
+              <input
+                type="text"
+                placeholder="Search clinics or address..."
+                className="nearby-search-input"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            
                     <div className='nearbybox4'>
                         <Button className='nearbybtns' style={{ backgroundColor: activeButton === 'veterinary' ? 'white' : '#d2d2d5', color: activeButton === 'veterinary' ? 'black' : 'white' }} onClick={() => handleFilter('veterinary')}>Vet Clinics</Button>
                         <Button className='nearbybtns' style={{ backgroundColor: activeButton === 'neutering' ? 'white' : '#d2d2d5', color: activeButton === 'neutering' ? 'black' : 'white' }} onClick={() => handleFilter('neutering')} >Neutering</Button>
                         <Button className='nearbybtns' style={{ backgroundColor: activeButton === 'hotel' ? 'white' : '#d2d2d5', color: activeButton === 'hotel' ? 'black' : 'white' }} onClick={() => handleFilter('hotel')} >Pet Hotels</Button>
                         <Button className='nearbybtns' style={{ backgroundColor: activeButton === 'grooming' ? 'white' : '#d2d2d5', color: activeButton === 'grooming' ? 'black' : 'white' }} onClick={() => handleFilter('grooming')}>Grooming</Button>
                     </div>
-                    <div className='nearavailableClinics'>
-                        {clinics.length > 0 ? ( // Check if clinics array has elements
-                            <div className='nearclinicsContainer'>
-                                {clinics.map((clinic, index) => (
-                                    <div className='nearclinicBox' key={index} onClick={() => handleBoxClick(clinic.ns_pin)}>
-                                        <Image 
-                                            src={clinic.ns_image && clinic.ns_image.data
-                                                ? `data:image/jpeg;base64,${convertToBase64(clinic.ns_image.data)}`
-                                                : 'fallback-image-url'} 
-                                            alt={clinic.ns_name} 
-                                        />
-                                        <div className='nearclinicInfo'>
-                                            <h5>{clinic.ns_name}</h5>
-                                            <p>{clinic.ns_address}</p>
+                        {/* Display Filtered Clinics */}
+                        <div className='nearavailableClinics'>
+                            {filteredClinics.length > 0 ? (
+                                <div className='nearclinicsContainer'>
+                                    {filteredClinics.map((clinic, index) => (
+                                        <div className='nearclinicBox' key={index} onClick={() => handleBoxClick(clinic.ns_pin)}>
+                                            <Image
+                                                src={clinic.ns_image && clinic.ns_image.data
+                                                    ? `data:image/jpeg;base64,${convertToBase64(clinic.ns_image.data)}`
+                                                    : 'fallback-image-url'}
+                                                alt={clinic.ns_name}
+                                            />
+                                            <div className='nearclinicInfo'>
+                                                <h5>{clinic.ns_name}</h5>
+                                                <p>{clinic.ns_address}</p>
+                                            </div>
+                                            <div className="nearclinic-buttons">
+                                                <Button className="nearbyedit" onClick={() => handleEditClick(clinic)}><PencilSquare /></Button>
+                                                <Button className="nearbydelete" onClick={() => handleDelete(clinic._id)}><Trash /></Button>
+                                            </div>
                                         </div>
-                                        <div className="nearclinic-buttons">
-                                            <Button className="nearbyedit" onClick={() => handleEditClick(clinic)}><PencilSquare /></Button>
-                                            <Button className="nearbydelete" onClick={() => handleDelete(clinic._id)}><Trash /></Button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <p style={{alignSelf:'center', justifySelf:'center'}}>There are no locations available for this category.</p>
-                        )}
-                    </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p style={{ alignSelf: 'center', justifySelf: 'center' }}>There are no locations available for this category.</p>
+                            )}
+                        </div>
 
                     <Button className="nearbyaddbtn" onClick={() => setShowModal(true)}>Add a Service</Button>
                 </div>

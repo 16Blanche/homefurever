@@ -18,7 +18,7 @@ const convertToBase64 = (buffer) => {
 
 const UserList=()=>{
 
-    const [searchQuery, setSearchQuery] = useState(""); // State for search query
+    const [searchQuery, setSearchQuery] = useState(""); 
 
     const [theUser,setTheUser]=useState({});
     const [allUsers, setAllUsers] = useState([]);
@@ -29,16 +29,16 @@ const UserList=()=>{
 
     const [showLargeIDModal, setShowLargeIDModal] = useState(false);
 
-    const [showConfirmModal, setShowConfirmModal] = useState(false); // State for confirmation modal
-    const [roleChangeRequest, setRoleChangeRequest] = useState(null); // State for role change request
+    const [showConfirmModal, setShowConfirmModal] = useState(false); 
+    const [roleChangeRequest, setRoleChangeRequest] = useState(null); 
 
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
 
     const handleViewButton = (user) => {
         console.log("View Button Clicked");
-        setSelectedUserForView(user); // Set selected user data
-        setShowViewModal(true); // Open view modal
+        setSelectedUserForView(user); 
+        setShowViewModal(true); 
     };
 
     const openConfirmModal = (user, newRole) => {
@@ -137,6 +137,7 @@ const UserList=()=>{
             ),
         },
     ];
+
     return (
         <>
             <div className="ulbox">
@@ -151,7 +152,13 @@ const UserList=()=>{
                     <div className="ulbox3">
                         <div className="ulbox4">
                             <h2 className="userlist">USER LIST</h2>
-                            <input type="text" className="petsearch" placeholder="Find a user" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}/>
+                            <input
+                                type="text"
+                                className="petsearch"
+                                placeholder="Find a user"
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                            />
 
                             <Button className="ulpendingbtn" onClick={handleClick}>
                                 <p className="ulpendingtxt">Pending Users</p>
@@ -161,7 +168,7 @@ const UserList=()=>{
                         <div className="ultable">
                             <DataTable
                                 columns={columns}
-                                data={allUsers}
+                                data={filteredUsers}
                                 paginationPerPage={13}
                                 paginationRowsPerPageOptions={[5, 10, 13]}
                                 pagination

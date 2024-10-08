@@ -99,11 +99,6 @@ const BarangayTable = () => {
   
     setEditingCell(null);
   };
-  
-    
-    
-    
-    
     
   const EditableCell = ({ row, columnName }) => {
     const isEditing = editingCell?.rowId === row._id && editingCell?.columnName === columnName;
@@ -146,14 +141,13 @@ const BarangayTable = () => {
     );
   };
   
-  
-
   const handleSubmit = (e) => {
     e.preventDefault();
     axios.post('http://localhost:8000/api/barangay/new', formData)
       .then(response => {
         setBarangays(prevBarangays => [...prevBarangays, response.data.savedBarangay]);
         setFilteredBarangays(prevBarangays => [...prevBarangays, response.data.savedBarangay]);
+        window.alert("Row successfully added.");
         handleClose();
       })
       .catch(error => console.error('Error adding new row:', error));
@@ -247,6 +241,7 @@ const BarangayTable = () => {
     });
 
     setFileData([]);
+    window.alert("File successfully imported.");
     handleCloseImportModal();
     alert('Data successfully imported and saved to the database!');
   };
@@ -285,7 +280,7 @@ const BarangayTable = () => {
 
           <div className="ulbox3">
             <div className="ulbox4">
-              <h2 className='barangay-header'>PASAY CITY ANIMAL POPULATION</h2>
+              <h2 className='barangay-header'>BARANGAY ANIMAL RECORD</h2>
               <p className='barangay-listp'>Barangay: </p>
               <input
                 type="text"

@@ -293,27 +293,27 @@ const AdminList = () => {
     const columns = [
         {
             name: 'User ID',
-            selector: row => row.a_id, // Correct: This matches the property from your backend
+            selector: row => row.a_id,
             sortable: true,
         },
         {
             name: 'Username',
-            selector: row => row.a_username, // Correct: This matches the property from your backend
+            selector: row => row.a_username, 
             sortable: true,
         },
         {
             name: 'Last Name',
-            selector: row => row.a_lname, // Correct: This matches the property from your backend
+            selector: row => row.a_lname, 
             sortable: true,
         },
         {
             name: 'First Name',
-            selector: row => row.a_fname, // Correct: This matches the property from your backend
+            selector: row => row.a_fname, 
             sortable: true,
         },
         {
             name: 'Email',
-            selector: row => row.a_email, // Correct: This matches the property from your backend
+            selector: row => row.a_email, 
             sortable: true,
         },
         {
@@ -446,16 +446,16 @@ const AdminList = () => {
                         <Modal.Body>
                             <form onSubmit={handleConfirmation}>
                                 <div>
-                                    <label>First Name: {formData.firstName}</label>
-                                    <label>Middle Name: {formData.middleName}</label>
-                                    <label>Last Name: {formData.lastName}</label>
-                                    <label>Position: {formData.position}</label>
-                                    <label>Gender: {formData.gender}</label>
-                                    <label>Position: {formData.position}</label>
-                                    <label>Email: {formData.email}</label>
-                                    <label>Contact Number: {formData.contact}</label>
-                                    <label>Address: {formData.address}</label>
-                                    <label>Birthdate: {formData.birthdate}</label>
+                                    <p>First Name: {formData.firstName}</p>
+                                    <p>Middle Name: {formData.middleName}</p>
+                                    <p>Last Name: {formData.lastName}</p>
+                                    <p>Position: {formData.position}</p>
+                                    <p>Gender: {formData.gender}</p>
+                                    <p>Position: {formData.position}</p>
+                                    <p>Email: {formData.email}</p>
+                                    <p>Contact Number: {formData.contact}</p>
+                                    <p>Address: {formData.address}</p>
+                                    <p>Birthdate: {formData.birthdate}</p>
                                 </div>
                                 <Button variant="primary" type="submit">
                                     Add Admin

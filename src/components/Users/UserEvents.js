@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router-dom"; 
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import PinkNavigationBar from "./PinkNavigationBar";
@@ -51,13 +51,16 @@ const UserEvents = () => {
         return { day, dayOfWeek, month, year, time };
     };
 
-    const upcomingEvents = events.filter(event => {
-        const eventDate = new Date(event.e_date);
-        const currentDate = new Date();
-        eventDate.setHours(0, 0, 0, 0);
-        currentDate.setHours(0, 0, 0, 0);
-        return eventDate >= currentDate;
-    });
+    // Filter and sort upcoming events
+    const upcomingEvents = events
+        .filter(event => {
+            const eventDate = new Date(event.e_date);
+            const currentDate = new Date();
+            eventDate.setHours(0, 0, 0, 0);
+            currentDate.setHours(0, 0, 0, 0);
+            return eventDate >= currentDate;
+        })
+        .sort((a, b) => new Date(a.e_date) - new Date(b.e_date)); // Sort by date in ascending order
 
     const totalPages = Math.ceil(upcomingEvents.length / eventsPerPage) || 1;
 
@@ -105,7 +108,6 @@ const UserEvents = () => {
                         <p className="loading">Loading events...</p>
                     ) : upcomingEvents.length > 0 ? (
                         <>
-
                             {currentEvents.map((event) => {
                                 const { day, dayOfWeek, month, year, time } = formatDate(event.e_date);
                                 return (
@@ -119,7 +121,7 @@ const UserEvents = () => {
                                                 : imgpholder
                                             }
                                             alt={imgpholder}
-                                            />
+                                        />
                                         <p className="ueventsday">{day}</p>
                                         <div className="ueventsbox4">
                                             <h2>{dayOfWeek}</h2>
@@ -139,7 +141,7 @@ const UserEvents = () => {
                                 <Modal.Header closeButton>
                                     <Modal.Title>{selectedEvent?.e_title}</Modal.Title>
                                 </Modal.Header>
-                                <Modal.Body >
+                                <Modal.Body>
                                     {selectedEvent && (
                                         <div>
                                             <div className="uevents-imagecontainer">

@@ -62,6 +62,7 @@ const NewPet = () => {
         })
         .then((response) => {
             console.log("Response:", response.data);
+            window.alert("Successfully added a pet!");
             navigate("/pet/all");
         })
         .catch((err) => {

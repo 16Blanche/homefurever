@@ -13,8 +13,6 @@ import DataTable from 'react-data-table-component';
 import AuthContext from '../../context/AuthContext';
 import { Image } from "react-bootstrap";
 
-
-// Define the convertToBase64 function before using it
 const convertToBase64 = (buffer) => {
     return btoa(
         new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
@@ -44,12 +42,14 @@ const PetListings =()=>{
     const [showArchiveModal, setShowArchiveModal] = useState(false);
     const [archiveReason, setArchiveReason] = useState("");
     const [selectedPetForArchive, setSelectedPetForArchive] = useState(null);
+
+    const [searchQuery, setSearchQuery] = useState(''); 
     
 
     const handleViewButton = (pet) => {
         console.log("View Button Clicked");
-        setSelectedPetForView(pet); // Set selected pet data
-        setShowViewModal(true); // Open view modal
+        setSelectedPetForView(pet);
+        setShowViewModal(true);
     };
 
     const PostsClick = () => {
@@ -78,25 +78,25 @@ const PetListings =()=>{
             p_vaccines: e.target.elements.vaccines.value,
         };    
     
-        console.log("Updated Pet Data:", updatedPet); // Log updatedPet for debugging
+        console.log("Updated Pet Data:", updatedPet); 
     
         axios.put(`http://localhost:8000/api/pet/update/${selectedPet._id}`, updatedPet)
             .then(response => {
-                console.log("Update Response:", response); // Log response for debugging
-                
-                // Update the local state without refreshing the page
+                console.log("Update Response:", response);
+
                 setAllPets(prevPets => 
                     prevPets.map(pet => 
                         pet._id === selectedPet._id ? { ...pet, ...updatedPet } : pet
                     )
                 );
-                setShowEditModal(false); // Close the modal after the update
-                setSelectedPet(null); // Clear the selected pet
+                window.alert("Pet successfully edited!");
+                setShowEditModal(false);
+                setSelectedPet(null); 
             })
             .catch(err => {
                 console.error("There was an error updating the pet!", err);
                 if (err.response) {
-                    console.error("Error Data:", err.response.data); // Log error response data
+                    console.error("Error Data:", err.response.data);
                 }
             });
     };
@@ -124,17 +124,6 @@ const PetListings =()=>{
         setShowDeleteModal(false);
     };
 
-    // const handleArchive = (petId) => {
-    //     axios.delete(`http://localhost:8000/api/pet/delete/transfer/${petId}`)
-    //         .then((response) => {
-    //             setAllPets(allPets.filter(pet => pet._id !== petId));
-    //             console.log(response.data.message);
-    //         })
-    //         .catch((err) => {
-    //             console.log(err);
-    //         });
-    // };
-
     const handleArchiveModalShow = (pet) => {
         setSelectedPetForArchive(pet);
         setShowArchiveModal(true);
@@ -151,6 +140,7 @@ const PetListings =()=>{
             .then((response) => {
                 setAllPets(prevPets => prevPets.filter(pet => pet._id !== selectedPetForArchive._id));
                 console.log(response.data.message);
+                window.alert("Pet successfully archived!");
                 handleArchiveModalClose();
             })
             .catch((err) => {
@@ -166,16 +156,30 @@ const PetListings =()=>{
     };
       
 
-    useEffect(()=>{
+    useEffect(() => {
         axios.get("http://localhost:8000/api/pet/all")
-        .then((response)=>{
-            console.log(response.data.thePet);
-            setAllPets(response.data.thePet);
-        })
-        .catch((err)=>{
-            console.log(err);
-        })
-    },[])
+            .then((response) => {
+                console.log(response.data.thePet);
+                setAllPets(response.data.thePet);
+                setFilteredPets(response.data.thePet);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
+
+    useEffect(() => {
+        const results = allPets.filter(pet =>
+            pet.p_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            pet.p_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            pet.p_breed.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredPets(results);
+    }, [searchQuery, allPets]); 
+
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value); 
+    };
 
     useEffect(() => {
         axios.delete('http://localhost:8000/api/pet/delete/:id')
@@ -191,13 +195,13 @@ const PetListings =()=>{
         axios.get("http://localhost:8000/api/pet/name/" + pname)
             .then((response) => {
                 console.log("Fetched Pet Data:", response.data.thePet);
-                setSelectedPetForView(response.data.thePet); // Update selected pet data
+                setSelectedPetForView(response.data.thePet);
 
             })
             .catch((err) => {
                 console.log(err);
             });
-    }, [pname]); // Include pname in dependency array to re-fetch data when it changes
+    }, [pname]); 
 
     const columns = [
             {
@@ -252,7 +256,14 @@ const PetListings =()=>{
                     <div className="petlistbox4">
 
                         <h2 className="petlistings">PET LIST</h2>
-                        <input type="text" className="petsearch" placeholder="Find a pet"/>
+
+                        <input
+                            type="text"
+                            className="petsearch"
+                            placeholder="Find a pet"
+                            value={searchQuery}
+                            onChange={handleSearchChange} 
+                        />
 
                         <form action="/pet/new" className="plbutton">
                             <Button className="plbtntext" type="submit">+ Add Pet</Button>
@@ -269,7 +280,7 @@ const PetListings =()=>{
                         <div className="pltable">
                             <DataTable
                                 columns={columns}
-                                data={allPets}
+                                data={filteredPets} 
                                 paginationPerPage={13}
                                 paginationRowsPerPageOptions={[5, 10, 13]}
                                 pagination
@@ -291,10 +302,10 @@ const PetListings =()=>{
                                             selectedPetForView.pet_img.map((img, index) => (
                                                 <Image
                                                     key={index}
-                                                    src={`data:image/jpeg;base64,${convertToBase64(img.data)}`} // Use convertToBase64 function to convert image buffer to base64
+                                                    src={`data:image/jpeg;base64,${convertToBase64(img.data)}`}
                                                     alt={`Pet Image ${index + 1}`}
                                                     className="ulimg-preview"
-                                                    style={{ marginBottom: '10px', maxWidth: '100%' }} // Adjust styling as needed
+                                                    style={{ marginBottom: '10px', maxWidth: '100%' }} 
                                                 />
                                             ))
                                         )}
@@ -308,7 +319,7 @@ const PetListings =()=>{
                                         <p>Gender: {selectedPetForView.p_gender}</p>
                                         <p>Weight: {selectedPetForView.p_weight}</p>
                                         <p>Medical History: {selectedPetForView.p_medicalhistory}</p>
-                                        <p>Vaccines: {selectedPetForView.p_vaccines.join(", ")}</p> {/* Join vaccines array into a string */}
+                                        <p>Vaccines: {selectedPetForView.p_vaccines.join(", ")}</p>
                                     </>
                                 )}
                             </Modal.Body>

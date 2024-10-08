@@ -2703,16 +2703,16 @@
     margin-top: -1rem;
 }
   .nearavailableClinics {
-    flex-grow: 1;
+
     display: flex;
     flex-direction: column;
-
 }
   .nearclinicsContainer {
     display: flex;
     flex-direction: column;
     gap: .5rem !important;
-    height: 20rem !important;
+    min-height: 18.5rem !important;
+    max-height: 18.5rem !important;
     flex-grow: 1;
     overflow-y: auto;
     margin-top: 0 !important;

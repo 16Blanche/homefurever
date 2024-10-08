@@ -30,12 +30,13 @@ const Adoptions = () => {
     const [visitDate, setVisitDate] = useState('');
     const [visitTime, setVisitTime] = useState('');
     const [rejectionReason, setRejectionReason] = useState('');
+    const [otherReason, setOtherReason] = useState('');
     const [showFailedModal, setShowFailedModal] = useState(false);
     const [failedReason, setFailedReason] = useState('');
+    const [otherFailedReason, setOtherFailedReason] = useState('');
 
     const navigate = useNavigate();
-    
-    // State for card visibility
+
     const [pendingStartIndex, setPendingStartIndex] = useState(0);
     const [activeStartIndex, setActiveStartIndex] = useState(0);
     const cardsToShow = 5;
@@ -44,7 +45,7 @@ const Adoptions = () => {
     const fetchAdoptions = () => {
         axios.get("http://localhost:8000/api/adoption/pending")
             .then((response) => {
-                console.log("Pending Adoptions Response:", response.data); // Log the response
+                console.log("Pending Adoptions Response:", response.data); 
                 setPendingAdoptions(response.data || []);
             })
             .catch((err) => {
@@ -53,7 +54,7 @@ const Adoptions = () => {
 
         axios.get("http://localhost:8000/api/adoption/active")
             .then((response) => {
-                console.log("Active Adoptions Response:", response.data); // Log the response
+                console.log("Active Adoptions Response:", response.data); 
                 setActiveAdoptions(response.data || []);
             })
             .catch((err) => {
@@ -96,12 +97,13 @@ const Adoptions = () => {
     };
 
     const handleRejectConfirmation = () => {
-        axios.patch(`http://localhost:8000/api/adoption/decline/${selectedAdoption._id}`, { rejection_reason: rejectionReason })
+        axios.patch(`http://localhost:8000/api/adoption/decline/${selectedAdoption._id}`, { rejection_reason: rejectionReason === 'Other' ? otherReason : rejectionReason })
             .then(() => {
                 setPendingAdoptions(prev => prev.filter(adopt => adopt._id !== selectedAdoption._id));
                 setShowRejectModal(false);
                 setSelectedAdoption(null);
                 setRejectionReason('');
+                setOtherReason('');
                 alert('Adoption rejected successfully.');
                 fetchAdoptions();
             })
@@ -116,12 +118,11 @@ const Adoptions = () => {
                 setVisitDate('');
                 setVisitTime('');
                 alert('Adoption approved and visit scheduled.');
-                fetchAdoptions();  // Re-fetch data without refreshing the whole page
+                fetchAdoptions(); 
             })
             .catch(err => console.error("Error approving adoption:", err));
     };
 
-    // Mark as complete
     const handleCompleteAdoption = () => {
         if (!selectedActiveAdoption || !selectedActiveAdoption._id) {
             console.error("No active adoption selected or missing adoption ID");
@@ -136,26 +137,24 @@ const Adoptions = () => {
             .catch(err => console.error("Error completing adoption:", err));
     };
 
-    // Mark as failed
     const handleFailAdoption = () => {
         setShowModal(false);
         setShowFailedModal(true);
     };
 
-    // Submit failed reason
     const handleSubmitFailed = () => {
-        axios.patch(`http://localhost:8000/api/adoption/fail/${selectedActiveAdoption._id}`, { reason: failedReason })
+        axios.patch(`http://localhost:8000/api/adoption/fail/${selectedActiveAdoption._id}`, { reason: failedReason === 'Other' ? otherFailedReason : failedReason })
             .then(() => {
                 alert('Adoption marked as failed.');
                 fetchAdoptions();
                 setShowFailedModal(false);
                 setFailedReason('');
+                setOtherFailedReason('');
                 setShowActiveModal(false);
             })
             .catch(err => console.error("Error failing adoption:", err));
     };
 
-    // Handle pagination for pending adoptions
     const handlePendingNext = () => {
         if (pendingStartIndex + cardsToShow < pendingAdoptions.length) {
             setPendingStartIndex(prevIndex => prevIndex + cardsToShow);
@@ -168,7 +167,6 @@ const Adoptions = () => {
         }
     };
 
-    // Handle pagination for active adoptions
     const handleActiveNext = () => {
         if (activeStartIndex + cardsToShow < activeAdoptions.length) {
             setActiveStartIndex(prevIndex => prevIndex + cardsToShow);
@@ -178,6 +176,22 @@ const Adoptions = () => {
     const handleActivePrev = () => {
         if (activeStartIndex - cardsToShow >= 0) {
             setActiveStartIndex(prevIndex => prevIndex - cardsToShow);
+        }
+    };
+
+    const handleRejectionReasonChange = (e) => {
+        setRejectionReason(e.target.value);
+
+        if (e.target.value !== 'Other') {
+            setOtherReason('');
+        }
+    };
+
+    const handleFailedReasonChange = (e) => {
+        setFailedReason(e.target.value);
+
+        if (e.target.value !== 'Other') {
+            setOtherFailedReason('');
         }
     };
 
@@ -214,7 +228,7 @@ const Adoptions = () => {
                                             <Card.Body>
                                             {adoption.p_id.pet_img && adoption.p_id.pet_img.length > 0 && (
                                                 <Image
-                                                    src={`data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img[0].data)}`} // Use first image
+                                                    src={`data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img[0].data)}`} 
                                                     alt={adoption.p_id.p_name}
                                                     fluid
                                                     className="adoptions-pimg"
@@ -307,7 +321,6 @@ const Adoptions = () => {
                             </div>
                         </div>
 
-
                         {/* Modal for displaying full adoption details */}
                         {selectedAdoption && (
                             <Modal show={showModal} onHide={handleCloseModal}>
@@ -389,7 +402,7 @@ const Adoptions = () => {
                                     <Form.Control
                                         as="select"
                                         value={failedReason}
-                                        onChange={(e) => setFailedReason(e.target.value)}
+                                        onChange={handleFailedReasonChange}
                                     >
                                         <option value="">-- Select a Reason --</option>
                                         <option value="Incompatible with pet">Incompatible with pet</option>
@@ -399,12 +412,29 @@ const Adoptions = () => {
                                         <option value="Other">Other</option>
                                     </Form.Control>
                                 </Form.Group>
+
+                                {/* Conditionally render the "Other" reason text box */}
+                                {failedReason === 'Other' && (
+                                    <Form.Group controlId="otherFailedReason" className="mt-3">
+                                        <Form.Label>Please specify the reason</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Enter the reason"
+                                            value={otherFailedReason}
+                                            onChange={(e) => setOtherFailedReason(e.target.value)}
+                                        />
+                                    </Form.Group>
+                                )}
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button variant="secondary" onClick={() => setShowFailedModal(false)}>
                                     Cancel
                                 </Button>
-                                <Button variant="danger" onClick={handleSubmitFailed}>
+                                <Button
+                                    variant="danger"
+                                    onClick={handleSubmitFailed}
+                                    disabled={failedReason === '' || (failedReason === 'Other' && otherFailedReason === '')}
+                                >
                                     Submit Failure Reason
                                 </Button>
                             </Modal.Footer>
@@ -453,7 +483,7 @@ const Adoptions = () => {
                                         <Form.Control
                                             as="select"
                                             value={rejectionReason}
-                                            onChange={(e) => setRejectionReason(e.target.value)}
+                                            onChange={handleRejectionReasonChange}
                                         >
                                             <option value="">Select a reason</option>
                                             <option value="Not Suitable">Not Suitable</option>
@@ -461,13 +491,30 @@ const Adoptions = () => {
                                             <option value="Other">Other</option>
                                         </Form.Control>
                                     </Form.Group>
+
+                                    {/* Conditionally render the "Other" reason text box */}
+                                    {rejectionReason === 'Other' && (
+                                        <Form.Group controlId="otherReason" className="mt-3">
+                                            <Form.Label>Please specify the reason</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                placeholder="Enter the reason"
+                                                value={otherReason}
+                                                onChange={(e) => setOtherReason(e.target.value)}
+                                            />
+                                        </Form.Group>
+                                    )}
                                 </Form>
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button variant="secondary" onClick={() => setShowRejectModal(false)}>
                                     Cancel
                                 </Button>
-                                <Button variant="danger" onClick={handleRejectConfirmation}>
+                                <Button
+                                    variant="danger"
+                                    onClick={() => handleRejectConfirmation(rejectionReason, otherReason)}
+                                    disabled={rejectionReason === '' || (rejectionReason === 'Other' && otherReason === '')} // Disable if no reason or "Other" is selected but empty
+                                >
                                     Confirm Reject
                                 </Button>
                             </Modal.Footer>

@@ -13,6 +13,7 @@ const ArchivedPets =()=>{
     const navigate = useNavigate();
     const [allPets,setAllPets] =useState([]);
     const [filteredPets, setFilteredPets] = useState([]); 
+    const [searchQuery, setSearchQuery] = useState('');
 
     const {apname}=useParams();
     const [thePet,setThePet]=useState({});
@@ -91,12 +92,6 @@ const ArchivedPets =()=>{
             });
     };
 
-    const handleDeleteCancel = () => {
-        setShowDeleteModal(false);
-    };
-
-      
-
     useEffect(()=>{
         axios.get("http://localhost:8000/api/archived/all")
         .then((response)=>{
@@ -107,6 +102,19 @@ const ArchivedPets =()=>{
             console.log(err);
         })
     },[])
+
+    useEffect(() => {
+        const results = allPets.filter(pet =>
+            pet.ap_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            pet.ap_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            pet.ap_breed.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredPets(results);
+    }, [searchQuery, allPets]); 
+
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
 
     const handleRestoreSubmit = (archivedPetId) => {
         axios.post(`http://localhost:8000/api/pet/restore/${archivedPetId}`)
@@ -195,14 +203,20 @@ const ArchivedPets =()=>{
                     <div className="petlistbox4">
 
                         <h2 className="petlistings">ARCHIVED PETS</h2>
-                        <input type="text" className="petsearch" placeholder="Find a pet"/>
+                        <input
+                                type="text"
+                                className="petsearch"
+                                placeholder="Find a pet"
+                                value={searchQuery}
+                                onChange={handleSearchChange}
+                            />
                         </div>
                         
                         
                         <div className="pltable">
                         <DataTable
                                 columns={columns}
-                                data={allPets}
+                                data={filteredPets}
                                 paginationPerPage={13}
                                 paginationRowsPerPageOptions={[5, 10, 13]}
                                 pagination

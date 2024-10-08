@@ -27,16 +27,20 @@ const MyPosts = () => {
     const [allPets, setAllPets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [description, setDescription] = useState(""); 
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredPets, setFilteredPets] = useState([]);
+
     useEffect(() => {
         axios.get("http://localhost:8000/api/pet/all")
             .then((response) => {
                 console.log(response.data.thePet);
                 setAllPets(response.data.thePet);
                 setPets(response.data.thePet.filter(pet => pet.p_status === 'For Adoption'));
+                setFilteredPets(response.data.thePet.filter(pet => pet.p_status === 'For Adoption')); // Initialize filtered pets
             })
             .catch((err) => {
                 console.log(err);
-            })
+            });
     }, []);
 
     const handleView = (pet) => {
@@ -77,6 +81,7 @@ const MyPosts = () => {
             );
 
             setAllPets(updatedPets);
+            window.alert("Pet successfully posted!");
             setPets(updatedPets.filter(pet => pet.p_status === 'For Adoption'));
             setShowConfirmModal(false);
             setShowViewModal(false);
@@ -99,6 +104,7 @@ const MyPosts = () => {
             );
             setAllPets(updatedPets);
             setPets(updatedPets.filter(pet => pet.p_status === 'For Adoption'));
+            window.alert("Post successfully removed.");
             setShowConfirmRemoveModal(false); 
             setShowViewPostModal(false);
         } catch (err) {
@@ -108,6 +114,19 @@ const MyPosts = () => {
 
     const closeConfirmRemoveModal = () => {
         setShowConfirmRemoveModal(false); 
+    };
+
+    const handleSearchChange = (e) => {
+        const query = e.target.value;
+        setSearchQuery(query);
+
+        const filtered = pets.filter(pet =>
+            pet.p_name.toLowerCase().includes(query.toLowerCase()) ||
+            pet.p_type.toLowerCase().includes(query.toLowerCase()) ||
+            pet.p_breed.toLowerCase().includes(query.toLowerCase())
+        );
+
+        setFilteredPets(filtered);
     };
 
     return (
@@ -121,27 +140,33 @@ const MyPosts = () => {
                     <div className="mpbox3">
                         <div className="mpbox4">
                             <h2 className="mptitle">MY POSTS</h2>
-                            <input type="text" className="mpsearch" placeholder="Find a pet" />
+                            <input
+                                type="text"
+                                className="mpsearch"
+                                placeholder="Find a pet"
+                                value={searchQuery}
+                                onChange={handleSearchChange}
+                            />
                             <Button className="mpaddbtn" type="submit" variant="success" onClick={() => setShowAddModal(true)}>+ Add Post</Button>
                         </div>
 
                         <div className="mpbox5">
                             <div className="mprow">
-                                {pets && pets.map(pet => (
-                                            <Button key={pet._id} className="pet-post" onClick={() => handleViewPost(pet)}>
-                                                <div className="mpimage-container">
-                                                {pet.pet_img && pet.pet_img.length > 0 && (
-                                                    <Image
-                                                        src={`data:image/jpeg;base64,${convertToBase64(pet.pet_img[0].data)}`} 
-                                                        rounded
-                                                        className="mpimage"
-                                                    />
-                                                )}
-                                                </div>
-                                                    <p className="mpname">{pet.p_name}</p>
-                                                    <p className="mpdesc">{pet.p_age} years old, {pet.p_gender} {pet.p_type}</p>
-                                            </Button>
-                                        ))}
+                            {filteredPets && filteredPets.map(pet => (
+                                    <Button key={pet._id} className="pet-post" onClick={() => handleViewPost(pet)}>
+                                        <div className="mpimage-container">
+                                            {pet.pet_img && pet.pet_img.length > 0 && (
+                                                <Image
+                                                    src={`data:image/jpeg;base64,${convertToBase64(pet.pet_img[0].data)}`} 
+                                                    rounded
+                                                    className="mpimage"
+                                                />
+                                            )}
+                                        </div>
+                                        <p className="mpname">{pet.p_name}</p>
+                                        <p className="mpdesc">{pet.p_age} years old, {pet.p_gender} {pet.p_type}</p>
+                                    </Button>
+                                ))}
                             </div>
                         </div>
 

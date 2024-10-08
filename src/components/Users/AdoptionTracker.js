@@ -36,7 +36,7 @@ const AdoptionTracker = () => {
     const [rating, setRating] = useState(0);
     const [feedbackText, setFeedbackText] = useState('');
     const [feedbackExists, setFeedbackExists] = useState(false);
-
+    const [statusFilter, setStatusFilter] = useState('');
     const { user } = useContext(AuthContext);
 
     const steps = ['Submitted', 'Accepted', 'Adoption Complete'];
@@ -198,11 +198,9 @@ const AdoptionTracker = () => {
             alert(response.data.message);
     
             setShowFeedbackModal(false);
-    
-            // After successful feedback submission, mark the feedback as existing
+
             setFeedbackExists(true);
-    
-            // Optionally, re-fetch adoptions to update the UI with any new changes
+
             const updatedAdoptions = await axios.get('http://localhost:8000/api/my/adoptions', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -224,17 +222,13 @@ const AdoptionTracker = () => {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
             console.log('Feedback check response:', response.data);
-            setFeedbackExists(response.data.exists); // Update the state based on response
+            setFeedbackExists(response.data.exists); 
         } catch (error) {
             console.error('Error checking feedback:', error);
-            setFeedbackExists(false); // Default to false if an error occurs
+            setFeedbackExists(false);
         }
     };
     
-    
-    
-    
-    // Rating component for stars
     const StarRating = ({ rating, onRatingChange }) => {
         const handleClick = (value) => {
             onRatingChange(value);
@@ -256,25 +250,48 @@ const AdoptionTracker = () => {
             case 'submitted':
                 return 0;
             case 'pending':
-                return 1; // Change this as per your status definitions, if 'pending' means step 1 is still active
+                return 1;
             case 'accepted':
-                return 2; // Step 2 becomes active after acceptance
+                return 2; 
             case 'rejected':
-                return 1; // Indicates failure at step 2, does not proceed to step 3
+                return 1;
             case 'complete':
                 return 3;
             case 'failed':
-                return 2; // Indicates failure at step 3
+                return 2;
             default:
-                return 0; // Default to step 0 if unknown status
+                return 0; 
         }
     }
 
     const isStepFailed = (status) => {
         return status === 'rejected' || status === 'failed';
     };
-    
 
+    const handleStatusFilterChange = (e) => {
+        setStatusFilter(e.target.value);
+    };
+
+    const filteredAdoptions = statusFilter
+        ? adoptions.filter(adoption => adoption.status === statusFilter)
+        : adoptions;
+    
+        const getStatusStyles = (status) => {
+            switch (status) {
+                case 'pending':
+                    return { color: 'orange' }; 
+                case 'accepted':
+                    return { color: '#5cb85c' }; 
+                case 'complete':
+                    return { color: '#0275d8' };
+                case 'rejected': 
+                case 'failed':
+                    return { color: '#d9534f' }; 
+                default:
+                    return { color: '#f8f9fa' };
+            }
+        };
+    
     return (
         <div className="box">
             <div className="navbox">
@@ -302,45 +319,60 @@ const AdoptionTracker = () => {
                             <p className="tracker-myadoptionstxt">MY ADOPTIONS</p>
                         </div>
                     </div>
-                    <div className="tracker-adoption-container">
-                    {adoptions.length > 0 ? (
-                        adoptions.map((adoption) => (
-                            <div key={adoption._id} className="tracker-pet-button">
-                                <Button
-                                    className="tracker-adoption-box"
-                                    onClick={() => handleAdoptionClick(adoption)}
-                                >
-                                {adoption.p_id && adoption.p_id.pet_img && adoption.p_id.pet_img.length > 0 && (
-                                    <div className="tracker-petimg-ph">
-                                        <Image
-                                            src={`data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img[0].data)}`} // Use the first image in the pet_img array
-                                            className="tracker-petimg-preview"
-                                            alt={adoption.p_id.p_name}
-                                        />
-                                    </div>
-                                )}
 
-                                    
-                                    <div className="tracker-profile-pettext">
-                                        <p className="tracker-pprofile-name">{adoption.p_id ? adoption.p_id.p_name : 'Unknown'}</p>
-                                        <p className="tracker-pprofile-det">
-                                            {adoption.p_id ? `${adoption.p_id.p_gender} ${adoption.p_id.p_type}` : 'No details available'}
-                                        </p>
-                                    </div>
-                                </Button>
-                            </div>
-                        ))
-                    ) : (
-                        <p>No adoptions found</p>
-                    )}
+                    {/* Dropdown for filtering based on status */}
+                    <div className="filter-container">
+                        <Form.Select 
+                            aria-label="Filter adoptions by status"
+                            value={statusFilter}
+                            onChange={handleStatusFilterChange}
+                            className="status-filter-dropdown"
+                        >
+                            <option value="">All Adoptions</option>
+                            <option value="pending">Pending</option>
+                            <option value="accepted">Accepted</option>
+                            <option value="complete">Completed</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="failed">Failed</option>
+                        </Form.Select>
                     </div>
 
-                    {/* <div className="tracker-pet-button">
-                        <Button className="tracker-adoption-box">
-                            + Adopt Pets
-                        </Button>
-                    </div> */}
-                </div>
+                    {/* Adoption cards */}
+                    <div className="tracker-adoption-container">
+                        {filteredAdoptions.length > 0 ? (
+                            filteredAdoptions.map((adoption) => (
+                                <div key={adoption._id} className="tracker-pet-button">
+                                    <Button
+                                        className="tracker-adoption-box"
+                                        onClick={() => handleAdoptionClick(adoption)}
+                                    >
+                                        {adoption.p_id && adoption.p_id.pet_img && adoption.p_id.pet_img.length > 0 && (
+                                            <div className="tracker-petimg-ph">
+                                                <Image
+                                                    src={`data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img[0].data)}`} // Use the first image in the pet_img array
+                                                    className="tracker-petimg-preview"
+                                                    alt={adoption.p_id.p_name}
+                                                />
+                                            </div>
+                                        )}
+
+                                        <div className="tracker-profile-pettext">
+                                            <p className="tracker-pprofile-name">{adoption.p_id ? adoption.p_id.p_name : 'Unknown'}</p>
+                                            <p className="tracker-pprofile-det">
+                                                {adoption.p_id ? `${adoption.p_id.p_gender} ${adoption.p_id.p_type}` : 'No details available'}
+                                            </p>
+                                        </div>
+                                        <div className="tracker-card-status" style={getStatusStyles(adoption.status)}>
+                                            <p>{adoption.status}</p>
+                                        </div>
+                                    </Button>
+                                </div>
+                            ))
+                        ) : (
+                            <p>No adoptions found</p>
+                        )}
+                    </div>
+                    </div>
 
                 <div className="trackerbox3">
                     {selectedPet ? (
@@ -372,59 +404,59 @@ const AdoptionTracker = () => {
 
                             <div className="tracker-adoption-progress">
                             <Stepper activeStep={getActiveStep(selectedAdoption?.status)} alternativeLabel>
-    {steps.map((label, index) => {
-        const currentStep = getActiveStep(selectedAdoption?.status);
-        const isStepCompleted = index < currentStep;
-        const isStepActive = index === currentStep;
-        const isStepFailed = (selectedAdoption?.status === 'rejected' && index === 1) || (selectedAdoption?.status === 'failed' && index === 2);
-        const stepColor = isStepFailed ? 'red' : (isStepCompleted ? '#ff66b2' : 'gray'); // Red for failed, pink for completed, gray for upcoming
+                                {steps.map((label, index) => {
+                                    const currentStep = getActiveStep(selectedAdoption?.status);
+                                    const isStepCompleted = index < currentStep;
+                                    const isStepActive = index === currentStep;
+                                    const isStepFailed = (selectedAdoption?.status === 'rejected' && index === 1) || (selectedAdoption?.status === 'failed' && index === 2);
+                                    const stepColor = isStepFailed ? 'red' : (isStepCompleted ? '#ff66b2' : 'gray'); // Red for failed, pink for completed, gray for upcoming
 
-        return (
-            <Step key={label} completed={isStepCompleted}>
-                <StepLabel
-                    StepIconProps={{
-                        style: { color: stepColor },
-                        component: isStepFailed ? Close : undefined  // Use the 'Close' icon component only when the step is failed
-                    }}
-                >
-                    {label}
-                </StepLabel>
-            </Step>
-        );
-    })}
-</Stepper>
+                                    return (
+                                        <Step key={label} completed={isStepCompleted}>
+                                            <StepLabel
+                                                StepIconProps={{
+                                                    style: { color: stepColor },
+                                                    component: isStepFailed ? Close : undefined  // Use the 'Close' icon component only when the step is failed
+                                                }}
+                                            >
+                                                {label}
+                                            </StepLabel>
+                                        </Step>
+                                    );
+                                })}
+                            </Stepper>
 
 
-    <div className="tracker-progress-texts">
-        <div className="tracker-progress-desc">
-            <div className="tracker-line3" />
-            <p className="tracker-prog-status">Status: {selectedAdoption.status}</p>
-        </div>
-        <div />
-        <p className="tracker-progressmsg">{getStatusMessage(selectedAdoption.status, selectedAdoption.visitDate, selectedAdoption.visitTime)}</p>
+                            <div className="tracker-progress-texts">
+                                <div className="tracker-progress-desc">
+                                    <div className="tracker-line3" />
+                                    <p className="tracker-prog-status">Status: {selectedAdoption.status}</p>
+                                </div>
+                                <div />
+                                <p className="tracker-progressmsg">{getStatusMessage(selectedAdoption.status, selectedAdoption.visitDate, selectedAdoption.visitTime)}</p>
 
-        {/* Rejection reason for rejected status */}
-        {selectedAdoption.status === 'rejected' && (
-            <p className="tracker-progressmsg">Reason: {selectedAdoption.rejection_reason}</p>
-        )}
+                                {/* Rejection reason for rejected status */}
+                                {selectedAdoption.status === 'rejected' && (
+                                    <p className="tracker-progressmsg">Reason: {selectedAdoption.rejection_reason}</p>
+                                )}
 
-        {/* Failed reason for failed status */}
-        {selectedAdoption.status === 'failed' && (
-            <p className="tracker-progressmsg">Reason: {selectedAdoption.failedReason}</p>
-        )}
+                                {/* Failed reason for failed status */}
+                                {selectedAdoption.status === 'failed' && (
+                                    <p className="tracker-progressmsg">Reason: {selectedAdoption.failedReason}</p>
+                                )}
 
-        <div className="tracker-action">
-            {selectedAdoption && selectedAdoption.status === 'complete' && !feedbackExists && (
-                <Button
-                    onClick={() => setShowFeedbackModal(true)}
-                    className="tracker-feedback-btn"
-                >
-                    Provide Feedback
-                </Button>
-            )}
-        </div>
-    </div>
-</div>
+                                <div className="tracker-action">
+                                    {selectedAdoption && selectedAdoption.status === 'complete' && !feedbackExists && (
+                                        <Button
+                                            onClick={() => setShowFeedbackModal(true)}
+                                            className="tracker-feedback-btn"
+                                        >
+                                            Provide Feedback
+                                        </Button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
 
                         </div>
                     ) : (
@@ -440,18 +472,6 @@ const AdoptionTracker = () => {
                             </Modal.Header>
                             <Modal.Body>
                                 <Form>
-                                {/* <Form.Group controlId="feedbackRating">
-                                    <Form.Label>Rating (1-5)</Form.Label>
-                                    <Form.Control 
-                                    as="select" 
-                                    value={rating} 
-                                    onChange={(e) => setRating(e.target.value)}>
-                                    <option value="">Select</option>
-                                    {[1, 2, 3, 4, 5].map((num) => (
-                                        <option key={num} value={num}>{num}</option>
-                                    ))}
-                                    </Form.Control>
-                                </Form.Group> */}
                             <Form.Group controlId="feedbackRating">
                                 <Form.Label>Rating</Form.Label>
                                 <StarRating rating={rating} onRatingChange={setRating} />

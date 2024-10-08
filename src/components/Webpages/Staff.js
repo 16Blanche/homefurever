@@ -110,6 +110,7 @@ const Staff = () => {
             .then((response) => {
                 console.log(response.data);
                 setAllStaff(allStaff.filter((s) => s._id !== staff._id)); 
+                window.alert("Staff successfully removed.");
                 setShowDeleteModal(false);
             })
             .catch((error) => {
@@ -207,6 +208,7 @@ const Staff = () => {
                 .then((response) => {
                     console.log("Staff added:", response.data);
                     setAllStaff([...allStaff, response.data.savedStaff]);
+                    window.alert("Staff successfully added.");
                     handleAddStaffModalClose(); 
                 })
                 .catch((err) => {
@@ -224,7 +226,8 @@ const Staff = () => {
                     const updatedStaffList = allStaff.map(staff =>
                         staff._id === selectedStaffForUpdate._id ? response.data.theUpdateStaff : staff
                     );
-                    setAllStaff(updatedStaffList);   
+                    setAllStaff(updatedStaffList);
+                    window.alert("Information successfully updated.");
                     setShowUpdateStaffModal(false);
                     alert('Staff updated successfully!');
                 })

@@ -235,7 +235,7 @@ const Homepage = () => {
 
                         <div className="brgybox">
                         <div className="brgygraph">
-                            <h1 className="graphtitle">Top 20 Highest Animal Population in Pasay City</h1>
+                            <h1 className="graphtitle">HIGHEST BARANGAY ANIMAL RECORD</h1>
                             <div className="graph-container">
                             <Bar data={chartData} options={chartOptions} />
                             </div>
