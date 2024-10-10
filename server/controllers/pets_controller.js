@@ -1,22 +1,39 @@
 const Pet = require('../models/pets_model');
 const Archived = require('../models/archivedpets_model');
 const Counter = require('../models/counter');
+const logActivity = require('./activitylog_controller');
  
 const newPet = async (req, res) => {
-    console.log("Request body:", req.body); // Log request body
-    console.log("Files received:", req.files); // Log uploaded files
+    console.log("Request body:", req.body);
+    console.log("Files received:", req.files);
 
+    // Log the entire req.user object to understand its structure
+    console.log("Decoded user from JWT in newPet function:", req.user);
+
+    // Extract adminId from req.user, using either _id or id property
+    const adminId = req.user && (req.user._id || req.user.id);
+
+    // Log the extracted adminId to ensure it's correctly set
+    console.log("Admin ID extracted from req.user:", adminId);
+
+    if (!adminId) {
+        // Log the failure to extract adminId and return an error response
+        console.error('Unauthorized: Admin ID not found in req.user');
+        return res.status(401).json({ message: 'Unauthorized: Admin ID not found' });
+    }
+
+    // Destructure pet details from the request body
     const { p_name, p_type, p_gender, p_age, p_breed, p_weight, p_medicalhistory, p_vaccines } = req.body;
-
-    // Verify if files are received correctly
     const pet_img = req.files ? req.files.map(file => file.buffer) : [];
     console.log("Extracted image buffers:", pet_img);
 
     try {
+        // Validate that at least one image is uploaded
         if (pet_img.length === 0) {
             return res.status(400).json({ error: 'No images uploaded' });
         }
 
+        // Create a new Pet instance and save it to the database
         const pet = new Pet({
             p_name,
             p_type,
@@ -30,12 +47,28 @@ const newPet = async (req, res) => {
         });
 
         const savedPet = await pet.save();
+
+        // Log the successful pet creation
+        console.log('Pet saved successfully:', savedPet);
+
+        // Log activity using the extracted adminId
+        await logActivity(
+            adminId, 
+            'ADD',
+            'Pet',
+            savedPet._id, 
+            `Added new pet: ${savedPet.p_name}`
+        );
+        console.log('Activity logged successfully');
+
+        // Return a success response with the saved pet data
         res.status(201).json({ savedPet, status: "successfully inserted" });
     } catch (err) {
         console.error("Error creating pet:", err);
         res.status(500).json({ message: 'Something went wrong', error: err.message });
     }
 };
+  
 
 
 

@@ -35,12 +35,14 @@ const NewPet = () => {
     };
 
     const registerPet = () => {
+        // Step 1: Validate the input fields
         const newErrors = validate();
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
     
+        // Step 2: Create FormData to hold pet data
         const formData = new FormData();
         formData.append("p_name", pname);
         formData.append("p_type", ptype);
@@ -51,24 +53,31 @@ const NewPet = () => {
         formData.append("p_medicalhistory", pmedicalhistory);
         formData.append("p_vaccines", pvaccines);
     
+        // Append each image file to the formData
         pimg.forEach((img) => {
             formData.append("pet_img", img);
         });
     
+        // Step 3: Retrieve the JWT token from local storage (or another storage mechanism)
+        const token = localStorage.getItem('token'); // Make sure to set the JWT token during login
+    
+        // Step 4: Make the Axios request with the Authorization header
         axios.post("http://localhost:8000/api/pet/new", formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`, // Add the JWT token here
             },
         })
         .then((response) => {
             console.log("Response:", response.data);
             window.alert("Successfully added a pet!");
-            navigate("/pet/all");
+            navigate("/pet/all"); // Navigate to the desired page after success
         })
         .catch((err) => {
             console.error("Error during Axios request:", err.response ? err.response.data : err.message);
         });
     };
+    
     
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);

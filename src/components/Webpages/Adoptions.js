@@ -41,7 +41,6 @@ const Adoptions = () => {
     const [activeStartIndex, setActiveStartIndex] = useState(0);
     const cardsToShow = 5;
 
-    // Fetch pending and active adoptions
     const fetchAdoptions = () => {
         axios.get("http://localhost:8000/api/adoption/pending")
             .then((response) => {
@@ -209,7 +208,10 @@ const Adoptions = () => {
                         <div className="adoptions-box3">
                             <div className="adoptions-titlenbtn">
                                 <h2 className="adoptions-title">PENDING ADOPTIONS</h2>
+                                <div className="adoptions-btns">
+                                <Button className="adoptions-feedbackbtn" onClick={() => navigate('/adoptions/past')}>Past Adoptions</Button>
                                 <Button className="adoptions-feedbackbtn" onClick={() => navigate('/feedbacks')}>View Feedback</Button>
+                                </div>
                             </div>
 
                             <div className="adoptions-box">

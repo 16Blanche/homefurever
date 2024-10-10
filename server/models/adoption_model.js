@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
+const Counter = require('./adoptionCounter');
 
 const AdoptionSchema = new mongoose.Schema({
+    a_id: {
+        type: Number,
+        unique: true
+    },
     v_id: { 
         type: mongoose.Schema.Types.ObjectId, ref: 'Verified', 
         required: true 
@@ -65,6 +70,23 @@ const AdoptionSchema = new mongoose.Schema({
     feedbackText: { 
         type: String, 
     },
+});
+
+AdoptionSchema.pre('save', function(next) {
+    const doc = this;
+    if (!doc.isNew) return next();
+
+    Counter.findByIdAndUpdate(
+        { _id: 'adoptionId' },
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true }
+    ).then(function(counter) {
+        doc.a_id = counter.seq;
+        next();
+    }).catch(function(err) {
+        console.error('Error during counter increment:', err);
+        next(err);
+    });
 });
 
 module.exports = mongoose.model('Adoption', AdoptionSchema);

@@ -3,54 +3,6 @@ const Adoption = require('../models/adoption_model');
 const Verified = require('../models/verified_model');
 const Feedback = require('../models/feedback_model');
 
-
-// const submitAdoptionForm = async (req, res) => {
-//     console.log('Submit adoption form called');
-//     console.log('Decoded user:', req.user);
-//     console.log('Form data:', req.body);
-
-//     try {
-//         const { pet_id, home_type, years_resided, adults_in_household, children_in_household, allergic_to_pets, household_description, occupation } = req.body;
-
-//         const pet = await Pet.findById(pet_id);
-//         if (!pet) {
-//             return res.status(404).json({ message: 'Pet not found' });
-//         }
-
-//         const user = await Verified.findById(req.user.id);
-//         if (!user) {
-//             return res.status(404).json({ message: 'User not found' });
-//         }
-
-//         // Use the user's ID as v_id and pet's ID as p_id
-//         const adoptionForm = new Adoption({
-//             v_id: user._id,  // Use the verified user's ID here
-//             p_id: pet._id,   // Use the pet's ID here
-//             full_name: `${user.v_lname} ${user.v_fname} ${user.v_mname ? user.v_mname : ''}`.trim(),
-//             occupation: occupation || '',
-//             address: user.v_add || '',
-//             email: user.v_emailadd,
-//             contact_number: user.v_contactnumber,
-//             home_type,
-//             years_resided,
-//             adults_in_household,
-//             children_in_household,
-//             allergic_to_pets,
-//             household_description,
-//             pet_name: pet.p_name,
-//             pet_type: pet.p_type,
-//             pet_age: pet.p_age,
-//             pet_gender: pet.p_gender
-//         });
-
-//         const savedForm = await adoptionForm.save();
-//         res.status(201).json({ message: 'Adoption form submitted successfully', form: savedForm });
-//     } catch (err) {
-//         console.error('Error submitting form:', err);
-//         res.status(500).json({ message: 'Error submitting form', error: err.message });
-//     }
-// };
-
 const submitAdoptionForm = async (req, res) => {
     console.log('Submit adoption form called');
     console.log('Decoded user:', req.user);
@@ -78,7 +30,6 @@ const submitAdoptionForm = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Create the new adoption form without the adoption_id
         const adoptionForm = new Adoption({
             v_id: user._id,
             p_id: pet._id,
@@ -97,19 +48,14 @@ const submitAdoptionForm = async (req, res) => {
             pet_type: pet.p_type,
             pet_age: pet.p_age,
             pet_gender: pet.p_gender,
-            // Removed adoption_id
         });
-
         const savedForm = await adoptionForm.save();
-        res.status(201).json({ message: 'Adoption form submitted successfully', form: savedForm });
+        res.status(201).json({ message: 'Adoption form submitted successfully', a_id: savedForm.a_id, form: savedForm });
     } catch (err) {
         console.error('Error submitting form:', err);
         res.status(500).json({ message: 'Error submitting form', error: err.message });
     }
 };
-
-
-  
 
 
 // Admin approves an adoption application (status -> 'active')
@@ -172,7 +118,7 @@ const getPendingAdoptions = async (req, res) => {
 };
 
 
-// Get all pending adoption applications
+// Get all active adoption applications
 const getActiveAdoptions = async (req, res) => {
     try {
         const activeAdoptions = await Adoption.find({ status: 'accepted' })
@@ -238,35 +184,17 @@ const failAdoption = async (req, res) => {
     }
 };
 
-// const submitFeedback = async (req, res) => {
-//     console.log('Submit feedback form called');
-//     console.log('Decoded user:', req.user);
-//     console.log('Form data:', req.body);
+const getPastAdoptions = async (req, res) => {
+    try {
+        const pastAdoptions = await Adoption.find({ status: { $in: ['failed', 'rejected', 'complete'] } })
+            .populate('v_id', 'v_fname v_lname v_mname v_add v_emailadd v_contactnumber v_username v_gender v_birthdate v_img')
+            .populate('p_id', 'pet_img p_name p_type p_age p_gender p_breed');
+        res.status(200).json(pastAdoptions);
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching completed adoptions', error: err.message });
+    }
+};
 
-//     try {
-//         const { adoptionId, rating, feedbackText } = req.body;
-
-//         // Check if adoption exists
-//         const adoption = await Adoption.findById(adoptionId);
-//         if (!adoption) {
-//             return res.status(404).json({ message: 'Adoption not found' });
-//         }
-
-//         // Check if feedback already exists
-//         if (adoption.feedback && adoption.feedback.rating) {
-//             return res.status(400).json({ message: 'Feedback already submitted for this adoption.' });
-//         }
-
-//         // Update the adoption with feedback
-//         adoption.feedback = { rating, feedbackText };
-//         const updatedAdoption = await adoption.save();
-
-//         res.status(201).json({ message: 'Feedback submitted successfully', adoption: updatedAdoption });
-//     } catch (err) {
-//         console.error('Error submitting feedback:', err);
-//         res.status(500).json({ message: 'Error submitting feedback', error: err.message });
-//     }
-// };
 
 const submitFeedback = async (req, res) => {
     const { adoptionId, rating, feedbackText } = req.body;
@@ -318,46 +246,33 @@ const checkFeedbackExists = async (req, res) => {
 
 const getAllFeedbacks = async (req, res) => {
     try {
-        // Find all adoptions that have feedback, and populate the adopter's username
         const feedbacks = await Adoption.find({
             feedbackRating: { $exists: true },
             feedbackText: { $exists: true }
         })
         .populate({
-            path: 'v_id', // Field that references Verified model
-            select: 'v_username', // Field you want to retrieve from Verified model
+            path: 'v_id',
+            select: 'v_username', 
         })
-        .select('feedbackRating feedbackText v_id'); // Only select feedback and adopter info
+        .select('feedbackRating feedbackText v_id'); 
 
         if (!feedbacks || feedbacks.length === 0) {
             return res.status(404).json({ message: 'No feedbacks found' });
         }
 
-        // Map feedbacks to return necessary fields
         const feedbackData = feedbacks.map(feedback => ({
             feedbackRating: feedback.feedbackRating,
             feedbackText: feedback.feedbackText,
-            adopterUsername: feedback.v_id ? feedback.v_id.v_username : 'Unknown', // Handle cases where v_id might be null
+            adopterUsername: feedback.v_id ? feedback.v_id.v_username : 'Unknown', 
         }));
 
-        // Send back the array of feedbacks
+
         res.status(200).json(feedbackData);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 };
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -372,6 +287,7 @@ module.exports = {
     failAdoption,
     submitFeedback,
     checkFeedbackExists,
-    getAllFeedbacks
+    getAllFeedbacks,
+    getPastAdoptions
 
 };

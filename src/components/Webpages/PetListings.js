@@ -276,7 +276,7 @@ const PetListings =()=>{
                         <form action="/posts" className="plbutton2">
                             <Button className="plbtntext" onClick={PostsClick}>My Posts</Button>
                         </form>
-                        </div>
+                    </div>
                         <div className="pltable">
                             <DataTable
                                 columns={columns}

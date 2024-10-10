@@ -1,36 +1,35 @@
-// models/ActivityLog.js
 const mongoose = require('mongoose');
 
 const ActivityLogSchema = new mongoose.Schema({
   adminId: {
-    type: mongoose.Schema.Types.ObjectId, // Reference to the admin's user ID
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'Admin'
+    ref: 'Admin' // Ensure 'Admin' matches the actual Admin model name
   },
   action: {
     type: String,
     required: true,
-    enum: ['ADD', 'UPDATE', 'DELETE'], // Define action types
+    enum: ['ADD', 'UPDATE', 'DELETE'],
     default: 'ADD',
   },
   entity: {
     type: String,
     required: true,
-    enum: ['Pet', 'User', 'Event'], // Define entity types that admins can act on
+    enum: ['Pet', 'User', 'Event'], // Make sure these are the correct names of your entities
     default: 'Pet',
   },
   entityId: {
-    type: mongoose.Schema.Types.ObjectId, // ID of the entity (e.g., pet or user) that was acted upon
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
-    refPath: 'entity',
+    refPath: 'entity', // Dynamically reference the model based on 'entity' value
   },
   description: {
-    type: String, // Description of the activity (e.g., "Added pet ID: 1 to the pet list")
+    type: String,
     required: true,
   },
   timestamp: {
     type: Date,
-    default: Date.now, // Log the timestamp of the activity
+    default: Date.now,
   },
 });
 

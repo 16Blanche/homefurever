@@ -49,6 +49,7 @@ import Staff from './components/Webpages/Staff';
 import AdminList from './components/Webpages/AdminList';
 import StaffHistory from './components/Webpages/StaffHistory';
 import Adoptions from './components/Webpages/Adoptions';
+import PastAdoptions from './components/Webpages/PastAdoptions';
 import AdoptionForm from './components/Users/AdoptionForm';
 import AdoptionTracker from './components/Users/AdoptionTracker';
 import UserEvents from './components/Users/UserEvents';
@@ -87,6 +88,7 @@ function App() {
               <Route path='/nearby-services/pet-hotel' element={<ProtectedRoute roles={['admin', 'super-admin']}><PetHotel/></ProtectedRoute>}/>
               <Route path='/barangay/table' element={<ProtectedRoute roles={['admin', 'super-admin']}><BarangayTable/></ProtectedRoute>}/>
               <Route path='/adoptions' element={<ProtectedRoute roles={['admin', 'super-admin']}><Adoptions/></ProtectedRoute>}/>
+              <Route path='/adoptions/past' element={<ProtectedRoute roles={['admin','super-admin']}><PastAdoptions/></ProtectedRoute>}/>
               <Route path='/update-credentials' element={<ProtectedRoute roles={['pending-admin']}><UpdateCredentials/></ProtectedRoute>}/>
               <Route path='/admin/welcome' element={<ProtectedRoute roles={['pending-admin']}><UpdateMessage/></ProtectedRoute>}/>
 

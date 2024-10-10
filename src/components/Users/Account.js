@@ -22,8 +22,8 @@ const Account = () => {
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { logout } = useContext(AuthContext); // Get the logout function from AuthContext
-    const navigate = useNavigate(); // Use navigate to redirect after sign out
+    const { logout } = useContext(AuthContext); 
+    const navigate = useNavigate(); 
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -37,7 +37,7 @@ const Account = () => {
             try {
                 const response = await axios.get('http://localhost:8000/api/user/profile', {
                     headers: {
-                        'Authorization': `Bearer ${token}`,  // Ensure 'Bearer' is used
+                        'Authorization': `Bearer ${token}`,  
                         'Content-Type': 'application/json'
                     }
                 });

@@ -2,59 +2,6 @@ const jwt = require('jsonwebtoken'); // For handling authentication tokens
 require('dotenv').config(); 
 console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
-
-// Middleware to verify if the user is authenticated
-// const authenticateJWT = (req, res, next) => {
-//     const authHeader = req.headers.authorization;
-//     const token = authHeader && authHeader.split(' ')[1]; // Extract token after 'Bearer '
-
-//     if (token) {
-//         jwt.verify(token, 'your_jwt_secret_key', (err, user) => {
-//             if (err) {
-//                 return res.sendStatus(403);
-//             }
-//             req.user = user;
-//             next();
-//         });
-//     } else {
-//         res.sendStatus(401);
-//     }
-// };
-
-// const authenticateJWT = (req, res, next) => {
-//     console.log('Authorization header:', req.headers['authorization']);
-//     const authHeader = req.headers['authorization'];
-//     const token = authHeader && authHeader.split(' ')[1];
-
-//     if (token == null) return res.sendStatus(401);
-
-//     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-//         if (err) return res.sendStatus(403);
-//         req.user = user;
-//         console.log('Authenticated user:', user);
-//         next();
-//     });
-// };
-
-// const authenticateJWT = (req, res, next) => {
-//     const token = req.header('Authorization')?.split(' ')[1]; // Extract token from header
-//     console.log('Authorization header:', req.headers['authorization']);
-//     console.log('Token:', token);
-
-//     if (!token) {
-//         return res.status(403).json({ message: 'No token provided' });
-//     }
-
-//     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-//         if (err) {
-//             console.error('Token verification failed:', err);
-//             return res.status(403).json({ message: 'Invalid token' });
-//         }
-//         req.user = user;
-//         next();
-//     });
-// };
-
 const authenticateJWT = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
@@ -65,22 +12,15 @@ const authenticateJWT = (req, res, next) => {
             if (err) {
                 return res.sendStatus(403); // Forbidden if token is invalid
             }
-
+        
+            console.log('Decoded user from JWT:', user); // Add this to inspect the decoded user
             req.user = user; // Attach the decoded user object to request
-            console.log('Decoded user:', req.user); // Should now include the id
             next();
-        });
+        });        
     } else {
         res.sendStatus(401); // Unauthorized if token is missing
     }
 };
-
-
-
-
-
-
-
 
 // Middleware to check for admin or super-admin role
 const isAdminOrSuperAdmin = (req, res, next) => {

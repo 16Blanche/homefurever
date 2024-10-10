@@ -208,6 +208,7 @@ const AdoptionTracker = () => {
                 }
             });
             setAdoptions(updatedAdoptions.data);
+            window.alert("Feedback submitted.");
             
         } catch (error) {
             console.error('Error submitting feedback:', error);

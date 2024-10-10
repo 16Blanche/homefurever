@@ -56,6 +56,7 @@ module.exports = (app, upload) => {
     app.patch('/api/submit/feedback', adoptionController.submitFeedback);
     app.get('/api/feedback/check/:adoptionId', authenticateJWT, adoptionController.checkFeedbackExists);
     app.get('/api/feedback', adoptionController.getAllFeedbacks);
+    app.get('/api/adoption/past', adoptionController.getPastAdoptions);
 
     // api links for verified users
     app.delete('/api/user/delete/transfer/:id', verifiedController.deleteUserByIdAndTransferData);
@@ -65,7 +66,7 @@ module.exports = (app, upload) => {
     // app.put('/api/user/:id/role', authenticateJWT, isSuperAdmin, userController.updateUserRole);
 
     // api links for pets
-    app.post('/api/pet/new', upload.array('pet_img', 10), petController.newPet);
+    app.post('/api/pet/new', upload.array('pet_img', 10), authenticateJWT, isAdminOrSuperAdmin, petController.newPet);
     app.get('/api/pet/all',petController.findAllPet);
     app.get('/api/pet/name/:pname',petController.findPetByName);
     app.get('/api/pet/type/:ptype',petController.findPetByType);

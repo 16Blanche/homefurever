@@ -60,11 +60,11 @@
     PetSchema.pre('save', function(next) {
         const doc = this;
         Counter.findByIdAndUpdate(
-            { _id: 'petId' }, // Use 'petId' as the identifier in the counter collection
-            { $inc: { seq: 1 } }, // Increment the sequence by 1
-            { new: true, upsert: true } // Options: return updated counter or create if it doesn't exist
+            { _id: 'petId' },
+            { $inc: { seq: 1 } }, 
+            { new: true, upsert: true } 
         ).then(function(counter) {
-            doc.p_id = counter.seq; // Assign the new sequence number to the p_id field
+            doc.p_id = counter.seq;
             next();
         }).catch(function(err) {
             console.error('Error during counter increment:', err);
