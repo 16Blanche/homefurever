@@ -80,7 +80,7 @@ const PetListings =()=>{
     
         console.log("Updated Pet Data:", updatedPet); 
     
-        axios.put(`http://localhost:8000/api/pet/update/${selectedPet._id}`, updatedPet)
+        axios.put(`http://54.206.91.60/api/pet/update/${selectedPet._id}`, updatedPet)
             .then(response => {
                 console.log("Update Response:", response);
 
@@ -109,7 +109,7 @@ const PetListings =()=>{
     };
 
       const handleDeleteConfirm = () => {
-        axios.delete(`http://localhost:8000/api/pet/delete/${selectedPetForDelete._id}`)
+        axios.delete(`http://54.206.91.60/api/pet/delete/${selectedPetForDelete._id}`)
             .then((response) => {
                 console.log('Pet deleted:', response.data);
                 setAllPets(allPets.filter(pet => pet._id !== selectedPetForDelete._id));
@@ -136,7 +136,7 @@ const PetListings =()=>{
     };
 
     const handleArchiveSubmit = () => {
-        axios.delete(`http://localhost:8000/api/pet/delete/transfer/${selectedPetForArchive._id}/${archiveReason}`)
+        axios.delete(`http://54.206.91.60/api/pet/delete/transfer/${selectedPetForArchive._id}/${archiveReason}`)
             .then((response) => {
                 setAllPets(prevPets => prevPets.filter(pet => pet._id !== selectedPetForArchive._id));
                 console.log(response.data.message);
@@ -157,7 +157,7 @@ const PetListings =()=>{
       
 
     useEffect(() => {
-        axios.get("http://localhost:8000/api/pet/all")
+        axios.get("http://54.206.91.60/api/pet/all")
             .then((response) => {
                 console.log(response.data.thePet);
                 setAllPets(response.data.thePet);
@@ -182,7 +182,7 @@ const PetListings =()=>{
     };
 
     useEffect(() => {
-        axios.delete('http://localhost:8000/api/pet/delete/:id')
+        axios.delete('http://54.206.91.60/api/pet/delete/:id')
             .then((response) => {
                 console.log(response.data.thePet);
             }) 
@@ -192,7 +192,7 @@ const PetListings =()=>{
     }, []);
 
     useEffect(() => {
-        axios.get("http://localhost:8000/api/pet/name/" + pname)
+        axios.get("http://54.206.91.60/api/pet/name/" + pname)
             .then((response) => {
                 console.log("Fetched Pet Data:", response.data.thePet);
                 setSelectedPetForView(response.data.thePet);

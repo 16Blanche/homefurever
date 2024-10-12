@@ -85,7 +85,7 @@ const NearbyServices = () => {
         console.log('FormData:', formData);
     
         try {
-            const response = await axios.post('http://localhost:8000/api/service/new', formData, {
+            const response = await axios.post('http://54.206.91.60/api/service/new', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -107,7 +107,7 @@ const NearbyServices = () => {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/api/service/all');
+                const response = await axios.get('http://54.206.91.60/api/service/all');
                 setServices(response.data);
 
                 const veterinaryClinics = response.data.filter(service => service.ns_type === 'veterinary');
@@ -139,7 +139,7 @@ const NearbyServices = () => {
         }
     
         try {
-            const response = await axios.put(`http://localhost:8000/api/service/update/${currentService._id}`, formData, {
+            const response = await axios.put(`http://54.206.91.60/api/service/update/${currentService._id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -159,7 +159,7 @@ const NearbyServices = () => {
     
     const handleConfirmDelete = async (serviceId) => {
         try {
-            await axios.delete(`http://localhost:8000/api/service/delete/${serviceId}`);
+            await axios.delete(`http://54.206.91.60/api/service/delete/${serviceId}`);
             const updatedServices = services.filter(service => service._id !== serviceId);
             setServices(updatedServices);
             setShowDeleteModal(false);

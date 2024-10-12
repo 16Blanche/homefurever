@@ -35,7 +35,7 @@ const BarangayTable = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/barangay/all')
+    axios.get('http://54.206.91.60/api/barangay/all')
       .then(response => {
         setBarangays(response.data.theInfo);
         setFilteredBarangays(response.data.theInfo);
@@ -80,7 +80,7 @@ const BarangayTable = () => {
       setFilteredBarangays(updatedBarangays);
   
       axios
-        .put(`http://localhost:8000/api/barangay/update/${row._id}`, { [editingCell.columnName]: editValue })
+        .put(`http://54.206.91.60/api/barangay/update/${row._id}`, { [editingCell.columnName]: editValue })
         .then((response) => {
           console.log('PUT request successful. Response from backend:', response.data);
   
@@ -143,7 +143,7 @@ const BarangayTable = () => {
   
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.post('http://localhost:8000/api/barangay/new', formData)
+    axios.post('http://54.206.91.60/api/barangay/new', formData)
       .then(response => {
         setBarangays(prevBarangays => [...prevBarangays, response.data.savedBarangay]);
         setFilteredBarangays(prevBarangays => [...prevBarangays, response.data.savedBarangay]);
@@ -232,7 +232,7 @@ const BarangayTable = () => {
         b_address: row['Address/Barangay/Zone'],
       };
 
-      axios.post('http://localhost:8000/api/barangay/new', formattedRow)
+      axios.post('http://54.206.91.60/api/barangay/new', formattedRow)
         .then(response => {
           setBarangays(prevBarangays => [...prevBarangays, response.data.savedBarangay]);
           setFilteredBarangays(prevBarangays => [...prevBarangays, response.data.savedBarangay]);

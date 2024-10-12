@@ -28,7 +28,7 @@ const NewUser =()=>{
             p_emailadd:pemailadd,
             p_password:ppassword
         }
-        axios.post("http://localhost:8000/api/user/new",newUser)
+        axios.post("http://54.206.91.60/api/user/new",newUser)
         .then((response)=>{
             console.log(response.data);
             navigate("/option");
@@ -49,7 +49,7 @@ const NewUser =()=>{
     
     const transferDataToDifferentFile = (userId) => {
         // Example: Send an HTTP request to transfer data
-        axios.post('http://localhost:8000/api/user/transfer', { userId })
+        axios.post('http://54.206.91.60/api/user/transfer', { userId })
             .then((response) => {
                 console.log('Data transferred successfully:', response.data);
             })

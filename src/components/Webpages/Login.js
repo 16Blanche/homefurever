@@ -23,7 +23,7 @@ const Login =()=>{
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-          const response = await axios.post('http://localhost:8000/api/user/login', {
+          const response = await axios.post('http://54.206.91.60/api/user/login', {
             username,
             password
           });

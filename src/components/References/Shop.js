@@ -13,7 +13,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 const Shop =()=>{
     const [allItems,setAllItems] =useState([]);
     useEffect(()=>{
-        axios.get("http://localhost:8000/api/store/all")
+        axios.get("http://54.206.91.60/api/store/all")
         .then((response)=>{
             console.log(response.data.theItem);
             setAllItems(response.data.theItem);

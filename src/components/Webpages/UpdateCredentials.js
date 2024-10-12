@@ -55,7 +55,7 @@ const UpdateCredentials = () => {
             const decodedToken = jwtDecode(token); // Decode the token to get the user ID
             const userId = decodedToken.id;
 
-            await axios.patch(`http://localhost:8000/api/admin/update-credentials/${userId}`, {
+            await axios.patch(`http://54.206.91.60/api/admin/update-credentials/${userId}`, {
                 newUsername,
                 newPassword
             });

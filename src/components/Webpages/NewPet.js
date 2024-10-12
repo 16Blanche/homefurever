@@ -62,7 +62,7 @@ const NewPet = () => {
         const token = localStorage.getItem('token'); // Make sure to set the JWT token during login
     
         // Step 4: Make the Axios request with the Authorization header
-        axios.post("http://localhost:8000/api/pet/new", formData, {
+        axios.post("http://54.206.91.60/api/pet/new", formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
                 Authorization: `Bearer ${token}`, // Add the JWT token here

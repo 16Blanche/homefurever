@@ -87,7 +87,7 @@ const SignUp = () => {
             }
         });
 
-        axios.post("http://localhost:8000/api/user/new", formData, {
+        axios.post("http://54.206.91.60/api/user/new", formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

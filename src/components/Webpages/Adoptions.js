@@ -42,7 +42,7 @@ const Adoptions = () => {
     const cardsToShow = 5;
 
     const fetchAdoptions = () => {
-        axios.get("http://localhost:8000/api/adoption/pending")
+        axios.get("http://54.206.91.60/api/adoption/pending")
             .then((response) => {
                 console.log("Pending Adoptions Response:", response.data); 
                 setPendingAdoptions(response.data || []);
@@ -51,7 +51,7 @@ const Adoptions = () => {
                 console.error("Error fetching pending adoptions:", err);
             });
 
-        axios.get("http://localhost:8000/api/adoption/active")
+        axios.get("http://54.206.91.60/api/adoption/active")
             .then((response) => {
                 console.log("Active Adoptions Response:", response.data); 
                 setActiveAdoptions(response.data || []);
@@ -96,7 +96,7 @@ const Adoptions = () => {
     };
 
     const handleRejectConfirmation = () => {
-        axios.patch(`http://localhost:8000/api/adoption/decline/${selectedAdoption._id}`, { rejection_reason: rejectionReason === 'Other' ? otherReason : rejectionReason })
+        axios.patch(`http://54.206.91.60/api/adoption/decline/${selectedAdoption._id}`, { rejection_reason: rejectionReason === 'Other' ? otherReason : rejectionReason })
             .then(() => {
                 setPendingAdoptions(prev => prev.filter(adopt => adopt._id !== selectedAdoption._id));
                 setShowRejectModal(false);
@@ -110,7 +110,7 @@ const Adoptions = () => {
     };
 
     const handleSubmitDate = () => {
-        axios.patch(`http://localhost:8000/api/adoption/approve/${selectedAdoption._id}`, { visitDate, visitTime })
+        axios.patch(`http://54.206.91.60/api/adoption/approve/${selectedAdoption._id}`, { visitDate, visitTime })
             .then(() => {
                 setPendingAdoptions(prev => prev.filter(adopt => adopt._id !== selectedAdoption._id));
                 setShowDateModal(false);
@@ -127,7 +127,7 @@ const Adoptions = () => {
             console.error("No active adoption selected or missing adoption ID");
             return;
         }
-        axios.patch(`http://localhost:8000/api/adoption/complete/${selectedActiveAdoption._id}`)
+        axios.patch(`http://54.206.91.60/api/adoption/complete/${selectedActiveAdoption._id}`)
             .then(() => {
                 alert('Adoption marked as complete.');
                 fetchAdoptions();
@@ -142,7 +142,7 @@ const Adoptions = () => {
     };
 
     const handleSubmitFailed = () => {
-        axios.patch(`http://localhost:8000/api/adoption/fail/${selectedActiveAdoption._id}`, { reason: failedReason === 'Other' ? otherFailedReason : failedReason })
+        axios.patch(`http://54.206.91.60/api/adoption/fail/${selectedActiveAdoption._id}`, { reason: failedReason === 'Other' ? otherFailedReason : failedReason })
             .then(() => {
                 alert('Adoption marked as failed.');
                 fetchAdoptions();
