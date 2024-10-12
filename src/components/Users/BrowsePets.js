@@ -41,7 +41,7 @@ const BrowsePets = () => {
     const [randomServices, setRandomServices] = useState([]);
 
     useEffect(() => {
-        axios.get("http://54.206.91.60/api/pet/all")
+        axios.get("http://3.24.136.73/api/pet/all")
             .then((response) => {
                 const allPets = response.data.thePet.filter(pet => pet.p_status === 'For Adoption');
                 setPets(allPets);
@@ -57,7 +57,7 @@ const BrowsePets = () => {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const response = await axios.get('http://54.206.91.60/api/service/all');
+                const response = await axios.get('http://3.24.136.73/api/service/all');
                 
                 console.log('Fetched services:', response.data); // Check if data is being fetched correctly
 
@@ -120,7 +120,7 @@ const BrowsePets = () => {
 
 
     useEffect(() => {
-        axios.get('http://54.206.91.60/api/events/all')
+        axios.get('http://3.24.136.73/api/events/all')
             .then((response) => {
                 const upcomingEvents = response.data.theEvent.filter(event => new Date(event.e_date) >= new Date());
                 const shuffledEvents = getRandomEvents(upcomingEvents);

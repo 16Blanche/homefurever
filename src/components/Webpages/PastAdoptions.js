@@ -31,7 +31,7 @@ const Adoptions = () => {
     useEffect(() => {
         const fetchPastAdoptions = async () => {
             try {
-                const response = await axios.get('http://54.206.91.60/api/adoption/past');
+                const response = await axios.get('http://3.24.136.73/api/adoption/past');
                 setAdoptions(response.data);
                 setLoading(false);
             } catch (error) {

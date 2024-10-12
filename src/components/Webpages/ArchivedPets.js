@@ -60,7 +60,7 @@ const ArchivedPets =()=>{
     
         console.log("Updated Pet Data:", updatedPet);
     
-        axios.put(`http://54.206.91.60/api/archived/update/${selectedPet.ap_name}`, updatedPet)
+        axios.put(`http://3.24.136.73/api/archived/update/${selectedPet.ap_name}`, updatedPet)
             .then(response => {
                 console.log("Update Response:", response);
                 setAllPets(prevPets => prevPets.map(pet => pet.ap_name === updatedPet.ap_name ? updatedPet : pet));
@@ -81,7 +81,7 @@ const ArchivedPets =()=>{
     };
 
       const handleDeleteConfirm = () => {
-        axios.delete(`http://54.206.91.60/api/pet/delete/${selectedPetForDelete._id}`)
+        axios.delete(`http://3.24.136.73/api/pet/delete/${selectedPetForDelete._id}`)
             .then((response) => {
                 console.log('Pet deleted:', response.data);
                 setAllPets(allPets.filter(pet => pet._id !== selectedPetForDelete._id));
@@ -93,7 +93,7 @@ const ArchivedPets =()=>{
     };
 
     useEffect(()=>{
-        axios.get("http://54.206.91.60/api/archived/all")
+        axios.get("http://3.24.136.73/api/archived/all")
         .then((response)=>{
             console.log(response.data.apets);
             setAllPets(response.data.apets);
@@ -117,7 +117,7 @@ const ArchivedPets =()=>{
     };
 
     const handleRestoreSubmit = (archivedPetId) => {
-        axios.post(`http://54.206.91.60/api/pet/restore/${archivedPetId}`)
+        axios.post(`http://3.24.136.73/api/pet/restore/${archivedPetId}`)
             .then((response) => {
                 setAllPets([...allPets, response.data.restoredPet]);
                 console.log(response.data.message);
@@ -140,7 +140,7 @@ const ArchivedPets =()=>{
     };
 
     useEffect(() => {
-        axios.get("http://54.206.91.60/api/archived/" + apname)
+        axios.get("http://3.24.136.73/api/archived/" + apname)
             .then((response) => {
                 console.log("Fetched Pet Data:", response.data.apets);
                 setSelectedPetForView(response.data.apets); 

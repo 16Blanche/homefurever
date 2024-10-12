@@ -31,7 +31,7 @@ const MyPosts = () => {
     const [filteredPets, setFilteredPets] = useState([]);
 
     useEffect(() => {
-        axios.get("http://54.206.91.60/api/pet/all")
+        axios.get("http://3.24.136.73/api/pet/all")
             .then((response) => {
                 console.log(response.data.thePet);
                 setAllPets(response.data.thePet);
@@ -71,7 +71,7 @@ const MyPosts = () => {
 
     const handleConfirmPost = async () => {
         try {
-            await axios.put(`http://54.206.91.60/api/pet/update-status/${selectedPet._id}`, {
+            await axios.put(`http://3.24.136.73/api/pet/update-status/${selectedPet._id}`, {
                 p_status: 'For Adoption',
                 p_description: description, 
             });
@@ -98,7 +98,7 @@ const MyPosts = () => {
 
     const confirmRemove = async () => {
         try {
-            await axios.put(`http://54.206.91.60/api/pet/update-status/${selectedPet._id}`, { p_status: 'None' });
+            await axios.put(`http://3.24.136.73/api/pet/update-status/${selectedPet._id}`, { p_status: 'None' });
             const updatedPets = allPets.map(pet =>
                 pet._id === selectedPet._id ? { ...pet, p_status: 'None' } : pet
             );

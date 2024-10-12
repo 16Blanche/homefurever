@@ -47,12 +47,12 @@ const Homepage = () => {
           barangayResponse, 
           eventsResponse 
         ] = await Promise.all([
-          axios.get('http://54.206.91.60/api/dashboard/adopted'),
-          axios.get('http://54.206.91.60/api/dashboard/pets'),
-          axios.get('http://54.206.91.60/api/dashboard/pending'),
-          axios.get('http://54.206.91.60/api/dashboard/verified'),
-          axios.get('http://54.206.91.60/api/barangay/all'), 
-          axios.get('http://54.206.91.60/api/events/all') 
+          axios.get('http://3.24.136.73/api/dashboard/adopted'),
+          axios.get('http://3.24.136.73/api/dashboard/pets'),
+          axios.get('http://3.24.136.73/api/dashboard/pending'),
+          axios.get('http://3.24.136.73/api/dashboard/verified'),
+          axios.get('http://3.24.136.73/api/barangay/all'), 
+          axios.get('http://3.24.136.73/api/events/all') 
         ]);
 
         const barangayCounts = {};

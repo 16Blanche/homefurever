@@ -47,7 +47,7 @@ const Events = () => {
 
     const fetchEvents = async () => {
         try {
-            const response = await fetch('http://54.206.91.60/api/events/all');
+            const response = await fetch('http://3.24.136.73/api/events/all');
             const data = await response.json();
             setEvents(data.theEvent.map(event => ({
                 title: event.e_title,
@@ -63,7 +63,7 @@ const Events = () => {
 
     const fetchEventsByDate = async (date) => {
         try {
-            const response = await axios.get(`http://54.206.91.60/api/events/date/${date}`);
+            const response = await axios.get(`http://3.24.136.73/api/events/date/${date}`);
             setDateEvents(response.data.events.map(event => ({
                 ...event,
                 id: event._id
@@ -112,8 +112,8 @@ const Events = () => {
     
         const method = selectedEvent ? 'PUT' : 'POST';
         const url = selectedEvent
-            ? `http://54.206.91.60/api/events/update/${selectedEvent.id}`
-            : 'http://54.206.91.60/api/events/new';
+            ? `http://3.24.136.73/api/events/update/${selectedEvent.id}`
+            : 'http://3.24.136.73/api/events/new';
     
         const formData = new FormData();
         formData.append("e_title", newEvent.title);
@@ -163,7 +163,7 @@ const Events = () => {
         if (!selectedEvent) return;
 
         try {
-            await axios.delete(`http://54.206.91.60/api/events/delete/${selectedEvent.id}`);
+            await axios.delete(`http://3.24.136.73/api/events/delete/${selectedEvent.id}`);
             setShowConfirmModal(false); // Close the confirmation modal
             setSelectedEvent(null); // Reset selectedEvent to null
             fetchEvents();

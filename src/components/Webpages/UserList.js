@@ -49,7 +49,7 @@ const UserList=()=>{
     const handleRoleChange = async () => {
         const { user, newRole } = roleChangeRequest;
         try {
-            await axios.put(`http://54.206.91.60/api/user/${user._id}/role`, { v_role: newRole });
+            await axios.put(`http://3.24.136.73/api/user/${user._id}/role`, { v_role: newRole });
 
             setAllUsers(allUsers.map(u => u._id === user._id ? { ...u, v_role: newRole } : u));
             setShowConfirmModal(false); 
@@ -59,7 +59,7 @@ const UserList=()=>{
     };
 
     useEffect(() => {
-        axios.get("http://54.206.91.60/api/verified/all")
+        axios.get("http://3.24.136.73/api/verified/all")
             .then((response) => {
                 console.log(response.data.users);
                 setAllUsers(response.data.users);
@@ -71,7 +71,7 @@ const UserList=()=>{
 
     useEffect(() => {
         if (vusername) {
-            axios.get("http://54.206.91.60/api/verified/" + vusername)
+            axios.get("http://3.24.136.73/api/verified/" + vusername)
                 .then((response) => {
                     console.log("Fetched Pet Data:", response.data.theUser);
                     setSelectedUserForView(response.data.theUser); 

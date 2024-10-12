@@ -82,7 +82,7 @@ const AdminList = () => {
     
 
     useEffect(() => {
-        axios.get("http://54.206.91.60/api/staff/all")
+        axios.get("http://3.24.136.73/api/staff/all")
             .then((response) => {
                 setAllStaff(response.data.theStaff || []);
             })
@@ -92,7 +92,7 @@ const AdminList = () => {
     }, []);
 
     useEffect(() => {
-        axios.get("http://54.206.91.60/api/admin/all")
+        axios.get("http://3.24.136.73/api/admin/all")
             .then((response) => {
                 const admins = response.data.admins || [];
                 const filteredAdmins = admins.filter(admin => admin.a_role === 'admin');
@@ -107,7 +107,7 @@ const AdminList = () => {
 
     useEffect(() => {
         if (pusername) {
-            axios.get(`http://54.206.91.60/api/user/username/${pusername}`)
+            axios.get(`http://3.24.136.73/api/user/username/${pusername}`)
                 .then((response) => {
                     setSelectedUserForView(response.data.theUser);
                 })
@@ -156,7 +156,7 @@ const AdminList = () => {
     
         if (validateForm()) {
             try {
-                const response = await axios.post("http://54.206.91.60/api/admin/new", {
+                const response = await axios.post("http://3.24.136.73/api/admin/new", {
                     firstName: updatedFormData.firstName, 
                     lastName: updatedFormData.lastName,
                     middleName: updatedFormData.middleName,
@@ -174,7 +174,7 @@ const AdminList = () => {
                 console.log("Admin added:", response.data);
                 setShowConfirmationModal(false); 
 
-                await axios.post("http://54.206.91.60/api/send-email", {
+                await axios.post("http://3.24.136.73/api/send-email", {
                     to: updatedFormData.email,
                     subject: "Your Admin Credentials",
                     text: `Dear ${updatedFormData.firstName},\n\nYour admin account has been created. Below are your login credentials:\n\nUsername: ${generatedUsername}\nPassword: ${generatedPassword}\n\nPlease change your password after logging in.\n`
@@ -192,7 +192,7 @@ const AdminList = () => {
     const fetchAdmins = () => {
         console.log("Fetching admin data from the API...");
     
-        axios.get("http://54.206.91.60/api/admin/all")
+        axios.get("http://3.24.136.73/api/admin/all")
             .then((response) => {
                 console.log("Admin data fetched from API response:", response.data);
     
@@ -243,7 +243,7 @@ const AdminList = () => {
     };
 
     // const handleDeleteConfirm = (admin) => {
-    //     axios.delete(`http://54.206.91.60/api/admin/delete/${admin._id}`)
+    //     axios.delete(`http://3.24.136.73/api/admin/delete/${admin._id}`)
     //         .then((response) => {
     //             console.log(response.data);
     //             setAllAdmins(allAdmins.filter((s) => s._id !== admin._id)); // Remove from current staff list
@@ -257,7 +257,7 @@ const AdminList = () => {
     // const handleDeleteConfirm = async (admin) => {
     //     try {
     //         // Ensure the ID is correctly passed in the URL
-    //         await axios.post(`http://54.206.91.60/api/deletedadmin/new/${admin._id}`, {
+    //         await axios.post(`http://3.24.136.73/api/deletedadmin/new/${admin._id}`, {
     //             da_id: admin.a_id,
     //             da_fname: admin.a_fname,
     //             da_lname: admin.a_lname,
@@ -267,7 +267,7 @@ const AdminList = () => {
     //         });
     
     //         // Delete the admin from the current list
-    //         await axios.delete(`http://54.206.91.60/api/admin/delete/${admin._id}`);
+    //         await axios.delete(`http://3.24.136.73/api/admin/delete/${admin._id}`);
         
     //         // Update the state to remove the admin from the list
     //         setAllAdmins(allAdmins.filter((s) => s._id !== admin._id)); // Remove from current admin list
@@ -279,7 +279,7 @@ const AdminList = () => {
 
     const handleDeleteConfirm = async (admin) => {
         try {
-            await axios.patch(`http://54.206.91.60/api/admin/update/${admin._id}`, {
+            await axios.patch(`http://3.24.136.73/api/admin/update/${admin._id}`, {
                 s_role: 'deleted-admin'
             });
 

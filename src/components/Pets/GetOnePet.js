@@ -27,7 +27,7 @@ const GetOnePet =()=>{
     }
 
     useEffect(()=>{
-        axios.get("http://54.206.91.60/api/pet/"+pid)
+        axios.get("http://3.24.136.73/api/pet/"+pid)
         .then((response)=>{
             console.log(response.data);
             setThePet(response.data.thePet);
@@ -42,7 +42,7 @@ const deletePet=(pid)=>{
     const resp = window.confirm("Adopt this pet?");
     if(resp)
     {
-        axios.delete("http://54.206.91.60/api/pet/delete/"+pid)
+        axios.delete("http://3.24.136.73/api/pet/delete/"+pid)
         .then((response)=>{
             console.log(response.data);
             navigate("/adopt");

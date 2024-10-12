@@ -27,7 +27,7 @@ const PetProfile = () => {
     setPet(null);
     setRandomPets([]);
 
-    axios.get(`http://54.206.91.60/api/pet/${id}`)
+    axios.get(`http://3.24.136.73/api/pet/${id}`)
       .then(response => {
         setPet(response.data.thePet);
         setLoading(false);
@@ -37,7 +37,7 @@ const PetProfile = () => {
         setLoading(false);
       });
 
-    axios.get(`http://54.206.91.60/api/pet/all`)
+    axios.get(`http://3.24.136.73/api/pet/all`)
       .then(response => {
         const pets = response.data.thePet;
         setAllPets(pets);

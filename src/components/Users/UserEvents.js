@@ -28,7 +28,7 @@ const UserEvents = () => {
     const [selectedEvent, setSelectedEvent] = useState(null);
 
     useEffect(() => {
-        axios.get('http://54.206.91.60/api/events/all')
+        axios.get('http://3.24.136.73/api/events/all')
             .then((response) => {
                 setEvents(response.data.theEvent || []);
                 setLoading(false);
