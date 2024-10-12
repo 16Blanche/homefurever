@@ -40,10 +40,6 @@ import Account from './components/Users/Account';
 import AdminAboutUs from './components/Webpages/AdminAboutUs';
 import NearbyServices from './components/Webpages/UserNearbyServices';
 import UserNearbyServices from './components/Users/NearbyServices';
-import PetGrooming from './components/Webpages/PetGrooming';
-import VeterinaryClinic from './components/Webpages/VeterinaryClinic';
-import NeuteringClinic from './components/Webpages/NeuteringClinic';
-import PetHotel from './components/Webpages/PetHotel';
 import BarangayTable from './components/Webpages/BarangayTable';
 import Staff from './components/Webpages/Staff';
 import AdminList from './components/Webpages/AdminList';
@@ -82,10 +78,6 @@ function App() {
               <Route path="/pet/archived" element={<ArchivedPets/>}></Route>
               <Route path='/admin/aboutus' element={<ProtectedRoute roles={['admin', 'super-admin']}><AdminAboutUs/></ProtectedRoute>}></Route>
               <Route path="/nearby-services" element={<ProtectedRoute roles={['admin', 'super-admin']}><NearbyServices/></ProtectedRoute>} />
-              <Route path='/nearby-services/pet-grooming' element={<ProtectedRoute roles={['admin', 'super-admin']}><PetGrooming/></ProtectedRoute>}/>
-              <Route path='/nearby-services/veterinary-clinic' element={<ProtectedRoute roles={['admin', 'super-admin']}><VeterinaryClinic/></ProtectedRoute>}/>
-              <Route path='/nearby-services/neutering-clinic' element={<ProtectedRoute roles={['admin', 'super-admin']}><NeuteringClinic/></ProtectedRoute>}/>
-              <Route path='/nearby-services/pet-hotel' element={<ProtectedRoute roles={['admin', 'super-admin']}><PetHotel/></ProtectedRoute>}/>
               <Route path='/barangay/table' element={<ProtectedRoute roles={['admin', 'super-admin']}><BarangayTable/></ProtectedRoute>}/>
               <Route path='/adoptions' element={<ProtectedRoute roles={['admin', 'super-admin']}><Adoptions/></ProtectedRoute>}/>
               <Route path='/adoptions/past' element={<ProtectedRoute roles={['admin','super-admin']}><PastAdoptions/></ProtectedRoute>}/>
