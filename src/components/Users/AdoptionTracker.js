@@ -51,7 +51,7 @@ const AdoptionTracker = () => {
             }
         
             try {
-                const response = await axios.get('http://3.24.136.73/api/user/profile', {
+                const response = await axios.get('http://52.64.196.154/api/user/profile', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -93,7 +93,7 @@ const AdoptionTracker = () => {
             }
 
             try {
-                const response = await axios.get('http://3.24.136.73/api/my/adoptions', {
+                const response = await axios.get('http://52.64.196.154/api/my/adoptions', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -136,7 +136,7 @@ const AdoptionTracker = () => {
 
     const fetchPetById = async (petId) => {
         try {
-            const response = await axios.get(`http://3.24.136.73/api/pet/${petId}`);
+            const response = await axios.get(`http://52.64.196.154/api/pet/${petId}`);
             setSelectedPet(response.data.thePet);
         } catch (error) {
             console.error('Error fetching pet:', error);
@@ -187,7 +187,7 @@ const AdoptionTracker = () => {
 
     const handleSubmitFeedback = async () => {
         try {
-            const response = await axios.patch('http://3.24.136.73/api/submit/feedback', {
+            const response = await axios.patch('http://52.64.196.154/api/submit/feedback', {
                 adoptionId: selectedAdoption._id,
                 petId: selectedAdoption.p_id._id,
                 userId: user._id,
@@ -201,7 +201,7 @@ const AdoptionTracker = () => {
 
             setFeedbackExists(true);
 
-            const updatedAdoptions = await axios.get('http://3.24.136.73/api/my/adoptions', {
+            const updatedAdoptions = await axios.get('http://52.64.196.154/api/my/adoptions', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json'
@@ -219,7 +219,7 @@ const AdoptionTracker = () => {
     
     const checkFeedbackExists = async (adoptionId) => {
         try {
-            const response = await axios.get(`http://3.24.136.73/api/feedback/check/${adoptionId}`, {
+            const response = await axios.get(`http://52.64.196.154/api/feedback/check/${adoptionId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
             console.log('Feedback check response:', response.data);

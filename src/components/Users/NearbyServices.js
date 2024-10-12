@@ -31,7 +31,7 @@ const NearbyServices = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get('http://3.24.136.73/api/service/all');
+        const response = await axios.get('http://52.64.196.154/api/service/all');
         const fetchedServices = response.data;
         setServices(fetchedServices);
 

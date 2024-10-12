@@ -21,7 +21,7 @@ const StaffHistory = () => {
   useEffect(() => {
     const fetchActivityLogs = async () => {
       try {
-        const response = await axios.get('http://3.24.136.73/api/logs/all');
+        const response = await axios.get('http://52.64.196.154/api/logs/all');
         if (response.data && Array.isArray(response.data)) {
           setActivityLogs(response.data);
           setFilteredLogs(response.data); // Set both the main and filtered logs initially

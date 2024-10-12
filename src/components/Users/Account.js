@@ -35,7 +35,7 @@ const Account = () => {
             }
         
             try {
-                const response = await axios.get('http://3.24.136.73/api/user/profile', {
+                const response = await axios.get('http://52.64.196.154/api/user/profile', {
                     headers: {
                         'Authorization': `Bearer ${token}`,  
                         'Content-Type': 'application/json'

@@ -57,7 +57,7 @@ const AdminList = () => {
     };
 
     useEffect(() => {
-        axios.get("http://3.24.136.73/api/staff/all")
+        axios.get("http://52.64.196.154/api/staff/all")
             .then((response) => {
                 setAllStaff(response.data.theStaff || []);
             })
@@ -67,7 +67,7 @@ const AdminList = () => {
     }, []);
 
 useEffect(() => {
-    axios.get("http://3.24.136.73/api/admin/all")
+    axios.get("http://52.64.196.154/api/admin/all")
         .then((response) => {
             setAllAdmins(response.data.admins || []);
         })
@@ -79,7 +79,7 @@ useEffect(() => {
 
     useEffect(() => {
         if (pusername) {
-            axios.get(`http://3.24.136.73/api/user/username/${pusername}`)
+            axios.get(`http://52.64.196.154/api/user/username/${pusername}`)
                 .then((response) => {
                     setSelectedUserForView(response.data.theUser);
                 })
@@ -109,7 +109,7 @@ useEffect(() => {
     const handleFormSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
-            axios.post("http://3.24.136.73/api/admin/new", {
+            axios.post("http://52.64.196.154/api/admin/new", {
                 a_id: selectedStaff.s_id, // Include s_id if required
                 firstName: formData.firstName, 
                 lastName: formData.lastName,
@@ -150,7 +150,7 @@ useEffect(() => {
     };
 
     // const handleDeleteConfirm = (admin) => {
-    //     axios.delete(`http://3.24.136.73/api/admin/delete/${admin._id}`)
+    //     axios.delete(`http://52.64.196.154/api/admin/delete/${admin._id}`)
     //         .then((response) => {
     //             console.log(response.data);
     //             setAllAdmins(allAdmins.filter((s) => s._id !== admin._id)); // Remove from current staff list
@@ -164,7 +164,7 @@ useEffect(() => {
     const handleDeleteConfirm = async (admin) => {
         try {
             // Ensure the ID is correctly passed in the URL
-            await axios.post(`http://3.24.136.73/api/deletedadmin/new/${admin._id}`, {
+            await axios.post(`http://52.64.196.154/api/deletedadmin/new/${admin._id}`, {
                 da_id: admin.a_id,
                 da_fname: admin.a_fname,
                 da_lname: admin.a_lname,
@@ -174,7 +174,7 @@ useEffect(() => {
             });
     
             // Delete the admin from the current list
-            await axios.delete(`http://3.24.136.73/api/admin/delete/${admin._id}`);
+            await axios.delete(`http://52.64.196.154/api/admin/delete/${admin._id}`);
         
             // Update the state to remove the admin from the list
             setAllAdmins(allAdmins.filter((s) => s._id !== admin._id)); // Remove from current admin list

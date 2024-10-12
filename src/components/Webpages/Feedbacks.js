@@ -11,7 +11,7 @@ const Feedbacks = () => {
     useEffect(() => {
         const fetchFeedbacks = async () => {
             try {
-                const response = await axios.get('http://3.24.136.73/api/feedback'); // replace with your endpoint
+                const response = await axios.get('http://52.64.196.154/api/feedback'); // replace with your endpoint
                 setFeedbacks(response.data);
             } catch (error) {
                 console.error('Error fetching feedbacks:', error);

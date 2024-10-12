@@ -34,7 +34,7 @@ const SignUpRef = () => {
         formData.append("p_birthdate", pbirthdate ? pbirthdate.toLocaleDateString("en-GB") : "");
         formData.append("p_validID", pvalidID);
 
-        axios.post("http://3.24.136.73/api/user/new", formData, {
+        axios.post("http://52.64.196.154/api/user/new", formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

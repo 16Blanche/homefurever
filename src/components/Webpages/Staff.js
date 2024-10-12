@@ -75,7 +75,7 @@ const Staff = () => {
     
     
     useEffect(() => {
-        axios.get("http://3.24.136.73/api/staff/all")
+        axios.get("http://52.64.196.154/api/staff/all")
             .then((response) => {
                 console.log('API Response:', response.data);
                 setAllStaff(response.data.theStaff || []); 
@@ -87,7 +87,7 @@ const Staff = () => {
     }, []);
     
     useEffect(() => {
-        axios.get("http://3.24.136.73/api/staff/id/" + id)
+        axios.get("http://52.64.196.154/api/staff/id/" + id)
             .then((response) => {
                 console.log("Fetched User Data:", response.data.theStaff);
                 setSelectedStaffForView(response.data.theStaff); 
@@ -104,7 +104,7 @@ const Staff = () => {
 
     const handleDeleteConfirm = (staff) => {
         axios
-            .delete(`http://3.24.136.73/api/staff/delete/${staff._id}`, {
+            .delete(`http://52.64.196.154/api/staff/delete/${staff._id}`, {
                 data: { deleteReason }
             })
             .then((response) => {
@@ -204,7 +204,7 @@ const Staff = () => {
     const handleFormSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
-            axios.post("http://3.24.136.73/api/staff/new", formData)
+            axios.post("http://52.64.196.154/api/staff/new", formData)
                 .then((response) => {
                     console.log("Staff added:", response.data);
                     setAllStaff([...allStaff, response.data.savedStaff]);
@@ -220,7 +220,7 @@ const Staff = () => {
     const handleUpdateFormSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
-            axios.put(`http://3.24.136.73/api/staff/update/${selectedStaffForUpdate._id}`, formData)
+            axios.put(`http://52.64.196.154/api/staff/update/${selectedStaffForUpdate._id}`, formData)
                 .then((response) => {
                     console.log("Staff updated:", response.data);
                     const updatedStaffList = allStaff.map(staff =>

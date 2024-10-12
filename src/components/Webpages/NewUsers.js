@@ -37,7 +37,7 @@ const NewUsers = () => {
     };
 
     const handleApprove = (userId) => {
-        axios.delete(`http://3.24.136.73/api/user/delete/transfer/${userId}`)
+        axios.delete(`http://52.64.196.154/api/user/delete/transfer/${userId}`)
             .then((response) => {
                 setAllUsers(allUsers.filter(user => user._id !== userId));
                 console.log(response.data.message);
@@ -48,7 +48,7 @@ const NewUsers = () => {
     };
 
     useEffect(() => {
-        axios.get("http://3.24.136.73/api/user/all")
+        axios.get("http://52.64.196.154/api/user/all")
             .then((response) => {
                 console.log(response.data.users);
                 setAllUsers(response.data.users);
@@ -59,7 +59,7 @@ const NewUsers = () => {
     }, []);
 
     useEffect(() => {
-        axios.get("http://3.24.136.73/api/user/username/" + pusername)
+        axios.get("http://52.64.196.154/api/user/username/" + pusername)
             .then((response) => {
                 console.log("Fetched User Data:", response.data.theUser);
                 setSelectedUserForView(response.data.theUser); 
@@ -75,7 +75,7 @@ const NewUsers = () => {
     };
 
     const handleDeleteConfirm = () => {
-        axios.delete(`http://3.24.136.73/api/user/delete/${selectedUserForDelete._id}`)
+        axios.delete(`http://52.64.196.154/api/user/delete/${selectedUserForDelete._id}`)
             .then((response) => {
                 console.log('User deleted:', response.data);
                 setAllUsers(allUsers.filter(user => user._id !== selectedUserForDelete._id));

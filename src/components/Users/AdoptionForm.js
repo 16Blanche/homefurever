@@ -37,7 +37,7 @@ const AdoptionForm = () => {
         }
     
         // Fetch pet details
-        axios.get(`http://3.24.136.73/api/pet/${id}`)
+        axios.get(`http://52.64.196.154/api/pet/${id}`)
             .then(response => {
                 // Ensure we're getting the right data from the response
                 setPet(response.data.thePet); // Update this to match the API response field
@@ -47,7 +47,7 @@ const AdoptionForm = () => {
             });
     
         // Fetch user details for logged-in user
-        axios.get('http://3.24.136.73/api/user/profile', {
+        axios.get('http://52.64.196.154/api/user/profile', {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
@@ -84,7 +84,7 @@ const AdoptionForm = () => {
                 user_id: userInfo.v_id // Include the user_id from the fetched user info
             };
     
-            axios.post('http://3.24.136.73/api/adoption/submit', formPayload, {
+            axios.post('http://52.64.196.154/api/adoption/submit', formPayload, {
                 headers: { Authorization: `Bearer ${token}` } 
             })
             .then(response => {

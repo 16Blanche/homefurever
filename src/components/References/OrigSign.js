@@ -49,7 +49,7 @@ const SignUp =()=>{
             p_birthdate: pbirthdate ? pbirthdate.toLocaleDateString("en-GB") : "", // Format birthdate to DD/MM/YYYY
             p_validID:pvalidID
         }
-        axios.post("http://3.24.136.73/api/user/new",newUser)
+        axios.post("http://52.64.196.154/api/user/new",newUser)
         .then((response)=>{
         console.log(response.data);
         navigate("/home");
