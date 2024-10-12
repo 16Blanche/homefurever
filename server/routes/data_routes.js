@@ -12,6 +12,7 @@ const emailController = require("../controllers/email_controller");
 const barangayController =require("../controllers/barangay_controller");
 const adoptionController = require("../controllers/adoption_controller");
 const nearbyController = require("../controllers/nearby_controller");
+const activityLogController =require("../controllers/activitylog_controller");
 const { authenticateJWT, isSuperAdmin, isAdminOrSuperAdmin, isPendingUser, isVerifiedUser} = require('../middlewares/auth');
 
 module.exports = (app, upload) => {
@@ -114,4 +115,7 @@ module.exports = (app, upload) => {
     app.get('/api/service/all', nearbyController.getAllNearbyServices);
     app.get('/api/service/:id', nearbyController.getNearbyServiceById);
     app.delete('/api/service/delete/:id', nearbyController.deleteNearbyService);
+
+    // api links for logs
+    app.get('/api/logs/all', activityLogController.getAllActivityLogs);
 };

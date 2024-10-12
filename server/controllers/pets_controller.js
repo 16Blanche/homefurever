@@ -1,7 +1,7 @@
 const Pet = require('../models/pets_model');
 const Archived = require('../models/archivedpets_model');
 const Counter = require('../models/counter');
-const logActivity = require('./activitylog_controller');
+const {logActivity} = require('./activitylog_controller');
  
 const newPet = async (req, res) => {
     console.log("Request body:", req.body);

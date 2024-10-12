@@ -1965,7 +1965,7 @@
     background-color:  #F6F4F4;
 }
 .staddstbtn {
-    width: 8%;
+    width: 9%;
     height: 30px;
     padding: 0px;
     margin-top: 5px;
@@ -3283,4 +3283,55 @@
     display: flex;
     flex-direction: row;
     margin-bottom: 2rem;
+}
+
+/* STAFF ACTIVITY */
+.sabox{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #F6F4F4;
+}
+.sabox2{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+}
+.sabox3{
+    width: 88%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+    margin-left: 15%;
+}
+.sabox4{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 2rem;
+}
+.sabox4 h1{
+    font-size: 2rem;
+    font-weight: bold;
+}
+.sasearch{
+    margin-left: 2rem;
+    width: 20rem;
+}
+.saaction{
+    margin-left: 1rem;
+
+}
+.sadate{
+    margin-left: 1rem;
+    width: 21rem;
+    height: 2rem;
+    display: flex;
+    justify-content: space-between;
+}
+.sapicker{
+    width: 10rem;
+    height: 2.2rem;
 }

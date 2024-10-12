@@ -26,5 +26,32 @@ const logActivity = async (adminId, action, entity, entityId, description) => {
   }
 };
 
+const getAllActivityLogs = async (req, res) => {
+  try {
+    const logs = await ActivityLog.find()
+      .populate({
+        path: 'adminId',
+        select: 'a_id a_username',
+      })
+      // .populate({
+      //   path: 'entityId',
+      //   select: 'p_id p_name p_type p_gender p_status',
+      // })
+      .exec();
 
-module.exports = logActivity;
+    console.log('Sending Logs from Backend:', logs); // Log data being sent from the backend
+    res.status(200).json(logs); // Send logs as JSON
+  } catch (error) {
+    console.error('Error retrieving activity logs:', error);
+    res.status(500).json({ error: 'Error retrieving activity logs' });
+  }
+};
+
+
+
+
+
+module.exports = {
+  logActivity,
+  getAllActivityLogs
+};
