@@ -9,6 +9,7 @@ import NavigationBar from './NavigationBar';
 import axios from 'axios';
 import DataTable from 'react-data-table-component';
 import * as XLSX from 'xlsx';
+import config from '../config';
 
 const BarangayTable = () => {
   const [barangays, setBarangays] = useState([]);
@@ -35,7 +36,7 @@ const BarangayTable = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://52.64.196.154/api/barangay/all')
+    axios.get(`${config.address}/api/barangay/all`)
       .then(response => {
         setBarangays(response.data.theInfo);
         setFilteredBarangays(response.data.theInfo);
@@ -80,7 +81,7 @@ const BarangayTable = () => {
       setFilteredBarangays(updatedBarangays);
   
       axios
-        .put(`http://52.64.196.154/api/barangay/update/${row._id}`, { [editingCell.columnName]: editValue })
+        .put(`${config.address}/api/barangay/update/${row._id}`, { [editingCell.columnName]: editValue })
         .then((response) => {
           console.log('PUT request successful. Response from backend:', response.data);
   
@@ -143,7 +144,7 @@ const BarangayTable = () => {
   
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.post('http://52.64.196.154/api/barangay/new', formData)
+    axios.post(`${config.address}/api/barangay/new`, formData)
       .then(response => {
         setBarangays(prevBarangays => [...prevBarangays, response.data.savedBarangay]);
         setFilteredBarangays(prevBarangays => [...prevBarangays, response.data.savedBarangay]);
@@ -232,7 +233,7 @@ const BarangayTable = () => {
         b_address: row['Address/Barangay/Zone'],
       };
 
-      axios.post('http://52.64.196.154/api/barangay/new', formattedRow)
+      axios.post(`${config.address}/api/barangay/new`, formattedRow)
         .then(response => {
           setBarangays(prevBarangays => [...prevBarangays, response.data.savedBarangay]);
           setFilteredBarangays(prevBarangays => [...prevBarangays, response.data.savedBarangay]);

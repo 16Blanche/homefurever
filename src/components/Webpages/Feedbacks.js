@@ -4,6 +4,7 @@ import StarRatings from 'react-star-ratings'; // Import the StarRatings componen
 import './Homepage.css';
 import TaskBar from "./TaskBar";
 import NavigationBar from "./NavigationBar";
+import config from '../config';
 
 const Feedbacks = () => {
     const [feedbacks, setFeedbacks] = useState([]);
@@ -11,7 +12,7 @@ const Feedbacks = () => {
     useEffect(() => {
         const fetchFeedbacks = async () => {
             try {
-                const response = await axios.get('http://52.64.196.154/api/feedback'); // replace with your endpoint
+                const response = await axios.get(`${config.address}/api/feedback`); // replace with your endpoint
                 setFeedbacks(response.data);
             } catch (error) {
                 console.error('Error fetching feedbacks:', error);

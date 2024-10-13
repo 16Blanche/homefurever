@@ -1,24 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Card, Modal, Button, Form, Image } from "react-bootstrap";
+import { Modal, Button, Form, Image } from "react-bootstrap";
 import NavigationBar from "./NavigationBar";
 import TaskBar from "./TaskBar";
 import axios from "axios";
 import './Homepage.css';
-import { useNavigate } from "react-router-dom";
 import DataTable from 'react-data-table-component';
+import config from '../config';
 
-const convertToBase64 = (buffer) => {
-    try {
-        return btoa(
-            new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-        );
-    } catch (error) {
-        console.error('Error converting to Base64:', error);
-        return '';
-    }
-};
-
-const Adoptions = () => {
+const PastAdoptions = () => {
     const [adoptions, setAdoptions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -26,12 +15,10 @@ const Adoptions = () => {
     const [selectedAdoption, setSelectedAdoption] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
-    const navigate = useNavigate();
-
     useEffect(() => {
         const fetchPastAdoptions = async () => {
             try {
-                const response = await axios.get('http://52.64.196.154/api/adoption/past');
+                const response = await axios.get(`${config.address}/api/adoption/past`);
                 setAdoptions(response.data);
                 setLoading(false);
             } catch (error) {
@@ -159,6 +146,16 @@ const Adoptions = () => {
                         <p><strong>Age:</strong> {selectedAdoption.p_id?.p_age}</p>
                         <p><strong>Gender:</strong> {selectedAdoption.p_id?.p_gender}</p>
 
+                        {/* Display pet image as URL */}
+                        {selectedAdoption.p_id?.pet_img && (
+                            <Image
+                                src={`${config.address}${selectedAdoption.p_id.pet_img[0]}`} // URL for the image
+                                alt={selectedAdoption.p_id?.p_name}
+                                fluid
+                                className="adoption-pet-image"
+                            />
+                        )}
+
                         <h4>Adopter Information</h4>
                         <p><strong>Full Name:</strong> {selectedAdoption.v_id?.v_fname} {selectedAdoption.v_id?.v_mname} {selectedAdoption.v_id?.v_lname}</p>
                         <p><strong>Occupation:</strong> {selectedAdoption.occupation || 'N/A'}</p>
@@ -184,4 +181,4 @@ const Adoptions = () => {
     );
 };
 
-export default Adoptions;
+export default PastAdoptions;

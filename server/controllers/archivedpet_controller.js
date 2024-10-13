@@ -4,6 +4,7 @@ const Pet = require('../models/pets_model');
 const deletePetByIdAndTransferData = (req, res) => {
     console.log('Received request to delete pet with ID:', req.params.id);
     const archiveReason = req.params.archiveReason;
+
     Pet.findByIdAndDelete(req.params.id)
         .then((deletedPet) => {
             if (!deletedPet) {
@@ -13,11 +14,11 @@ const deletePetByIdAndTransferData = (req, res) => {
 
             console.log('Deleted Pet:', deletedPet);
 
-            // Create a new document in the ArchivedPet collection
+            // Create a new ArchivedPet instance with the data from deletedPet
             const archivedPet = new ArchivedPet({
                 ap_id: deletedPet.p_id,
                 ap_name: deletedPet.p_name,
-                ap_img: deletedPet.p_img,
+                ap_img: deletedPet.pet_img,
                 ap_type: deletedPet.p_type,
                 ap_gender: deletedPet.p_gender,
                 ap_age: deletedPet.p_age,
@@ -31,9 +32,9 @@ const deletePetByIdAndTransferData = (req, res) => {
             console.log('Creating ArchivedPet document:', archivedPet);
 
             archivedPet.save()
-                .then((archivedPet) => {
-                    console.log('Archived Pet saved successfully:', archivedPet);
-                    res.json({ message: 'Pet deleted and data transferred successfully', deletedPet, archivedPet });
+                .then((savedArchivedPet) => {
+                    console.log('Archived Pet saved successfully:', savedArchivedPet);
+                    res.json({ message: 'Pet deleted and data transferred successfully', deletedPet, savedArchivedPet });
                 })
                 .catch((err) => {
                     console.error('Error saving ArchivedPet:', err);
@@ -45,6 +46,7 @@ const deletePetByIdAndTransferData = (req, res) => {
             res.status(500).json({ message: 'Error deleting pet', error: err });
         });
 };
+
 
 
 const findAllArchived = (req, res) => {

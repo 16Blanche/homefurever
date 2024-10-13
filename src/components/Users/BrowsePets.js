@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 import PinkNavigationBar from "./PinkNavigationBar";
 import "./Users.css";
 import imgpholder from "./assets/vaccination.png";
+import config from '../config'
 
 const convertToBase64 = (buffer) => {
     return btoa(
@@ -41,7 +42,7 @@ const BrowsePets = () => {
     const [randomServices, setRandomServices] = useState([]);
 
     useEffect(() => {
-        axios.get("http://52.64.196.154/api/pet/all")
+        axios.get(`${config.address}/api/pet/all`)
             .then((response) => {
                 const allPets = response.data.thePet.filter(pet => pet.p_status === 'For Adoption');
                 setPets(allPets);
@@ -57,7 +58,7 @@ const BrowsePets = () => {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const response = await axios.get('http://52.64.196.154/api/service/all');
+                const response = await axios.get(`${config.address}/api/service/all`);
                 
                 console.log('Fetched services:', response.data); // Check if data is being fetched correctly
 
@@ -120,11 +121,11 @@ const BrowsePets = () => {
 
 
     useEffect(() => {
-        axios.get('http://52.64.196.154/api/events/all')
+        axios.get(`${config.address}/api/events/all`)
             .then((response) => {
                 const upcomingEvents = response.data.theEvent.filter(event => new Date(event.e_date) >= new Date());
                 const shuffledEvents = getRandomEvents(upcomingEvents);
-                setEvents(shuffledEvents.slice(0, 2)); // Display 2 random events
+                setEvents(shuffledEvents.slice(0, 2)); 
             })
             .catch((err) => {
                 console.error('Error fetching events:', err);
@@ -194,11 +195,11 @@ const BrowsePets = () => {
                                         <div className="mpimage-container">
                                         {pet.pet_img && pet.pet_img.length > 0 && (
                                                 <Image 
-                                                    src={`data:image/jpeg;base64,${convertToBase64(pet.pet_img[0].data)}`} // Display only the first image in pet_img array
-                                                    rounded 
-                                                    className="clickable-image" 
-                                                    loading="lazy"
-                                                />
+                                                src={`${config.address}${pet.pet_img[0]}`} 
+                                                rounded 
+                                                className="clickable-image" 
+                                                loading="lazy"
+                                            />
                                             )}
                                         </div>
                                         <p className="mpname">{pet.p_name}</p>
@@ -246,11 +247,11 @@ const BrowsePets = () => {
                                 <>
                                     {selectedPet.pet_img && (
                                         <Image
-                                            src={`data:image/jpeg;base64,${convertToBase64(selectedPet.pet_img.data)}`}
-                                            alt="Pet Image"
-                                            rounded
-                                            className="ulimg-preview"
-                                        />
+                                        src={`${config.address}${selectedPet.pet_img[0]}`}
+                                        alt="Pet Image"
+                                        rounded
+                                        className="ulimg-preview"
+                                    />
                                     )}
                                     <p><strong>Name:</strong> {selectedPet.p_name}</p>
                                     <p><strong>Species:</strong> {selectedPet.p_type}</p>
@@ -273,10 +274,10 @@ const BrowsePets = () => {
                                             <div className="bpeventsline" />
                                             <div className="bpeventsimgbox">
                                             <Image 
-                                                src={event.e_image && event.e_image.data 
-                                                    ? `data:image/jpeg;base64,${convertToBase64(event.e_image.data)}` 
-                                                    : imgpholder 
-                                                } 
+                                            src={event.e_image && event.e_image.length > 0 
+                                                    ? `${config.address}${event.e_image}` 
+                                                    : imgpholder
+                                                }
                                                 className="bpeventsimg" 
                                                 alt={event.e_title} 
                                             />
@@ -303,8 +304,8 @@ const BrowsePets = () => {
                                         <div className='bpclinicBox' key={index} onClick={handleServiceClick}>
                                             <div className="bpeventsline" />
                                             <Image 
-                                                src={service.ns_image && service.ns_image.data 
-                                                    ? `data:image/jpeg;base64,${convertToBase64(service.ns_image.data)}` 
+                                                src={service.ns_image && service.ns_image.length > 0
+                                                    ? `${config.address}${service.ns_image}` 
                                                     : imgpholder
                                                 } 
                                                 alt={service.ns_name} 

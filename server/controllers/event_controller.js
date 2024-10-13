@@ -2,9 +2,9 @@ const Event = require('../models/events_model');
 
 const newEvent = async (req, res) => {
     const { e_title, e_description, e_date, e_location } = req.body;
-    
-    // Get the image as a buffer
-    const e_image = req.file ? req.file.buffer : null;
+
+    // Get the image path
+    const e_image = req.file ? `/uploads/images/${req.file.filename}` : null; // Save the image path
 
     try {
         if (!e_image) {
@@ -17,7 +17,7 @@ const newEvent = async (req, res) => {
             e_location,
             e_description,
             e_date,
-            e_image // Save the image as a buffer
+            e_image // Save the image path
         });
 
         // Save the event to the database
@@ -28,6 +28,7 @@ const newEvent = async (req, res) => {
         res.status(500).json({ message: 'Something went wrong', error: err });
     }
 };
+
 
 const findAllEvents = (req, res) => {
     Event.find()

@@ -7,7 +7,8 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import "./NavBar.css";
- 
+import config from '../config';
+
 const NewUser =()=>{
     const navigate = useNavigate();
     const [pname,setPname] = useState("");
@@ -28,7 +29,7 @@ const NewUser =()=>{
             p_emailadd:pemailadd,
             p_password:ppassword
         }
-        axios.post("http://52.64.196.15454/api/user/new",newUser)
+        axios.post(`${config.address}/api/user/new`,newUser)
         .then((response)=>{
             console.log(response.data);
             navigate("/option");

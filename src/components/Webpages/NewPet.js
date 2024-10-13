@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import TaskBar from "./TaskBar";
 import NavigationBar from "./NavigationBar";
+import config from '../config';
 
 const NewPet = () => {
     const navigate = useNavigate();
@@ -30,7 +31,7 @@ const NewPet = () => {
         if (!pweight) newErrors.pweight = "Please specify weight.";
         if (!pmedicalhistory) newErrors.pmedicalhistory = "Please specify medical history.";
         if (!pvaccines) newErrors.pvaccines = "Please specify vaccines.";
-        if (!pimg) newErrors.pimg = "Please upload an image.";
+        if (pimg.length === 0) newErrors.pimg = "Please upload at least one image."; // Change to check for array length
         return newErrors;
     };
 
@@ -55,14 +56,14 @@ const NewPet = () => {
     
         // Append each image file to the formData
         pimg.forEach((img) => {
-            formData.append("pet_img", img);
+            formData.append("pet_img", img); // No change needed here; keeps it the same
         });
     
         // Step 3: Retrieve the JWT token from local storage (or another storage mechanism)
         const token = localStorage.getItem('token'); // Make sure to set the JWT token during login
     
         // Step 4: Make the Axios request with the Authorization header
-        axios.post("http://52.64.196.154/api/pet/new", formData, {
+        axios.post(`${config.address}/api/pet/new`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
                 Authorization: `Bearer ${token}`, // Add the JWT token here
@@ -78,14 +79,11 @@ const NewPet = () => {
         });
     };
     
-    
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
         setPimg(files);
     };
     
-    
-
     return (
         <>
             <div className="box">
@@ -183,8 +181,6 @@ const NewPet = () => {
                             <br />
                             <div className="detailstwo">
                                 <Form >
-
-
                                     <Form.Group className="npinptitle">Medical History</Form.Group>
                                     <Form.Group className="mb-3">
                                         <Form.Control
@@ -243,8 +239,6 @@ const NewPet = () => {
                                         </Form.Group>
                                     </Form.Group>
 
-
-
                                     {/* File Input for Image Upload */}
                                     <Form.Group className="npinptitle">Images</Form.Group>
                                     <Form.Group className="mb-3">
@@ -259,7 +253,6 @@ const NewPet = () => {
                                             <Form.Label>{errors.pimg}</Form.Label>
                                         </Form.Group>
                                     </Form.Group>
-
                                 </Form>
                             </div>
                         </div>
@@ -276,4 +269,3 @@ const NewPet = () => {
 }
 
 export default NewPet;
-

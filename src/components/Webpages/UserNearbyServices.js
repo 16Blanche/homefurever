@@ -5,7 +5,7 @@ import axios from 'axios';
 import Image from 'react-bootstrap/Image';
 import { PencilSquare, Trash } from 'react-bootstrap-icons';
 import './Homepage.css';
-
+import config from '../config';
 
 const convertToBase64 = (buffer) => {
     try {
@@ -74,29 +74,22 @@ const NearbyServices = () => {
             setErrors(newErrors);
             return;
         }
-    
+
         const formData = new FormData();
-        formData.append('ns_name', name); 
-        formData.append('ns_address', address); 
-        formData.append('ns_image', image); 
+        formData.append('ns_name', name);
+        formData.append('ns_address', address);
+        formData.append('ns_image', image); // Assuming image will be in file format
         formData.append('ns_type', type);
         formData.append('ns_pin', pin);
-    
-        console.log('FormData:', formData);
-    
+
         try {
-            const response = await axios.post('http://52.64.196.154/api/service/new', formData, {
+            const response = await axios.post(`${config.address}/api/service/new`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            console.log('Service added:', response.data);
-            setService([...service, response.data.savedService]);
-            setName('');
-            setAddress('');
-            setPin('');
-            setImage('');
-            setType('');
+            setServices([...services, response.data.savedService]);
+            resetForm();
             setShowModal(false);
             window.location.reload();
         } catch (error) {
@@ -107,7 +100,7 @@ const NearbyServices = () => {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const response = await axios.get('http://52.64.196.154/api/service/all');
+                const response = await axios.get(`${config.address}/api/service/all`);
                 setServices(response.data);
 
                 const veterinaryClinics = response.data.filter(service => service.ns_type === 'veterinary');
@@ -139,7 +132,7 @@ const NearbyServices = () => {
         }
     
         try {
-            const response = await axios.put(`http://52.64.196.154/api/service/update/${currentService._id}`, formData, {
+            const response = await axios.put(`${config.address}/api/service/update/${currentService._id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -159,7 +152,7 @@ const NearbyServices = () => {
     
     const handleConfirmDelete = async (serviceId) => {
         try {
-            await axios.delete(`http://52.64.196.154/api/service/delete/${serviceId}`);
+            await axios.delete(`${config.address}/api/service/delete/${serviceId}`);
             const updatedServices = services.filter(service => service._id !== serviceId);
             setServices(updatedServices);
             setShowDeleteModal(false);
@@ -246,9 +239,7 @@ const NearbyServices = () => {
                                     {filteredClinics.map((clinic, index) => (
                                         <div className='nearclinicBox' key={index} onClick={() => handleBoxClick(clinic.ns_pin)}>
                                             <Image
-                                                src={clinic.ns_image && clinic.ns_image.data
-                                                    ? `data:image/jpeg;base64,${convertToBase64(clinic.ns_image.data)}`
-                                                    : 'fallback-image-url'}
+                                                src={`${config.address}${clinic.ns_image}`} // Display the image from the URL
                                                 alt={clinic.ns_name}
                                             />
                                             <div className='nearclinicInfo'>
@@ -379,11 +370,11 @@ const NearbyServices = () => {
                                 <div>
                                     <label>Current Image:</label>
                                     <Image 
-                                        src={`data:image/jpeg;base64,${convertToBase64(currentService.ns_image.data)}`} 
-                                        alt={currentService.ns_name} 
-                                        rounded 
-                                        style={{ width: '100%', height: 'auto', marginBottom: '10px' }} 
-                                    />
+                                            src={`${config.address}${currentService.ns_image}`} // Display the image from the URL
+                                            alt={currentService.ns_name} 
+                                            rounded 
+                                            style={{ width: '100%', height: 'auto', marginBottom: '10px' }} 
+                                        />
                                 </div>
                             )}
                                 <label>Service Name:</label>

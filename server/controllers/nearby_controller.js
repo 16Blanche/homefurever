@@ -1,12 +1,11 @@
 const Nearby = require('../models/service_model');
 
 const createNearbyService = async (req, res) => {
-
     console.log('Request body:', req.body);
     console.log('Uploaded file:', req.file);
 
     const { ns_name, ns_address, ns_type, ns_pin } = req.body;
-    const ns_image = req.file ? req.file.buffer : null;
+    const ns_image = req.file ? `/uploads/images/${req.file.filename}` : null; 
 
     try {
         if (!ns_name || !ns_address || !ns_type || !ns_image) {
@@ -16,18 +15,24 @@ const createNearbyService = async (req, res) => {
         const service = new Nearby({
             ns_name,
             ns_address,
-            ns_image,
+            ns_image, 
             ns_type,
             ns_pin
         });
 
         const savedService = await service.save();
+
+        console.log('Service saved successfully:', savedService);
+
         res.status(201).json({ savedService, status: "Service successfully inserted" });
     } catch (err) {
         console.error("Error creating nearby service:", err);
-        res.status(500).json({ message: 'Something went wrong', error: err });
+        res.status(500).json({ message: 'Something went wrong', error: err.message });
     }
 };
+
+
+
 
 const getAllNearbyServices = async (req, res) => {
     try {
@@ -56,7 +61,7 @@ const getNearbyServiceById = async (req, res) => {
 const editNearbyService = async (req, res) => {
     const { id } = req.params;
     const { ns_name, ns_address, ns_type, ns_pin } = req.body;
-    const ns_image = req.file ? req.file.buffer : null;
+    const ns_image = req.file ? `${config.address}/uploads/images/${req.file.filename}` : null; // Update to store URL
 
     try {
         const service = await Nearby.findById(id);

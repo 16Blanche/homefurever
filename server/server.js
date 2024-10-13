@@ -1,18 +1,31 @@
-require('dotenv').config({ path: "../.env" })
+require('dotenv').config({ path: "../.env" });
 console.log('JWT_SECRET:', process.env.JWT_SECRET);
 console.log('Environment Variables:', process.env);
 
 const express = require("express");
 const app = express();
-const port=8000;  
+const port = 8000;  
 const nodemailer = require('nodemailer');
 require("./config/mongo_config");
 const cors = require("cors");
+const multer = require('multer');
+const path = require('path');
 
-app.use(express.json(), express.urlencoded({ extended: true }),cors());
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/images/'); 
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname)); 
+    }
+});
+
+const upload = multer({ storage: storage });
+
+app.use(express.json(), express.urlencoded({ extended: true }), cors());
 
 app.use(cors({
-    origin: 'http://localhost:3000', // Adjust based on your frontend origin
+    origin: 'http://localhost:3000', 
     credentials: true
 }));
 
@@ -21,11 +34,9 @@ app.use((req, res, next) => {
     next();
 });
 
-const multer = require('multer');
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); 
 
 const UserRoutes = require("./routes/data_routes");
 UserRoutes(app, upload);
-   
+
 app.listen(port, () => console.log("The server is all fired up on port 8000."));

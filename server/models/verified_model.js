@@ -11,7 +11,7 @@ v_id: {
 },
 
 v_img:{
-    type: Buffer
+    type: String
 },
 
 v_username: {
@@ -59,7 +59,7 @@ v_birthdate: {
 },
 
 v_validID:{
-    type: Buffer
+    type: String
 },
 
 v_role:{

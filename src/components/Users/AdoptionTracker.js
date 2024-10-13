@@ -12,17 +12,7 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import { Check, Close } from '@mui/icons-material';
-
-const convertToBase64 = (buffer) => {
-    try {
-        return btoa(
-            new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-        );
-    } catch (error) {
-        console.error('Error converting to Base64:', error);
-        return '';
-    }
-};
+import config from '../config';
 
 const AdoptionTracker = () => {
     const [adoptions, setAdoptions] = useState([]);
@@ -51,7 +41,7 @@ const AdoptionTracker = () => {
             }
         
             try {
-                const response = await axios.get('http://52.64.196.154/api/user/profile', {
+                const response = await axios.get(`${config.address}/api/user/profile`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -59,10 +49,7 @@ const AdoptionTracker = () => {
                 });
         
                 setUserProfile(response.data.user);
-                if (response.data.user.profileImage && response.data.user.profileImage.data) {
-                    const userImageBase64 = convertToBase64(response.data.user.profileImage.data);
-                    setUserProfileImage(`data:image/jpeg;base64,${userImageBase64}`);
-                }
+                setUserProfileImage(response.data.user.profileImage ? `${config.address}${response.data.user.profileImage}` : null);
             } catch (error) {
                 if (error.response) {
                     console.error('Failed to fetch profile:', error.response.data.message || error.response.statusText);
@@ -93,7 +80,7 @@ const AdoptionTracker = () => {
             }
 
             try {
-                const response = await axios.get('http://52.64.196.154/api/my/adoptions', {
+                const response = await axios.get(`${config.address}/api/my/adoptions`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -102,13 +89,6 @@ const AdoptionTracker = () => {
 
                 // Sort adoptions by submitted date (assuming 'submittedDate' exists) in descending order
                 const sortedAdoptions = response.data.sort((a, b) => new Date(b.a_submitted_at) - new Date(a.a_submitted_at));
-
-                if (sortedAdoptions.length > 0 && sortedAdoptions[0].user && sortedAdoptions[0].user.profileImage.data) {
-                    const userImageBase64 = convertToBase64(sortedAdoptions[0].user.profileImage.data);
-                    setUserProfileImage(`data:image/jpeg;base64,${userImageBase64}`);
-                } else {
-                    setUserProfileImage(null);
-                }
 
                 setAdoptions(sortedAdoptions);
                 setLoading(false);
@@ -132,11 +112,10 @@ const AdoptionTracker = () => {
 
         fetchAdoptions();
     }, []);
-    
 
     const fetchPetById = async (petId) => {
         try {
-            const response = await axios.get(`http://52.64.196.154/api/pet/${petId}`);
+            const response = await axios.get(`${config.address}/api/pet/${petId}`);
             setSelectedPet(response.data.thePet);
         } catch (error) {
             console.error('Error fetching pet:', error);
@@ -183,11 +162,10 @@ const AdoptionTracker = () => {
                 return 'Status unknown. Please contact support for more information.';
         }
     };
-    
 
     const handleSubmitFeedback = async () => {
         try {
-            const response = await axios.patch('http://52.64.196.154/api/submit/feedback', {
+            const response = await axios.patch(`${config.address}/api/submit/feedback`, {
                 adoptionId: selectedAdoption._id,
                 petId: selectedAdoption.p_id._id,
                 userId: user._id,
@@ -201,7 +179,7 @@ const AdoptionTracker = () => {
 
             setFeedbackExists(true);
 
-            const updatedAdoptions = await axios.get('http://52.64.196.154/api/my/adoptions', {
+            const updatedAdoptions = await axios.get(`${config.address}/api/my/adoptions`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json'
@@ -215,14 +193,11 @@ const AdoptionTracker = () => {
         }
     };
     
-    
-    
     const checkFeedbackExists = async (adoptionId) => {
         try {
-            const response = await axios.get(`http://52.64.196.154/api/feedback/check/${adoptionId}`, {
+            const response = await axios.get(`${config.address}/api/feedback/check/${adoptionId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
-            console.log('Feedback check response:', response.data);
             setFeedbackExists(response.data.exists); 
         } catch (error) {
             console.error('Error checking feedback:', error);
@@ -277,22 +252,22 @@ const AdoptionTracker = () => {
         ? adoptions.filter(adoption => adoption.status === statusFilter)
         : adoptions;
     
-        const getStatusStyles = (status) => {
-            switch (status) {
-                case 'pending':
-                    return { color: 'orange' }; 
-                case 'accepted':
-                    return { color: '#5cb85c' }; 
-                case 'complete':
-                    return { color: '#0275d8' };
-                case 'rejected': 
-                case 'failed':
-                    return { color: '#d9534f' }; 
-                default:
-                    return { color: '#f8f9fa' };
-            }
-        };
-    
+    const getStatusStyles = (status) => {
+        switch (status) {
+            case 'pending':
+                return { color: 'orange' }; 
+            case 'accepted':
+                return { color: '#5cb85c' }; 
+            case 'complete':
+                return { color: '#0275d8' };
+            case 'rejected': 
+            case 'failed':
+                return { color: '#d9534f' }; 
+            default:
+                return { color: '#f8f9fa' };
+        }
+    };
+
     return (
         <div className="box">
             <div className="navbox">
@@ -350,7 +325,7 @@ const AdoptionTracker = () => {
                                         {adoption.p_id && adoption.p_id.pet_img && adoption.p_id.pet_img.length > 0 && (
                                             <div className="tracker-petimg-ph">
                                                 <Image
-                                                    src={`data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img[0].data)}`} // Use the first image in the pet_img array
+                                                    src={`${config.address}${adoption.p_id.pet_img[0]}`} // Use the first image in the pet_img array
                                                     className="tracker-petimg-preview"
                                                     alt={adoption.p_id.p_name}
                                                 />
@@ -373,7 +348,7 @@ const AdoptionTracker = () => {
                             <p>No adoptions found</p>
                         )}
                     </div>
-                    </div>
+                </div>
 
                 <div className="trackerbox3">
                     {selectedPet ? (
@@ -389,7 +364,7 @@ const AdoptionTracker = () => {
                             <div className="tracker-pet-details">
                             {selectedPet.pet_img && selectedPet.pet_img.length > 0 && (
                                 <Image
-                                    src={`data:image/jpeg;base64,${convertToBase64(selectedPet.pet_img[0].data)}`} // Use the first image in the pet_img array
+                                    src={`${config.address}${selectedPet.pet_img[0]}`} // Use the first image in the pet_img array
                                     className="tracker-pet-img"
                                     alt={selectedPet.p_name}
                                 />
@@ -426,7 +401,6 @@ const AdoptionTracker = () => {
                                     );
                                 })}
                             </Stepper>
-
 
                             <div className="tracker-progress-texts">
                                 <div className="tracker-progress-desc">
@@ -466,36 +440,35 @@ const AdoptionTracker = () => {
                         </div>
                     )}
 
-
-                        <Modal show={showFeedbackModal} onHide={() => setShowFeedbackModal(false)}>
-                            <Modal.Header closeButton>
-                                <Modal.Title>Submit Feedback</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <Form>
-                            <Form.Group controlId="feedbackRating">
-                                <Form.Label>Rating</Form.Label>
-                                <StarRating rating={rating} onRatingChange={setRating} />
-                            </Form.Group>
+                    <Modal show={showFeedbackModal} onHide={() => setShowFeedbackModal(false)}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Submit Feedback</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <Form>
+                                <Form.Group controlId="feedbackRating">
+                                    <Form.Label>Rating</Form.Label>
+                                    <StarRating rating={rating} onRatingChange={setRating} />
+                                </Form.Group>
                                 <Form.Group controlId="feedbackText">
                                     <Form.Label>Feedback</Form.Label>
                                     <Form.Control 
-                                    as="textarea" 
-                                    rows={3} 
-                                    value={feedbackText} 
-                                    onChange={(e) => setFeedbackText(e.target.value)} />
+                                        as="textarea" 
+                                        rows={3} 
+                                        value={feedbackText} 
+                                        onChange={(e) => setFeedbackText(e.target.value)} />
                                 </Form.Group>
-                                </Form>
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button variant="secondary" onClick={() => setShowFeedbackModal(false)}>
+                            </Form>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={() => setShowFeedbackModal(false)}>
                                 Close
-                                </Button>
-                                <Button variant="primary" onClick={handleSubmitFeedback}>
+                            </Button>
+                            <Button variant="primary" onClick={handleSubmitFeedback}>
                                 Submit Feedback
-                                </Button>
-                            </Modal.Footer>
-                            </Modal>
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
                 </div>
             </div>
         </div>

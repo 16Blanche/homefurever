@@ -7,6 +7,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import StartNavBar from './StartNavBar';
 import LogoImg from "./assets/logo.png";
+import config from '../config';
 
 const UpdateCredentials = () => {
     const navigate = useNavigate();
@@ -55,7 +56,7 @@ const UpdateCredentials = () => {
             const decodedToken = jwtDecode(token); // Decode the token to get the user ID
             const userId = decodedToken.id;
 
-            await axios.patch(`http://52.64.196.154/api/admin/update-credentials/${userId}`, {
+            await axios.patch(`${config.address}/api/admin/update-credentials/${userId}`, {
                 newUsername,
                 newPassword
             });

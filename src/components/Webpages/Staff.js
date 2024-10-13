@@ -8,6 +8,7 @@ import NavigationBar from "./NavigationBar";
 import Modal from 'react-bootstrap/Modal';
 import DataTable from 'react-data-table-component';
 import AuthContext from '../../context/AuthContext';
+import config from '../config';
 
 const convertToBase64 = (buffer) => {
     return btoa(
@@ -75,7 +76,7 @@ const Staff = () => {
     
     
     useEffect(() => {
-        axios.get("http://52.64.196.154/api/staff/all")
+        axios.get(`${config.address}/api/staff/all`)
             .then((response) => {
                 console.log('API Response:', response.data);
                 setAllStaff(response.data.theStaff || []); 
@@ -87,7 +88,7 @@ const Staff = () => {
     }, []);
     
     useEffect(() => {
-        axios.get("http://52.64.196.154/api/staff/id/" + id)
+        axios.get(`${config.address}/api/staff/id/` + id)
             .then((response) => {
                 console.log("Fetched User Data:", response.data.theStaff);
                 setSelectedStaffForView(response.data.theStaff); 
@@ -104,7 +105,7 @@ const Staff = () => {
 
     const handleDeleteConfirm = (staff) => {
         axios
-            .delete(`http://52.64.196.154/api/staff/delete/${staff._id}`, {
+            .delete(`${config.address}/api/staff/delete/${staff._id}`, {
                 data: { deleteReason }
             })
             .then((response) => {
@@ -204,7 +205,7 @@ const Staff = () => {
     const handleFormSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
-            axios.post("http://52.64.196.154/api/staff/new", formData)
+            axios.post(`${config.address}/api/staff/new`, formData)
                 .then((response) => {
                     console.log("Staff added:", response.data);
                     setAllStaff([...allStaff, response.data.savedStaff]);
@@ -220,7 +221,7 @@ const Staff = () => {
     const handleUpdateFormSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
-            axios.put(`http://52.64.196.154/api/staff/update/${selectedStaffForUpdate._id}`, formData)
+            axios.put(`${config.address}/api/staff/update/${selectedStaffForUpdate._id}`, formData)
                 .then((response) => {
                     console.log("Staff updated:", response.data);
                     const updatedStaffList = allStaff.map(staff =>

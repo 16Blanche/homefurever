@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
@@ -13,17 +12,7 @@ import TaskBar from './TaskBar';
 import './Homepage.css';
 import { PencilSquare, Trash } from 'react-bootstrap-icons';
 import { Image } from 'react-bootstrap';
-
-const convertToBase64 = (buffer) => {
-    try {
-        return btoa(
-            new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-        );
-    } catch (error) {
-        console.error('Error converting to Base64:', error);
-        return '';
-    }
-};
+import config from '../config';
 
 const Events = () => {
     const [events, setEvents] = useState([]);
@@ -31,7 +20,7 @@ const Events = () => {
     const [showDateModal, setShowDateModal] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
-    const [newEvent, setNewEvent] = useState({ title: '', description: '', date: '' });
+    const [newEvent, setNewEvent] = useState({ title: '', description: '', date: '', image: null });
     const [selectedDate, setSelectedDate] = useState('');
     const [dateEvents, setDateEvents] = useState([]);
     const [isViewOnly, setIsViewOnly] = useState(false);
@@ -39,31 +28,35 @@ const Events = () => {
     const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 }); 
     const [tooltipWidth, setTooltipWidth] = useState(0);
 
-
-
     useEffect(() => {
         fetchEvents();
     }, []);
 
     const fetchEvents = async () => {
         try {
-            const response = await fetch('http://52.64.196.154/api/events/all');
+            const response = await fetch(`${config.address}/api/events/all`);
             const data = await response.json();
+            console.log('Fetched events:', data); // Log the fetched events
             setEvents(data.theEvent.map(event => ({
                 title: event.e_title,
                 start: event.e_date,
                 location: event.e_location,
-                extendedProps: { description: event.e_description },
+                extendedProps: { 
+                    description: event.e_description, 
+                    image: event.e_image // Ensure this contains the correct image path
+                },
                 id: event._id
             })));
         } catch (error) {
             console.error('Error fetching events:', error);
         }
     };
+    
+    
 
     const fetchEventsByDate = async (date) => {
         try {
-            const response = await axios.get(`http://52.64.196.154/api/events/date/${date}`);
+            const response = await axios.get(`${config.address}/api/events/date/${date}`);
             setDateEvents(response.data.events.map(event => ({
                 ...event,
                 id: event._id
@@ -74,46 +67,42 @@ const Events = () => {
     };
 
     const handleDateClick = (info) => {
-        const today = new Date().setHours(0, 0, 0, 0); // Set time to midnight for comparison
-        const selectedDate = new Date(info.dateStr).setHours(0, 0, 0, 0); // Set selected date to midnight
+        const today = new Date().setHours(0, 0, 0, 0); 
+        const selectedDate = new Date(info.dateStr).setHours(0, 0, 0, 0);
     
         setSelectedDate(info.dateStr);
         fetchEventsByDate(info.dateStr);
     
-        const formattedDate = new Date(info.dateStr).toISOString().slice(0, 16); // Format date for input
+        const formattedDate = new Date(info.dateStr).toISOString().slice(0, 16);
     
         if (selectedDate < today) {
-            setIsViewOnly(true); // Set view-only mode
+            setIsViewOnly(true);
         } else {
-            setIsViewOnly(false); // Normal mode
+            setIsViewOnly(false);
             setNewEvent({
                 title: '',
                 description: '',
-                date: formattedDate // Set formatted date in proper format
+                date: formattedDate
             });
         }
     
-        setShowDateModal(true); // Show the modal
+        setShowDateModal(true);
     };
-    
 
     const validateEvent = () => {
-        if (!newEvent.title || !newEvent.description || !newEvent.date) {
-            return false; // At least one field is empty
-        }
-        return true; // All fields are filled
+        return newEvent.title && newEvent.description && newEvent.date; // Simplified validation
     };
 
     const handleSaveEvent = async () => { 
         if (!validateEvent()) {
-            alert("All fields must be filled out."); // Alert user if validation fails
-            return; // Exit function if validation fails
+            alert("All fields must be filled out.");
+            return;
         }
     
         const method = selectedEvent ? 'PUT' : 'POST';
         const url = selectedEvent
-            ? `http://52.64.196.154/api/events/update/${selectedEvent.id}`
-            : 'http://52.64.196.154/api/events/new';
+            ? `${config.address}/api/events/update/${selectedEvent.id}`
+            : `${config.address}/api/events/new`;
     
         const formData = new FormData();
         formData.append("e_title", newEvent.title);
@@ -125,21 +114,26 @@ const Events = () => {
         try {
             const response = await fetch(url, {
                 method,
-                body: formData // Use FormData instead of JSON
+                body: formData
             });
     
-            if (response.ok) {
-                setShowModal(false);
-                setNewEvent({ title: '', description: '', date: '', image: null }); // Reset form including the image
-                setSelectedEvent(null);
-                fetchEvents();
-                fetchEventsByDate(selectedDate);
-            } else {
-                const errorData = await response.json();
-                console.error('Error saving event:', errorData);
+            // Check if the response is OK
+            if (!response.ok) {
+                const errorText = await response.text(); // Get the error response text
+                console.error('Error saving event:', errorText);
+                alert('Failed to save event. Please try again.');
+                return;
             }
+    
+            const savedEvent = await response.json(); // Expect JSON response if successful
+            setShowModal(false);
+            setNewEvent({ title: '', description: '', date: '', image: null });
+            setSelectedEvent(null);
+            fetchEvents();
+            fetchEventsByDate(selectedDate);
         } catch (error) {
             console.error('Error saving event:', error);
+            alert('An unexpected error occurred. Please try again later.');
         }
     };
     
@@ -155,17 +149,17 @@ const Events = () => {
     };
 
     const handleDeleteEvent = (event) => {
-        setSelectedEvent(event); // Set the event to be deleted
-        setShowConfirmModal(true); // Open the confirmation modal
+        setSelectedEvent(event);
+        setShowConfirmModal(true);
     };
 
     const confirmDeleteEvent = async () => {
         if (!selectedEvent) return;
 
         try {
-            await axios.delete(`http://52.64.196.154/api/events/delete/${selectedEvent.id}`);
-            setShowConfirmModal(false); // Close the confirmation modal
-            setSelectedEvent(null); // Reset selectedEvent to null
+            await axios.delete(`${config.address}/api/events/delete/${selectedEvent.id}`);
+            setShowConfirmModal(false);
+            setSelectedEvent(null);
             fetchEvents();
             fetchEventsByDate(selectedDate);
         } catch (error) {
@@ -179,24 +173,18 @@ const Events = () => {
             top: eventRect.bottom + window.scrollY,
             left: eventRect.left + window.scrollX
         });
-        
         setTooltipWidth(eventRect.width);
-        
-        // Check what info.event contains
-        console.log('Hovered event:', info.event); // Debugging line
         setHoveredEvent({
             title: info.event.title,
             start: info.event.start,
-            location: info.event.extendedProps.location, // Ensure you're accessing it correctly
-            description: info.event.extendedProps.description, // If needed
+            location: info.event.extendedProps.location,
+            description: info.event.extendedProps.description,
         });
     };
-    
 
     const handleMouseLeave = () => {
-        setHoveredEvent(null); // Clears the tooltip when the mouse leaves the event
+        setHoveredEvent(null);
     };
-    
 
     return (
         <div className="eventsbox">
@@ -212,8 +200,8 @@ const Events = () => {
                         initialView="dayGridMonth"
                         events={events}
                         dateClick={handleDateClick}
-                        eventMouseEnter={handleMouseEnter} // Handles mouse hover over an event
-                        eventMouseLeave={handleMouseLeave} // Handles mouse leaving an event
+                        eventMouseEnter={handleMouseEnter}
+                        eventMouseLeave={handleMouseLeave}
                         height="90%"
                     />
                 </div>
@@ -234,50 +222,48 @@ const Events = () => {
                 </div>
             )}
 
-
-
             {/* Selected Date Modal */}
             <Modal show={showDateModal} onHide={() => setShowDateModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Events on {selectedDate}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className='evmodalbody'>
-                {dateEvents.length > 0 ? (
-                <ul>
-                    {dateEvents.map(event => (
-                        <li key={event.id}>
-                            <div className='evview'>
-                                <div className='evtitlebtn'>
-                                    <div className='evtitlegrp'>
-                                        <h2>{event.e_title} </h2>
+                    {dateEvents.length > 0 ? (
+                        <ul>
+                            {dateEvents.map(event => (
+                                <li key={event.id}>
+                                    <div className='evview'>
+                                        <div className='evtitlebtn'>
+                                            <div className='evtitlegrp'>
+                                                <h2>{event.e_title} </h2>
+                                            </div>
+                                            <div className="evbutton-group">
+                                                <Button variant="secondary" size="sm" onClick={() => handleEditEvent(event)}><PencilSquare/></Button>
+                                                <Button variant="danger" size="sm" onClick={() => handleDeleteEvent(event)}><Trash/></Button>
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Display the image */}
+                                        {event.e_image && (
+                                            <Image 
+                                                src={`${config.address}${event.e_image}`} // Construct the full image URL
+                                                alt={event.e_title} 
+                                                fluid 
+                                                className='evimg'
+                                            />
+                                        )}
+                                        <p><strong>Location: </strong>{event.e_location}</p>
+                                        <p><strong>Time: </strong>{new Date(event.e_date).toLocaleTimeString()}</p>
+                                        <p>{event.e_description}</p>
                                     </div>
-                                    <div className="evbutton-group">
-                                        <Button variant="secondary" size="sm" onClick={() => handleEditEvent(event)}><PencilSquare/></Button>
-                                        <Button variant="danger" size="sm" onClick={() => handleDeleteEvent(event)}><Trash/></Button>
-                                    </div>
-                                </div>
-                                
-                                {/* Display the image */}
-                                {event.e_image && (
-                                    <Image 
-                                        src={`data:image/jpeg;base64,${convertToBase64(event.e_image.data)}`} 
-                                        alt={event.e_title} 
-                                        fluid 
-                                        className='evimg'
-                                    />
-                                )}
-                                <p><strong>Location: </strong>{event.e_location}</p>
-                                <p><strong>Time: </strong>{new Date(event.e_date).toLocaleTimeString()}</p>
-                                <p>{event.e_description}</p>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p>No events scheduled for this date.</p>
-            )}
-
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>No events scheduled for this date.</p>
+                    )}
                 </Modal.Body>
+
                 <Modal.Footer className="evmodalfooter">
                     {!isViewOnly && (
                         <Button variant="secondary" onClick={() => setShowModal(true)}>
@@ -341,7 +327,6 @@ const Events = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-
 
             {/* Delete Confirmation Modal */}
             <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)}>

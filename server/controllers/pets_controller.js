@@ -17,15 +17,15 @@ const newPet = async (req, res) => {
     console.log("Admin ID extracted from req.user:", adminId);
 
     if (!adminId) {
-        // Log the failure to extract adminId and return an error response
         console.error('Unauthorized: Admin ID not found in req.user');
         return res.status(401).json({ message: 'Unauthorized: Admin ID not found' });
     }
 
     // Destructure pet details from the request body
     const { p_name, p_type, p_gender, p_age, p_breed, p_weight, p_medicalhistory, p_vaccines } = req.body;
-    const pet_img = req.files ? req.files.map(file => file.buffer) : [];
-    console.log("Extracted image buffers:", pet_img);
+    // Extract image paths instead of buffers
+    const pet_img = req.files ? req.files.map(file => `/uploads/images/${file.filename}`) : [];
+    console.log("Extracted image paths:", pet_img);
 
     try {
         // Validate that at least one image is uploaded
@@ -43,12 +43,11 @@ const newPet = async (req, res) => {
             p_weight,
             p_medicalhistory,
             p_vaccines,
-            pet_img
+            pet_img // Store the image paths
         });
 
         const savedPet = await pet.save();
 
-        // Log the successful pet creation
         console.log('Pet saved successfully:', savedPet);
 
         // Log activity using the extracted adminId
@@ -68,6 +67,7 @@ const newPet = async (req, res) => {
         res.status(500).json({ message: 'Something went wrong', error: err.message });
     }
 };
+
   
 
 

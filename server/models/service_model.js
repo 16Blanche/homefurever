@@ -18,10 +18,9 @@ const ServiceSchema = new mongoose.Schema({
         required: true,
     },
     ns_image: {
-        type: Buffer,
+        type: String, // Change from Buffer to String to store image URL
         required: true,
     },
-
 });
 
 module.exports = mongoose.model('Service', ServiceSchema);

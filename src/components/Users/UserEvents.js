@@ -7,17 +7,7 @@ import imgpholder from "./assets/vaccination.png";
 import Image from 'react-bootstrap/Image';
 import { Button } from "react-bootstrap";
 import Modal from 'react-bootstrap/Modal';
-
-const convertToBase64 = (buffer) => {
-    try {
-        return btoa(
-            new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-        );
-    } catch (error) {
-        console.error('Error converting to Base64:', error);
-        return '';
-    }
-};
+import config from '../config';
 
 const UserEvents = () => {
     const [events, setEvents] = useState([]);
@@ -28,7 +18,7 @@ const UserEvents = () => {
     const [selectedEvent, setSelectedEvent] = useState(null);
 
     useEffect(() => {
-        axios.get('http://52.64.196.154/api/events/all')
+        axios.get(`${config.address}/api/events/all`)
             .then((response) => {
                 setEvents(response.data.theEvent || []);
                 setLoading(false);
@@ -51,7 +41,6 @@ const UserEvents = () => {
         return { day, dayOfWeek, month, year, time };
     };
 
-    // Filter and sort upcoming events
     const upcomingEvents = events
         .filter(event => {
             const eventDate = new Date(event.e_date);
@@ -60,7 +49,7 @@ const UserEvents = () => {
             currentDate.setHours(0, 0, 0, 0);
             return eventDate >= currentDate;
         })
-        .sort((a, b) => new Date(a.e_date) - new Date(b.e_date)); // Sort by date in ascending order
+        .sort((a, b) => new Date(a.e_date) - new Date(b.e_date));
 
     const totalPages = Math.ceil(upcomingEvents.length / eventsPerPage) || 1;
 
@@ -116,11 +105,11 @@ const UserEvents = () => {
                                         <Image
                                             className="ueventsimg"
                                             src={
-                                                event.e_image && event.e_image.data
-                                                ? `data:image/jpeg;base64,${convertToBase64(event.e_image.data)}`
-                                                : imgpholder
+                                                event.e_image && event.e_image.length > 0 
+                                                    ? `${config.address}${event.e_image}` 
+                                                    : imgpholder
                                             }
-                                            alt={imgpholder}
+                                            alt={event.e_title}
                                         />
                                         <p className="ueventsday">{day}</p>
                                         <div className="ueventsbox4">
@@ -146,8 +135,8 @@ const UserEvents = () => {
                                         <div>
                                             <div className="uevents-imagecontainer">
                                                 <Image 
-                                                    src={selectedEvent.e_image && selectedEvent.e_image.data
-                                                        ? `data:image/jpeg;base64,${convertToBase64(selectedEvent.e_image.data)}`
+                                                    src={selectedEvent.e_image && selectedEvent.e_image.length > 0 // Ensure e_image is not empty
+                                                        ? `${config.address}${selectedEvent.e_image}`
                                                         : imgpholder}
                                                     alt="Event Image"
                                                     className="uevents-image" 

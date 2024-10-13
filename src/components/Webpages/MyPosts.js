@@ -9,6 +9,7 @@ import Image from 'react-bootstrap/Image';
 import NavigationBar from "./NavigationBar";
 import TaskBar from "./TaskBar";
 import './Homepage.css';
+import config from '../config';
 
 const convertToBase64 = (buffer) => {
     return btoa(
@@ -31,7 +32,7 @@ const MyPosts = () => {
     const [filteredPets, setFilteredPets] = useState([]);
 
     useEffect(() => {
-        axios.get("http://52.64.196.154/api/pet/all")
+        axios.get(`${config.address}/api/pet/all`)
             .then((response) => {
                 console.log(response.data.thePet);
                 setAllPets(response.data.thePet);
@@ -71,7 +72,7 @@ const MyPosts = () => {
 
     const handleConfirmPost = async () => {
         try {
-            await axios.put(`http://52.64.196.154/api/pet/update-status/${selectedPet._id}`, {
+            await axios.put(`${config.address}/api/pet/update-status/${selectedPet._id}`, {
                 p_status: 'For Adoption',
                 p_description: description, 
             });
@@ -98,7 +99,7 @@ const MyPosts = () => {
 
     const confirmRemove = async () => {
         try {
-            await axios.put(`http://52.64.196.154/api/pet/update-status/${selectedPet._id}`, { p_status: 'None' });
+            await axios.put(`${config.address}/api/pet/update-status/${selectedPet._id}`, { p_status: 'None' });
             const updatedPets = allPets.map(pet =>
                 pet._id === selectedPet._id ? { ...pet, p_status: 'None' } : pet
             );
@@ -157,7 +158,7 @@ const MyPosts = () => {
                                         <div className="mpimage-container">
                                             {pet.pet_img && pet.pet_img.length > 0 && (
                                                 <Image
-                                                    src={`data:image/jpeg;base64,${convertToBase64(pet.pet_img[0].data)}`} 
+                                                    src={`${config.address}${pet.pet_img[0]}`}
                                                     rounded
                                                     className="mpimage"
                                                 />
@@ -209,7 +210,7 @@ const MyPosts = () => {
                                     <>
                                         {selectedPet.pet_img && selectedPet.pet_img.length > 0 && (
                                             <Image
-                                                src={`data:image/jpeg;base64,${convertToBase64(selectedPet.pet_img[0].data)}`} 
+                                                src={`${config.address}${selectedPet.pet_img[0]}`}
                                                 alt="Pet Image"
                                                 rounded
                                                 className="ulimg-preview"
@@ -261,7 +262,7 @@ const MyPosts = () => {
                                     <>
                                         {selectedPet.pet_img && selectedPet.pet_img.length > 0 && (
                                             <Image
-                                                src={`data:image/jpeg;base64,${convertToBase64(selectedPet.pet_img[0].data)}`} 
+                                            src={`${config.address}${selectedPet.pet_img[0]}`}
                                                 alt="Pet Image"
                                                 rounded
                                                 className="ulimg-preview"

@@ -5,18 +5,7 @@ import PinkNavigationBar from './PinkNavigationBar';
 import './Users.css';
 import Image from 'react-bootstrap/Image';
 import axios from 'axios';
-import { PencilSquare, Trash } from 'react-bootstrap-icons';
-
-const convertToBase64 = (buffer) => {
-  try {
-    return btoa(
-      new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), ''
-    ));
-  } catch (error) {
-    console.error('Error converting to Base64:', error);
-    return '';
-  }
-};
+import config from '../config';
 
 const NearbyServices = () => {
   const navigate = useNavigate();
@@ -31,7 +20,7 @@ const NearbyServices = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get('http://52.64.196.154/api/service/all');
+        const response = await axios.get(`${config.address}/api/service/all`);
         const fetchedServices = response.data;
         setServices(fetchedServices);
 
@@ -129,9 +118,7 @@ const NearbyServices = () => {
                   {filteredClinics.map((clinic, index) => (
                     <div className='clinicBox' key={index} onClick={() => handleBoxClick(clinic.ns_pin)}>
                       <Image
-                        src={clinic.ns_image && clinic.ns_image.data
-                          ? `data:image/jpeg;base64,${convertToBase64(clinic.ns_image.data)}`
-                          : 'fallback-image-url'}
+                        src={clinic.ns_image ? `${config.address}${clinic.ns_image}` : 'fallback-image-url'}
                         alt={clinic.ns_name}
                       />
                       <div className='clinicInfo'>

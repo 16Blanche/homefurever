@@ -8,6 +8,7 @@ import TaskBar from './TaskBar';
 import NavigationBar from './NavigationBar';
 import DatePicker from 'react-datepicker'; // Import DatePicker
 import 'react-datepicker/dist/react-datepicker.css'; // Import DatePicker styles
+import config from '../config';
 
 const StaffHistory = () => {
   const [activityLogs, setActivityLogs] = useState([]);
@@ -21,7 +22,7 @@ const StaffHistory = () => {
   useEffect(() => {
     const fetchActivityLogs = async () => {
       try {
-        const response = await axios.get('http://52.64.196.154/api/logs/all');
+        const response = await axios.get(`${config.address}/api/logs/all`);
         if (response.data && Array.isArray(response.data)) {
           setActivityLogs(response.data);
           setFilteredLogs(response.data); // Set both the main and filtered logs initially

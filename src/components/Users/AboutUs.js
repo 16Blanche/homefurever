@@ -1,15 +1,8 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
 import React from "react";
-import Button from 'react-bootstrap/Button';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image';
-import TaskBar from "../Webpages/TaskBar";
 import PinkNavigationBar from "./PinkNavigationBar";
 import "./Users.css";
 import Phone from "./assets/Phone.png";
-import Fbb from "./assets/Fbb.png";
 import Catdog from "./assets/Catdog.png";
 import Telephone from "./assets/Telephone.png";
 

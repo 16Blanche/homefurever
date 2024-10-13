@@ -9,6 +9,7 @@ import NavigationBar from "./NavigationBar";
 import Modal from 'react-bootstrap/Modal';
 import AuthContext from '../../context/AuthContext';
 import DataTable from 'react-data-table-component';
+import config from '../config';
 
 const convertToBase64 = (buffer) => {
     return btoa(
@@ -49,7 +50,7 @@ const UserList=()=>{
     const handleRoleChange = async () => {
         const { user, newRole } = roleChangeRequest;
         try {
-            await axios.put(`http://52.64.196.154/api/user/${user._id}/role`, { v_role: newRole });
+            await axios.put(`${config.address}/api/user/${user._id}/role`, { v_role: newRole });
 
             setAllUsers(allUsers.map(u => u._id === user._id ? { ...u, v_role: newRole } : u));
             setShowConfirmModal(false); 
@@ -59,7 +60,7 @@ const UserList=()=>{
     };
 
     useEffect(() => {
-        axios.get("http://52.64.196.154/api/verified/all")
+        axios.get(`${config.address}/api/verified/all`)
             .then((response) => {
                 console.log(response.data.users);
                 setAllUsers(response.data.users);
@@ -71,7 +72,7 @@ const UserList=()=>{
 
     useEffect(() => {
         if (vusername) {
-            axios.get("http://52.64.196.154/api/verified/" + vusername)
+            axios.get(`${config.address}/api/verified/` + vusername)
                 .then((response) => {
                     console.log("Fetched Pet Data:", response.data.theUser);
                     setSelectedUserForView(response.data.theUser); 
@@ -188,7 +189,7 @@ const UserList=()=>{
                                         <div className="ulleft-column">
                                             {selectedUserForView.v_img && (
                                                 <img
-                                                    src={`data:image/jpeg;base64,${convertToBase64(selectedUserForView.v_img.data)}`}
+                                                    src={`${config.address}${selectedUserForView.v_img}`} // Use path for image display
                                                     alt="User Image"
                                                     className="ulimg-preview"
                                                 />
@@ -208,7 +209,7 @@ const UserList=()=>{
                                             <p>Valid ID:</p>
                                             {selectedUserForView.v_validID && (
                                                 <img
-                                                    src={`data:image/jpeg;base64,${convertToBase64(selectedUserForView.v_validID.data)}`}
+                                                    src={`${config.address}${selectedUserForView.v_validID}`} // Use path for valid ID display
                                                     alt="Valid ID"
                                                     className="ulidimg-preview"
                                                     onClick={handleValidIDClick}
@@ -228,7 +229,7 @@ const UserList=()=>{
                             <Modal.Body>
                                 {selectedUserForView && selectedUserForView.v_validID && (
                                     <img
-                                        src={`data:image/jpeg;base64,${convertToBase64(selectedUserForView.v_validID.data)}`}
+                                        src={`${config.address}${selectedUserForView.v_validID}`} // Use path for large valid ID display
                                         alt="Valid ID"
                                         className="ulmodal-image"
                                     />

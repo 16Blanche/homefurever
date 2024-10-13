@@ -19,7 +19,7 @@ import NavigationBar from "./NavigationBar";
 import AnimalGraph from "./assets/animalgraph.png";
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
-
+import config from '../config';
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const Homepage = () => {
@@ -47,12 +47,12 @@ const Homepage = () => {
           barangayResponse, 
           eventsResponse 
         ] = await Promise.all([
-          axios.get('http://52.64.196.154/api/dashboard/adopted'),
-          axios.get('http://52.64.196.154/api/dashboard/pets'),
-          axios.get('http://52.64.196.154/api/dashboard/pending'),
-          axios.get('http://52.64.196.154/api/dashboard/verified'),
-          axios.get('http://52.64.196.154/api/barangay/all'), 
-          axios.get('http://52.64.196.154/api/events/all') 
+          axios.get(`${config.address}/api/dashboard/adopted`),
+          axios.get(`${config.address}/api/dashboard/pets`),
+          axios.get(`${config.address}/api/dashboard/pending`),
+          axios.get(`${config.address}/api/dashboard/verified`),
+          axios.get(`${config.address}/api/barangay/all`), 
+          axios.get(`${config.address}/api/events/all`) 
         ]);
 
         const barangayCounts = {};

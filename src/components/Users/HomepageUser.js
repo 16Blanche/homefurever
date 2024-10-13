@@ -5,7 +5,6 @@ import Heartlogo from './assets/heartlogo.png';
 import Welcomehp from './assets/mainbg.png';
 import Dog from './assets/dog.png';
 import "./Users.css";
-// import HeaderImage from './assets/headerimage.png';
 import PinkNavigationBar from './PinkNavigationBar';
 
 const HomePageUser = () => {

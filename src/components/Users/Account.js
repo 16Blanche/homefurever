@@ -1,22 +1,11 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Container, Row, Col, Button, Image } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom'; // To navigate after sign out
+import { useNavigate } from 'react-router-dom'; 
 import PinkNavigationBar from "./PinkNavigationBar";
 import axios from 'axios';
-import AuthContext from '../../context/AuthContext'; // Import AuthContext
+import AuthContext from '../../context/AuthContext'; 
 import "./Users.css";
-
-const convertToBase64 = (buffer) => {
-    try {
-        return btoa(
-            new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-        );
-    } catch (error) {
-        console.error('Error converting to Base64:', error);
-        return '';
-    }
-};
-
+import config from '../config';
 
 const Account = () => {
     const [profileData, setProfileData] = useState(null);
@@ -35,7 +24,7 @@ const Account = () => {
             }
         
             try {
-                const response = await axios.get('http://52.64.196.154/api/user/profile', {
+                const response = await axios.get(`${config.address}/api/user/profile`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,  
                         'Content-Type': 'application/json'
@@ -69,14 +58,10 @@ const Account = () => {
         navigate('/login');
     };
     
-    
-    
-
     const handleTracker = async () => {
         navigate('/adoption/tracker');
     };
     
-
     if (loading) return <p>Loading...</p>;
     if (error) return <p>{error}</p>;
     if (!profileData) return <p>No profile data available</p>;
@@ -84,20 +69,17 @@ const Account = () => {
     return (
         <div className="box">
             <div className="navbox">
-            <PinkNavigationBar />
+                <PinkNavigationBar />
             </div>
             <div className="accbox">
                 <div className="accbox1">
                     <h1>Profile</h1>
                     <div className="profile-header">
                         <Image 
-                            src={profileData.profileImage && profileData.profileImage.data 
-                                ? `data:image/jpeg;base64,${convertToBase64(profileData.profileImage.data)}` 
-                                : 'fallback-image-url'} 
+                            src={profileData.profileImage ? `${config.address}${profileData.profileImage}` : 'fallback-image-url'} 
                             roundedCircle 
                             className="account-profile-image" 
                         />
-
                         <div className="profile-info">
                             <h1>{profileData.username}</h1>
                         </div>
@@ -105,16 +87,12 @@ const Account = () => {
                     <div className="basic-info">
                         <h2>User Information</h2>
                         <div className="basic-info-content">
-                            
                             <h2>{`${profileData.firstName} ${profileData.lastName}`}</h2>
                             <p>Full Name</p>
-                            
                             <h2>{profileData.birthday}</h2>
                             <p>Birthday</p>
-                            
                             <h2>{profileData.gender}</h2>
                             <p>Gender</p>
-                            
                             <h2>{profileData.address}</h2>
                             <p>Address</p>
                         </div>
@@ -122,12 +100,10 @@ const Account = () => {
                 </div>
                 <div className="accbox2">
                     <div className="contact-info">
-                    <h2>Contact Information</h2>
+                        <h2>Contact Information</h2>
                         <div className="contact-info-content">                            
-                            
                             <h2>{profileData.contactNumber}</h2>
                             <p>Mobile</p>
-                            
                             <h2>{profileData.email}</h2>
                             <p>Email</p>
                         </div>

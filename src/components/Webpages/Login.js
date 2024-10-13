@@ -12,6 +12,7 @@ import LogoImg from "./assets/logo.png"
 import PinkNavigationBar from "./PinkNavigationBar";
 import { jwtDecode } from 'jwt-decode';
 import StartNavBar from "./StartNavBar";
+import config from '../config';
 
 const Login =()=>{
     const navigate = useNavigate();
@@ -23,7 +24,7 @@ const Login =()=>{
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-          const response = await axios.post('http://52.64.196.154/api/user/login', {
+          const response = await axios.post(`${config.address}/api/user/login`, {
             username,
             password
           });

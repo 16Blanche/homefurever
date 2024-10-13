@@ -1,7 +1,6 @@
 import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from 'react-bootstrap/Button';
 import './Homepage.css';
 import TaskBar from "./TaskBar";
@@ -9,35 +8,26 @@ import NavigationBar from "./NavigationBar";
 import Modal from 'react-bootstrap/Modal';
 import DeleteModal from "./DeleteModal";
 import DataTable from 'react-data-table-component';
-
-const convertToBase64 = (buffer) => {
-    return btoa(
-        new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-    );
-};
+import config from '../config';
 
 const NewUsers = () => {
     const [theUser, setTheUser] = useState({});
     const [allUsers, setAllUsers] = useState([]);
-    const [transferUser, setTransferUser] = useState([]);
-
-    const [showViewModal, setShowViewModal] = useState(false);
     const [selectedUserForView, setSelectedUserForView] = useState(null);
     const { pusername } = useParams();
-
+    const [showViewModal, setShowViewModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedUserForDelete, setSelectedUserForDelete] = useState(null);
-
     const [showLargeIDModal, setShowLargeIDModal] = useState(false);
 
     const handleViewButton = (user) => {
         console.log("View Button Clicked");
-        setSelectedUserForView(user); // Set selected user data
-        setShowViewModal(true); // Open view modal
+        setSelectedUserForView(user); 
+        setShowViewModal(true); 
     };
 
     const handleApprove = (userId) => {
-        axios.delete(`http://52.64.196.154/api/user/delete/transfer/${userId}`)
+        axios.delete(`${config.address}/api/user/delete/transfer/${userId}`)
             .then((response) => {
                 setAllUsers(allUsers.filter(user => user._id !== userId));
                 console.log(response.data.message);
@@ -48,7 +38,7 @@ const NewUsers = () => {
     };
 
     useEffect(() => {
-        axios.get("http://52.64.196.154/api/user/all")
+        axios.get(`${config.address}/api/user/all`)
             .then((response) => {
                 console.log(response.data.users);
                 setAllUsers(response.data.users);
@@ -59,14 +49,16 @@ const NewUsers = () => {
     }, []);
 
     useEffect(() => {
-        axios.get("http://52.64.196.154/api/user/username/" + pusername)
-            .then((response) => {
-                console.log("Fetched User Data:", response.data.theUser);
-                setSelectedUserForView(response.data.theUser); 
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        if (pusername) {
+            axios.get(`${config.address}/api/user/username/` + pusername)
+                .then((response) => {
+                    console.log("Fetched User Data:", response.data.theUser);
+                    setSelectedUserForView(response.data.theUser); 
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
     }, [pusername]); 
 
     const handleDeleteButton = (user) => {
@@ -75,7 +67,7 @@ const NewUsers = () => {
     };
 
     const handleDeleteConfirm = () => {
-        axios.delete(`http://52.64.196.154/api/user/delete/${selectedUserForDelete._id}`)
+        axios.delete(`${config.address}/api/user/delete/${selectedUserForDelete._id}`)
             .then((response) => {
                 console.log('User deleted:', response.data);
                 setAllUsers(allUsers.filter(user => user._id !== selectedUserForDelete._id));
@@ -169,7 +161,7 @@ const NewUsers = () => {
                                         <div className="nuleft-column"> 
                                             {selectedUserForView.p_img && (
                                                 <img
-                                                    src={`data:image/jpeg;base64,${convertToBase64(selectedUserForView.p_img.data)}`}
+                                                    src={`${config.address}${selectedUserForView.p_img}`} // Use path for user image display
                                                     alt="User Image"
                                                     className="nuimg-preview"
                                                 />
@@ -188,7 +180,7 @@ const NewUsers = () => {
                                             <p>Valid ID:</p>
                                             {selectedUserForView.p_validID && (
                                                 <img
-                                                    src={`data:image/jpeg;base64,${convertToBase64(selectedUserForView.p_validID.data)}`}
+                                                    src={`${config.address}${selectedUserForView.p_validID}`} // Use path for valid ID display
                                                     alt="Valid ID"
                                                     className="nuidimg-preview"
                                                     onClick={handleValidIDClick}
@@ -208,7 +200,7 @@ const NewUsers = () => {
                             <Modal.Body>
                                 {selectedUserForView && selectedUserForView.p_validID && (
                                     <img
-                                        src={`data:image/jpeg;base64,${convertToBase64(selectedUserForView.p_validID.data)}`}
+                                        src={`${config.address}${selectedUserForView.p_validID}`} // Use path for large valid ID display
                                         alt="Valid ID"
                                         className="numodal-image"
                                     />

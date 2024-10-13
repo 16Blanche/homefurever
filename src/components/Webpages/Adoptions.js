@@ -5,18 +5,8 @@ import TaskBar from "./TaskBar";
 import axios from "axios";
 import './Homepage.css';
 import { useNavigate } from "react-router-dom";
-import {ChevronLeft, ChevronRight} from 'react-bootstrap-icons';
-
-const convertToBase64 = (buffer) => {
-    try {
-        return btoa(
-            new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-        );
-    } catch (error) {
-        console.error('Error converting to Base64:', error);
-        return '';
-    }
-};
+import { ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
+import config from '../config';
 
 const Adoptions = () => {
     const [pendingAdoptions, setPendingAdoptions] = useState([]);
@@ -42,7 +32,7 @@ const Adoptions = () => {
     const cardsToShow = 5;
 
     const fetchAdoptions = () => {
-        axios.get("http://52.64.196.154/api/adoption/pending")
+        axios.get(`${config.address}/api/adoption/pending`)
             .then((response) => {
                 console.log("Pending Adoptions Response:", response.data); 
                 setPendingAdoptions(response.data || []);
@@ -51,7 +41,7 @@ const Adoptions = () => {
                 console.error("Error fetching pending adoptions:", err);
             });
 
-        axios.get("http://52.64.196.154/api/adoption/active")
+        axios.get(`${config.address}/api/adoption/active`)
             .then((response) => {
                 console.log("Active Adoptions Response:", response.data); 
                 setActiveAdoptions(response.data || []);
@@ -96,7 +86,7 @@ const Adoptions = () => {
     };
 
     const handleRejectConfirmation = () => {
-        axios.patch(`http://52.64.196.154/api/adoption/decline/${selectedAdoption._id}`, { rejection_reason: rejectionReason === 'Other' ? otherReason : rejectionReason })
+        axios.patch(`${config.address}/api/adoption/decline/${selectedAdoption._id}`, { rejection_reason: rejectionReason === 'Other' ? otherReason : rejectionReason })
             .then(() => {
                 setPendingAdoptions(prev => prev.filter(adopt => adopt._id !== selectedAdoption._id));
                 setShowRejectModal(false);
@@ -110,7 +100,7 @@ const Adoptions = () => {
     };
 
     const handleSubmitDate = () => {
-        axios.patch(`http://52.64.196.154/api/adoption/approve/${selectedAdoption._id}`, { visitDate, visitTime })
+        axios.patch(`${config.address}/api/adoption/approve/${selectedAdoption._id}`, { visitDate, visitTime })
             .then(() => {
                 setPendingAdoptions(prev => prev.filter(adopt => adopt._id !== selectedAdoption._id));
                 setShowDateModal(false);
@@ -127,7 +117,7 @@ const Adoptions = () => {
             console.error("No active adoption selected or missing adoption ID");
             return;
         }
-        axios.patch(`http://52.64.196.154/api/adoption/complete/${selectedActiveAdoption._id}`)
+        axios.patch(`${config.address}/api/adoption/complete/${selectedActiveAdoption._id}`)
             .then(() => {
                 alert('Adoption marked as complete.');
                 fetchAdoptions();
@@ -142,7 +132,7 @@ const Adoptions = () => {
     };
 
     const handleSubmitFailed = () => {
-        axios.patch(`http://52.64.196.154/api/adoption/fail/${selectedActiveAdoption._id}`, { reason: failedReason === 'Other' ? otherFailedReason : failedReason })
+        axios.patch(`${config.address}/api/adoption/fail/${selectedActiveAdoption._id}`, { reason: failedReason === 'Other' ? otherFailedReason : failedReason })
             .then(() => {
                 alert('Adoption marked as failed.');
                 fetchAdoptions();
@@ -180,7 +170,6 @@ const Adoptions = () => {
 
     const handleRejectionReasonChange = (e) => {
         setRejectionReason(e.target.value);
-
         if (e.target.value !== 'Other') {
             setOtherReason('');
         }
@@ -188,7 +177,6 @@ const Adoptions = () => {
 
     const handleFailedReasonChange = (e) => {
         setFailedReason(e.target.value);
-
         if (e.target.value !== 'Other') {
             setOtherFailedReason('');
         }
@@ -209,8 +197,8 @@ const Adoptions = () => {
                             <div className="adoptions-titlenbtn">
                                 <h2 className="adoptions-title">PENDING ADOPTIONS</h2>
                                 <div className="adoptions-btns">
-                                <Button className="adoptions-feedbackbtn" onClick={() => navigate('/adoptions/past')}>Past Adoptions</Button>
-                                <Button className="adoptions-feedbackbtn" onClick={() => navigate('/feedbacks')}>View Feedback</Button>
+                                    <Button className="adoptions-feedbackbtn" onClick={() => navigate('/adoptions/past')}>Past Adoptions</Button>
+                                    <Button className="adoptions-feedbackbtn" onClick={() => navigate('/feedbacks')}>View Feedback</Button>
                                 </div>
                             </div>
 
@@ -230,7 +218,7 @@ const Adoptions = () => {
                                             <Card.Body>
                                             {adoption.p_id.pet_img && adoption.p_id.pet_img.length > 0 && (
                                                 <Image
-                                                    src={`data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img[0].data)}`} 
+                                                    src={`${config.address}${adoption.p_id.pet_img[0]}`} // Use path for image display
                                                     alt={adoption.p_id.p_name}
                                                     fluid
                                                     className="adoptions-pimg"
@@ -287,7 +275,7 @@ const Adoptions = () => {
                                             <Card.Body>
                                             {adoption.p_id.pet_img && adoption.p_id.pet_img.length > 0 && (
                                                 <Image
-                                                    src={`data:image/jpeg;base64,${convertToBase64(adoption.p_id.pet_img[0].data)}`} // Use first image
+                                                    src={`${config.address}${adoption.p_id.pet_img[0]}`} // Use path for image display
                                                     alt={adoption.p_id.p_name}
                                                     fluid
                                                     className="adoptions-pimg"
@@ -415,7 +403,6 @@ const Adoptions = () => {
                                     </Form.Control>
                                 </Form.Group>
 
-                                {/* Conditionally render the "Other" reason text box */}
                                 {failedReason === 'Other' && (
                                     <Form.Group controlId="otherFailedReason" className="mt-3">
                                         <Form.Label>Please specify the reason</Form.Label>
@@ -494,7 +481,6 @@ const Adoptions = () => {
                                         </Form.Control>
                                     </Form.Group>
 
-                                    {/* Conditionally render the "Other" reason text box */}
                                     {rejectionReason === 'Other' && (
                                         <Form.Group controlId="otherReason" className="mt-3">
                                             <Form.Label>Please specify the reason</Form.Label>
@@ -515,7 +501,7 @@ const Adoptions = () => {
                                 <Button
                                     variant="danger"
                                     onClick={() => handleRejectConfirmation(rejectionReason, otherReason)}
-                                    disabled={rejectionReason === '' || (rejectionReason === 'Other' && otherReason === '')} // Disable if no reason or "Other" is selected but empty
+                                    disabled={rejectionReason === '' || (rejectionReason === 'Other' && otherReason === '')}
                                 >
                                     Confirm Reject
                                 </Button>

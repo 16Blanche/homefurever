@@ -8,10 +8,13 @@ const deleteUserByIdAndTransferData = (req, res) => {
                 return res.status(404).json({ message: 'User not found' });
             }
 
+            // Construct the image URL
+            const userImageUrl = deletedUser.p_img;
+
             // Create a new document in the Verified collection
             const verifiedUser = new Verified({
                 v_id: deletedUser.pending_id,
-                v_img: deletedUser.p_img,
+                v_img: userImageUrl,
                 v_username: deletedUser.p_username,
                 v_emailadd: deletedUser.p_emailadd,
                 v_fname: deletedUser.p_fname,
@@ -27,18 +30,23 @@ const deleteUserByIdAndTransferData = (req, res) => {
                 v_role: 'verified'
             });
 
+            console.log('User data to be transferred:', verifiedUser);
+
             verifiedUser.save()
                 .then((transferredUser) => {
                     res.json({ message: 'User deleted and data transferred successfully', deletedUser, transferredUser });
                 })
                 .catch((err) => {
+                    console.error('Error transferring data:', err);
                     res.status(500).json({ message: 'Error transferring data', error: err });
                 });
         })
         .catch((err) => {
+            console.error('Error deleting user:', err);
             res.status(500).json({ message: 'Error deleting user', error: err });
         });
 };
+
 
 const findAllVerified = (req, res) => {
     Verified.find()
@@ -51,12 +59,12 @@ const findAllVerified = (req, res) => {
 };
 
 const findVerifiedByUname = (req, res) => {
-    Verified.findOne({v_username:req.params.vusername})
+    Verified.findOne({ v_username: req.params.vusername })
         .then((theUser) => {
-            res.json({ theUser })
+            res.json({ theUser });
         })
         .catch((err) => {
-            res.json({ message: 'Something went wrong', error: err })
+            res.json({ message: 'Something went wrong', error: err });
         });
 }
 

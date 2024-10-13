@@ -12,6 +12,7 @@ import Modal from 'react-bootstrap/Modal';
 import "./Homepage.css";
 import AddPhoto from "./assets/addphoto.png";
 import StartNavBar from "./StartNavBar";
+import config from '../config';
 
 const SignUp = () => {
     const navigate = useNavigate();
@@ -87,7 +88,7 @@ const SignUp = () => {
             }
         });
 
-        axios.post("http://52.64.196.154/api/user/new", formData, {
+        axios.post(`${config.address}/api/user/new`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

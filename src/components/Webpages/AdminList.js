@@ -12,6 +12,7 @@ import './Homepage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import DataTable from 'react-data-table-component';
+import config from '../config';
 
 const AdminList = () => {
     const navigate = useNavigate();
@@ -82,7 +83,7 @@ const AdminList = () => {
     
 
     useEffect(() => {
-        axios.get("http://52.64.196.154/api/staff/all")
+        axios.get(`${config.address}/api/staff/all`)
             .then((response) => {
                 setAllStaff(response.data.theStaff || []);
             })
@@ -92,7 +93,7 @@ const AdminList = () => {
     }, []);
 
     useEffect(() => {
-        axios.get("http://52.64.196.154/api/admin/all")
+        axios.get(`${config.address}/api/admin/all`)
             .then((response) => {
                 const admins = response.data.admins || [];
                 const filteredAdmins = admins.filter(admin => admin.a_role === 'admin');
@@ -107,7 +108,7 @@ const AdminList = () => {
 
     useEffect(() => {
         if (pusername) {
-            axios.get(`http://52.64.196.154/api/user/username/${pusername}`)
+            axios.get(`${config.address}/api/user/username/${pusername}`)
                 .then((response) => {
                     setSelectedUserForView(response.data.theUser);
                 })
@@ -156,7 +157,7 @@ const AdminList = () => {
     
         if (validateForm()) {
             try {
-                const response = await axios.post("http://52.64.196.154/api/admin/new", {
+                const response = await axios.post(`${config.address}/api/admin/new`, {
                     firstName: updatedFormData.firstName, 
                     lastName: updatedFormData.lastName,
                     middleName: updatedFormData.middleName,
@@ -174,7 +175,7 @@ const AdminList = () => {
                 console.log("Admin added:", response.data);
                 setShowConfirmationModal(false); 
 
-                await axios.post("http://52.64.196.154/api/send-email", {
+                await axios.post(`${config.address}/api/send-email`, {
                     to: updatedFormData.email,
                     subject: "Your Admin Credentials",
                     text: `Dear ${updatedFormData.firstName},\n\nYour admin account has been created. Below are your login credentials:\n\nUsername: ${generatedUsername}\nPassword: ${generatedPassword}\n\nPlease change your password after logging in.\n`
@@ -192,7 +193,7 @@ const AdminList = () => {
     const fetchAdmins = () => {
         console.log("Fetching admin data from the API...");
     
-        axios.get("http://52.64.196.154/api/admin/all")
+        axios.get(`${config.address}/api/admin/all`)
             .then((response) => {
                 console.log("Admin data fetched from API response:", response.data);
     
@@ -279,7 +280,7 @@ const AdminList = () => {
 
     const handleDeleteConfirm = async (admin) => {
         try {
-            await axios.patch(`http://52.64.196.154/api/admin/update/${admin._id}`, {
+            await axios.patch(`${config.address}/api/admin/update/${admin._id}`, {
                 s_role: 'deleted-admin'
             });
 

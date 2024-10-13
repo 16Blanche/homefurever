@@ -12,6 +12,7 @@ import React, { useContext } from "react";
 import DataTable from 'react-data-table-component';
 import AuthContext from '../../context/AuthContext';
 import { Image } from "react-bootstrap";
+import config from '../config';
 
 const convertToBase64 = (buffer) => {
     return btoa(
@@ -80,7 +81,7 @@ const PetListings =()=>{
     
         console.log("Updated Pet Data:", updatedPet); 
     
-        axios.put(`http://52.64.196.154/api/pet/update/${selectedPet._id}`, updatedPet)
+        axios.put(`${config.address}/api/pet/update/${selectedPet._id}`, updatedPet)
             .then(response => {
                 console.log("Update Response:", response);
 
@@ -109,7 +110,7 @@ const PetListings =()=>{
     };
 
       const handleDeleteConfirm = () => {
-        axios.delete(`http://52.64.196.154/api/pet/delete/${selectedPetForDelete._id}`)
+        axios.delete(`${config.address}/api/pet/delete/${selectedPetForDelete._id}`)
             .then((response) => {
                 console.log('Pet deleted:', response.data);
                 setAllPets(allPets.filter(pet => pet._id !== selectedPetForDelete._id));
@@ -136,7 +137,7 @@ const PetListings =()=>{
     };
 
     const handleArchiveSubmit = () => {
-        axios.delete(`http://52.64.196.154/api/pet/delete/transfer/${selectedPetForArchive._id}/${archiveReason}`)
+        axios.delete(`${config.address}/api/pet/delete/transfer/${selectedPetForArchive._id}/${archiveReason}`)
             .then((response) => {
                 setAllPets(prevPets => prevPets.filter(pet => pet._id !== selectedPetForArchive._id));
                 console.log(response.data.message);
@@ -157,7 +158,7 @@ const PetListings =()=>{
       
 
     useEffect(() => {
-        axios.get("http://52.64.196.154/api/pet/all")
+        axios.get(`${config.address}/api/pet/all`)
             .then((response) => {
                 console.log(response.data.thePet);
                 setAllPets(response.data.thePet);
@@ -182,7 +183,7 @@ const PetListings =()=>{
     };
 
     useEffect(() => {
-        axios.delete('http://52.64.196.154/api/pet/delete/:id')
+        axios.delete(`${config.address}/api/pet/delete/:id`)
             .then((response) => {
                 console.log(response.data.thePet);
             }) 
@@ -192,7 +193,7 @@ const PetListings =()=>{
     }, []);
 
     useEffect(() => {
-        axios.get("http://52.64.196.154/api/pet/name/" + pname)
+        axios.get(`${config.address}/api/pet/name/` + pname)
             .then((response) => {
                 console.log("Fetched Pet Data:", response.data.thePet);
                 setSelectedPetForView(response.data.thePet);
@@ -289,41 +290,41 @@ const PetListings =()=>{
                             />
                         </div>
 
-                        {/* View Modal */}
-                        <Modal show={showViewModal} onHide={() => setShowViewModal(false)}>
-                            <Modal.Header closeButton>
-                                <Modal.Title>View Pet Information</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                {selectedPetForView && (
-                                    <>
-                                        {/* Display Multiple Pet Images if Available */}
-                                        {selectedPetForView.pet_img && selectedPetForView.pet_img.length > 0 && (
-                                            selectedPetForView.pet_img.map((img, index) => (
-                                                <Image
-                                                    key={index}
-                                                    src={`data:image/jpeg;base64,${convertToBase64(img.data)}`}
-                                                    alt={`Pet Image ${index + 1}`}
-                                                    className="ulimg-preview"
-                                                    style={{ marginBottom: '10px', maxWidth: '100%' }} 
-                                                />
-                                            ))
-                                        )}
-                                        
-                                        {/* Display Pet Information */}
-                                        <p>Pet ID: {selectedPetForView.p_id}</p>
-                                        <p>Pet Name: {selectedPetForView.p_name}</p>
-                                        <p>Species: {selectedPetForView.p_type}</p>
-                                        <p>Breed: {selectedPetForView.p_breed}</p>
-                                        <p>Age: {selectedPetForView.p_age}</p>
-                                        <p>Gender: {selectedPetForView.p_gender}</p>
-                                        <p>Weight: {selectedPetForView.p_weight}</p>
-                                        <p>Medical History: {selectedPetForView.p_medicalhistory}</p>
-                                        <p>Vaccines: {selectedPetForView.p_vaccines.join(", ")}</p>
-                                    </>
-                                )}
-                            </Modal.Body>
-                        </Modal>
+                    {/* View Modal */}
+                    <Modal show={showViewModal} onHide={() => setShowViewModal(false)}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>View Pet Information</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            {selectedPetForView && (
+                                <>
+                                    {/* Display Multiple Pet Images if Available */}
+                                    {selectedPetForView.pet_img && selectedPetForView.pet_img.length > 0 && (
+                                        selectedPetForView.pet_img.map((img, index) => (
+                                            <Image
+                                                key={index}
+                                                src={`${config.address}${img}`} // Construct full URL for images
+                                                alt={`Pet Image ${index + 1}`}
+                                                className="ulimg-preview"
+                                                style={{ marginBottom: '10px', maxWidth: '100%' }} 
+                                            />
+                                        ))
+                                    )}
+                                    
+                                    {/* Display Pet Information */}
+                                    <p>Pet ID: {selectedPetForView.p_id}</p>
+                                    <p>Pet Name: {selectedPetForView.p_name}</p>
+                                    <p>Species: {selectedPetForView.p_type}</p>
+                                    <p>Breed: {selectedPetForView.p_breed}</p>
+                                    <p>Age: {selectedPetForView.p_age}</p>
+                                    <p>Gender: {selectedPetForView.p_gender}</p>
+                                    <p>Weight: {selectedPetForView.p_weight}</p>
+                                    <p>Medical History: {selectedPetForView.p_medicalhistory}</p>
+                                    <p>Vaccines: {selectedPetForView.p_vaccines.join(", ")}</p>
+                                </>
+                            )}
+                        </Modal.Body>
+                    </Modal>
 
 
                         {/* Edit Modal */}

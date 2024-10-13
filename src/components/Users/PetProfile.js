@@ -5,12 +5,7 @@ import "./Users.css";
 import PinkNavigationBar from './PinkNavigationBar';
 import { Button, Image } from 'react-bootstrap';
 import { ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
-
-const convertToBase64 = (buffer) => {
-  return btoa(
-    new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-  );
-};
+import config from '../config';
 
 const PetProfile = () => {
   const { id } = useParams();
@@ -22,12 +17,11 @@ const PetProfile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-
     setLoading(true);
     setPet(null);
     setRandomPets([]);
 
-    axios.get(`http://52.64.196.154/api/pet/${id}`)
+    axios.get(`${config.address}/api/pet/${id}`)
       .then(response => {
         setPet(response.data.thePet);
         setLoading(false);
@@ -37,7 +31,7 @@ const PetProfile = () => {
         setLoading(false);
       });
 
-    axios.get(`http://52.64.196.154/api/pet/all`)
+    axios.get(`${config.address}/api/pet/all`)
       .then(response => {
         const pets = response.data.thePet;
         setAllPets(pets);
@@ -45,7 +39,7 @@ const PetProfile = () => {
       .catch(err => {
         console.error(err);
       });
-  }, [id]); 
+  }, [id]);
 
   useEffect(() => {
     if (pet && allPets.length > 0) {
@@ -98,23 +92,23 @@ const PetProfile = () => {
                   disabled={currentImageIndex === 0}
                   className="pagination-button-left"
                 >
-                  <ChevronLeft/>
+                  <ChevronLeft />
                 </Button>
               </div>
                 <Image
-                  src={`data:image/jpeg;base64,${convertToBase64(pet.pet_img[currentImageIndex].data)}`}
+                  src={`${config.address}${pet.pet_img[currentImageIndex]}`}
                   alt={`Pet Image ${currentImageIndex + 1}`}
                   className="pppet-image"
                 />
-                              <div className='pppagebtn'>
-                <Button
-                  onClick={handleNextImage}
-                  disabled={currentImageIndex === pet.pet_img.length - 1}
-                  className="pagination-button-right"
-                >
-                  <ChevronRight/>
-                </Button>
-              </div>
+                <div className='pppagebtn'>
+                  <Button
+                    onClick={handleNextImage}
+                    disabled={currentImageIndex === pet.pet_img.length - 1}
+                    className="pagination-button-right"
+                  >
+                    <ChevronRight />
+                  </Button>
+                </div>
               </div>
 
             </div>
@@ -145,25 +139,25 @@ const PetProfile = () => {
         <div className='ppbox4'>
           <h1>OTHER PETS</h1>
           <div className="ppbox5">
-              {randomPets && randomPets.map((pet) => (
-                <Button key={pet._id} className="ppother" onClick={() => handleViewProfile(pet._id)}>
-                  <div className="ppotherimgbox">
-                    {pet.pet_img && pet.pet_img.length > 0 && (
-                      <Image 
-                        src={`data:image/jpeg;base64,${convertToBase64(pet.pet_img[0].data)}`} 
-                        rounded 
-                        className="clickable-image" 
-                        loading="lazy"
-                      />
-                    )}
-                  </div>
-                  <div className='ppothertext'>
-                    <h1>{pet.p_name}</h1>
-                    <p>{pet.p_age} years old</p>
-                    <p>{pet.p_gender} {pet.p_type}</p>
-                  </div>
-                </Button>
-              ))}
+            {randomPets && randomPets.map((pet) => (
+              <Button key={pet._id} className="ppother" onClick={() => handleViewProfile(pet._id)}>
+                <div className="ppotherimgbox">
+                  {pet.pet_img && pet.pet_img.length > 0 && (
+                    <Image 
+                      src={`${config.address}${pet.pet_img[0]}`} // Use the image URL directly
+                      rounded 
+                      className="clickable-image" 
+                      loading="lazy"
+                    />
+                  )}
+                </div>
+                <div className='ppothertext'>
+                  <h1>{pet.p_name}</h1>
+                  <p>{pet.p_age} years old</p>
+                  <p>{pet.p_gender} {pet.p_type}</p>
+                </div>
+              </Button>
+            ))}
           </div>
         </div>
       </div>

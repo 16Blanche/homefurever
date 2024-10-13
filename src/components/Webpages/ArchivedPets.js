@@ -7,7 +7,8 @@ import NavigationBar from "./NavigationBar";
 import TaskBar from "./TaskBar";
 import Modal from 'react-bootstrap/Modal';
 import DataTable from 'react-data-table-component';
-
+import { Image } from "react-bootstrap";
+import config from '../config';
  
 const ArchivedPets =()=>{
     const navigate = useNavigate();
@@ -60,7 +61,7 @@ const ArchivedPets =()=>{
     
         console.log("Updated Pet Data:", updatedPet);
     
-        axios.put(`http://52.64.196.154/api/archived/update/${selectedPet.ap_name}`, updatedPet)
+        axios.put(`${config.address}/api/archived/update/${selectedPet.ap_name}`, updatedPet)
             .then(response => {
                 console.log("Update Response:", response);
                 setAllPets(prevPets => prevPets.map(pet => pet.ap_name === updatedPet.ap_name ? updatedPet : pet));
@@ -81,7 +82,7 @@ const ArchivedPets =()=>{
     };
 
       const handleDeleteConfirm = () => {
-        axios.delete(`http://52.64.196.154/api/pet/delete/${selectedPetForDelete._id}`)
+        axios.delete(`${config.address}/api/pet/delete/${selectedPetForDelete._id}`)
             .then((response) => {
                 console.log('Pet deleted:', response.data);
                 setAllPets(allPets.filter(pet => pet._id !== selectedPetForDelete._id));
@@ -93,7 +94,7 @@ const ArchivedPets =()=>{
     };
 
     useEffect(()=>{
-        axios.get("http://52.64.196.154/api/archived/all")
+        axios.get(`${config.address}/api/archived/all`)
         .then((response)=>{
             console.log(response.data.apets);
             setAllPets(response.data.apets);
@@ -117,7 +118,7 @@ const ArchivedPets =()=>{
     };
 
     const handleRestoreSubmit = (archivedPetId) => {
-        axios.post(`http://52.64.196.154/api/pet/restore/${archivedPetId}`)
+        axios.post(`${config.address}/api/pet/restore/${archivedPetId}`)
             .then((response) => {
                 setAllPets([...allPets, response.data.restoredPet]);
                 console.log(response.data.message);
@@ -140,7 +141,7 @@ const ArchivedPets =()=>{
     };
 
     useEffect(() => {
-        axios.get("http://52.64.196.154/api/archived/" + apname)
+        axios.get(`${config.address}/api/archived/` + apname)
             .then((response) => {
                 console.log("Fetched Pet Data:", response.data.apets);
                 setSelectedPetForView(response.data.apets); 
@@ -233,6 +234,18 @@ const ArchivedPets =()=>{
                             <Modal.Body>
                                 {selectedPetForView && (
                                     <>
+                                        {/* Display Multiple Pet Images if Available */}
+                                        {selectedPetForView.ap_img && selectedPetForView.ap_img.length > 0 && (
+                                            selectedPetForView.ap_img.map((img, index) => (
+                                                <Image
+                                                    key={index}
+                                                    src={`${config.address}${img}`} // Construct full URL for images
+                                                    alt={`Archived Pet Image ${index + 1}`}
+                                                    className="ulimg-preview"
+                                                    style={{ marginBottom: '10px', maxWidth: '100%' }} 
+                                                />
+                                            ))
+                                        )}
                                         <p>Pet ID: {selectedPetForView.ap_id}</p>
                                         <p>Pet Name: {selectedPetForView.ap_name}</p>
                                         <p>Species: {selectedPetForView.ap_type}</p>

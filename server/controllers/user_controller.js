@@ -31,11 +31,11 @@ const newUser = async (req, res) => {
         p_repassword, p_add, p_contactnumber, p_gender, p_birthdate 
     } = req.body;
 
-    const p_img = req.files['p_img'] ? req.files['p_img'][0].buffer : null;
-    const p_validID = req.files['p_validID'] ? req.files['p_validID'][0].buffer : null;
+    // Store the image paths as relative URLs
+    const p_img = req.files['p_img'] ? `/uploads/images/${req.files['p_img'][0].filename}` : null; 
+    const p_validID = req.files['p_validID'] ? `/uploads/images/${req.files['p_validID'][0].filename}` : null; 
 
     try {
-
         // Create a new user instance
         const user = new User({
             p_img, 
@@ -61,6 +61,7 @@ const newUser = async (req, res) => {
         res.status(500).json({ message: 'Something went wrong', error: err });
     }
 };
+
 
 
 const login = async (req, res) => {

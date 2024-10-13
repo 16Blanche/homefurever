@@ -18,7 +18,6 @@ import Chatroom from './components/Webpages/Chatroom';
 import Login from './components/Webpages/Login'
 import Feedbacks from './components/Webpages/Feedbacks';
 import MyPosts from './components/Webpages/MyPosts';
-import Barangay from './components/Webpages/Barangay';
 import NewUsers from './components/Webpages/NewUsers';
 import StartingPage from './components/Webpages/StartingPage';
 import PetListings from './components/Webpages/PetListings';
@@ -63,7 +62,6 @@ function App() {
               
               {/* ADMIN */}
               <Route path='/home' element={<ProtectedRoute roles={['admin', 'super-admin']}> <Homepage/> </ProtectedRoute>} />
-              <Route path='/barangay/population' element={<ProtectedRoute roles={['admin', 'super-admin']}><Barangay/></ProtectedRoute>}></Route>
               <Route path='/pet/new' element={<NewPet/>}></Route>
               <Route path='/feedbacks' element={<ProtectedRoute roles={['admin', 'super-admin']}><Feedbacks/></ProtectedRoute>}></Route>
               <Route path='/posts' element={<MyPosts/>}></Route>
