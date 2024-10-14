@@ -1,22 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import NavigationBar from './NavigationBar';
 import axios from 'axios';
 import Image from 'react-bootstrap/Image';
 import { PencilSquare, Trash } from 'react-bootstrap-icons';
 import './Homepage.css';
+import AuthContext from '../../context/AuthContext';
 import config from '../config';
-
-const convertToBase64 = (buffer) => {
-    try {
-        return btoa(
-            new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-        );
-    } catch (error) {
-        console.error('Error converting to Base64:', error);
-        return '';
-    }
-};
 
 const NearbyServices = () => {
     const [services, setServices] = useState([]);
@@ -41,6 +31,8 @@ const NearbyServices = () => {
     const [serviceToDelete, setServiceToDelete] = useState(null);
 
     const [searchQuery, setSearchQuery] = useState('');
+
+    const { user, token } = useContext(AuthContext);
 
     const validate = () => {
         const newErrors = {};
@@ -74,28 +66,36 @@ const NearbyServices = () => {
             setErrors(newErrors);
             return;
         }
-
+    
         const formData = new FormData();
         formData.append('ns_name', name);
         formData.append('ns_address', address);
         formData.append('ns_image', image); // Assuming image will be in file format
         formData.append('ns_type', type);
         formData.append('ns_pin', pin);
-
+    
         try {
+            const token = localStorage.getItem('token'); // Retrieve the token
+            console.log('Token:', token); // Check if the token is retrieved correctly
+    
             const response = await axios.post(`${config.address}/api/service/new`, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`, // Include authorization token
+                    'Accept': 'application/json',
                 },
             });
+    
             setServices([...services, response.data.savedService]);
             resetForm();
             setShowModal(false);
             window.location.reload();
         } catch (error) {
             console.error('Error adding service:', error);
+            alert('Failed to add service. Please try again later.'); // User-friendly error message
         }
     };
+    
+    
 
     useEffect(() => {
         const fetchServices = async () => {
@@ -124,7 +124,8 @@ const NearbyServices = () => {
         formData.append('ns_address', address);
         formData.append('ns_pin', pin);
         formData.append('ns_type', type);
-        
+    
+        // Check if image is a File object and append accordingly
         if (image instanceof File) {
             formData.append('ns_image', image);
         } else {
@@ -132,11 +133,16 @@ const NearbyServices = () => {
         }
     
         try {
+            const token = localStorage.getItem('token'); // Retrieve the token
+    
             const response = await axios.put(`${config.address}/api/service/update/${currentService._id}`, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`, // Include authorization token
+                    'Accept': 'application/json',
+                    // Note: Content-Type for FormData should not be set manually; it is handled automatically by Axios
                 },
             });
+    
             const updatedServices = services.map(service => 
                 service._id === currentService._id ? response.data.updatedService : service
             );
@@ -147,20 +153,32 @@ const NearbyServices = () => {
             window.location.reload();
         } catch (error) {
             console.error('Error editing service:', error);
+            alert('Failed to edit service. Please try again later.'); // User-friendly error message
         }
     };
     
+    
     const handleConfirmDelete = async (serviceId) => {
         try {
-            await axios.delete(`${config.address}/api/service/delete/${serviceId}`);
+            const token = localStorage.getItem('token'); // Retrieve the token
+    
+            await axios.delete(`${config.address}/api/service/delete/${serviceId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Include authorization token
+                    'Accept': 'application/json',
+                },
+            });
+    
             const updatedServices = services.filter(service => service._id !== serviceId);
             setServices(updatedServices);
             setShowDeleteModal(false);
             window.location.reload();
         } catch (error) {
             console.error('Error deleting service:', error);
+            alert('Failed to delete service. Please try again later.'); // User-friendly error message
         }
-    };    
+    };
+       
 
     const handleDelete = (serviceId) => {
         setServiceToDelete(serviceId);

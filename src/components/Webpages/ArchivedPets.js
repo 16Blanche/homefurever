@@ -9,143 +9,69 @@ import Modal from 'react-bootstrap/Modal';
 import DataTable from 'react-data-table-component';
 import { Image } from "react-bootstrap";
 import config from '../config';
- 
-const ArchivedPets =()=>{
+import React, { useContext } from "react";
+import AuthContext from '../../context/AuthContext';
+
+const ArchivedPets = () => {
     const navigate = useNavigate();
-    const [allPets,setAllPets] =useState([]);
+    const [allPets, setAllPets] = useState([]);
     const [filteredPets, setFilteredPets] = useState([]); 
     const [searchQuery, setSearchQuery] = useState('');
 
-    const {apname}=useParams();
-    const [thePet,setThePet]=useState({});
-    const [page,setPage] = useState(0);
-
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [selectedPet, setSelectedPet] = useState(null);
-    const [pets, setPets] = useState(thePet);
-    
-    const [showViewModal, setShowViewModal] = useState(false);
+    const { apname } = useParams();
     const [selectedPetForView, setSelectedPetForView] = useState(null);
+    const [showViewModal, setShowViewModal] = useState(false);
 
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedPetForDelete, setSelectedPetForDelete] = useState(null);
-
-    const [selectedArchivedPet, setSelectedArchivedPet] = useState(null);
-
-    const [showRestoreModal, setShowRestoreModal] = useState(false);
+    const { user, token } = useContext(AuthContext);
 
     const handleViewButton = (pet) => {
         console.log("View Button Clicked");
-        setSelectedPetForView(pet); // Set selected pet data
-        setShowViewModal(true); // Open view modal
+        setSelectedPetForView(pet);
+        setShowViewModal(true);
     };
-
-    const handleEditButton = (pet) => {
-        setSelectedPet(pet);
-        setShowEditModal(true);
-    };
-
-    const handleEditSubmit = (e) => {
-        e.preventDefault();
-        const updatedPet = {
-            ...selectedPet,
-            ap_name: e.target.elements.name.value,
-            ap_type: e.target.elements.type.value,
-            ap_breed: e.target.elements.breed.value,
-            ap_age: e.target.elements.age.value,
-            ap_gender: e.target.elements.gender.value,
-            ap_weight: e.target.elements.weight.value,
-            ap_medicalhistory: e.target.elements.medicalhistory.value,
-            ap_vaccines: e.target.elements.vaccines.value,
-        };
-    
-        console.log("Updated Pet Data:", updatedPet);
-    
-        axios.put(`${config.address}/api/archived/update/${selectedPet.ap_name}`, updatedPet)
-            .then(response => {
-                console.log("Update Response:", response);
-                setAllPets(prevPets => prevPets.map(pet => pet.ap_name === updatedPet.ap_name ? updatedPet : pet));
-                setShowEditModal(false);
-                setSelectedPet(null);
-            })
-            .catch(err => {
-                console.error("There was an error updating the pet!", err);
-                if (err.response) {
-                    console.error("Error Data:", err.response.data);
-                }
-            });
-    };
-    
-      const handleDeleteButton = (pet) => {
-        setSelectedPetForDelete(pet);
-        setShowDeleteModal(true);
-    };
-
-      const handleDeleteConfirm = () => {
-        axios.delete(`${config.address}/api/pet/delete/${selectedPetForDelete._id}`)
-            .then((response) => {
-                console.log('Pet deleted:', response.data);
-                setAllPets(allPets.filter(pet => pet._id !== selectedPetForDelete._id));
-                setShowDeleteModal(false);
-            })
-            .catch((error) => {
-                console.error('There was an error!', error);
-            });
-    };
-
-    useEffect(()=>{
-        axios.get(`${config.address}/api/archived/all`)
-        .then((response)=>{
-            console.log(response.data.apets);
-            setAllPets(response.data.apets);
-        })
-        .catch((err)=>{
-            console.log(err);
-        })
-    },[])
 
     useEffect(() => {
-        const results = allPets.filter(pet =>
-            pet.ap_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            pet.ap_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            pet.ap_breed.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+        axios.get(`${config.address}/api/pet/all`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        })
+        .then((response) => {
+            const fetchedPets = Array.isArray(response.data.thePet) ? response.data.thePet : [];
+            setAllPets(fetchedPets);
+
+            // Filter out pets with status 'none' or 'For Adoption'
+            const filtered = fetchedPets.filter(pet => 
+                pet.p_status !== 'none' && pet.p_status !== 'For Adoption'
+            );
+            setFilteredPets(filtered);
+        })
+        .catch((err) => {
+            console.error("Error fetching pet data:", err);
+            setAllPets([]);
+            setFilteredPets([]);
+        });
+    }, [token]);
+
+    useEffect(() => {
+        const results = allPets.filter(pet => {
+            const nameMatches = pet.p_name && pet.p_name.toLowerCase().includes(searchQuery.toLowerCase());
+            const typeMatches = pet.p_type && pet.p_type.toLowerCase().includes(searchQuery.toLowerCase());
+            const breedMatches = pet.p_breed && pet.p_breed.toLowerCase().includes(searchQuery.toLowerCase());
+            return (nameMatches || typeMatches || breedMatches) && 
+                (pet.p_status !== 'none' && pet.p_status !== 'For Adoption'); // Include status check
+        });
         setFilteredPets(results);
-    }, [searchQuery, allPets]); 
+    }, [searchQuery, allPets]);
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
     };
 
-    const handleRestoreSubmit = (archivedPetId) => {
-        axios.post(`${config.address}/api/pet/restore/${archivedPetId}`)
-            .then((response) => {
-                setAllPets([...allPets, response.data.restoredPet]);
-                console.log(response.data.message);
-                handleRestoreModalClose();
-            })
-            .catch((err) => {
-                console.log(err);
-                handleRestoreModalClose();
-            });
-    };
-
-    const handleRestoreModalOpen = (archivedPet) => {
-        setSelectedArchivedPet(archivedPet);
-        setShowRestoreModal(true);
-    };
-
-    const handleRestoreModalClose = () => {
-        setShowRestoreModal(false);
-        setSelectedArchivedPet(null);
-    };
-
     useEffect(() => {
         axios.get(`${config.address}/api/archived/` + apname)
             .then((response) => {
-                console.log("Fetched Pet Data:", response.data.apets);
-                setSelectedPetForView(response.data.apets); 
-
+                setSelectedPetForView(response.data.pets); // Assuming the response contains pets with p_ fields
             })
             .catch((err) => {
                 console.log(err);
@@ -155,27 +81,27 @@ const ArchivedPets =()=>{
     const columns = [
         {
             name: 'Pet ID',
-            selector: row => row.ap_id,
+            selector: row => row.p_id,
             sortable: true,
         },
         {
             name: 'Pet Name',
-            selector: row => row.ap_name,
+            selector: row => row.p_name,
             sortable: true,
         },
         {
             name: 'Species',
-            selector: row => row.ap_type,
+            selector: row => row.p_type,
             sortable: true,
         },
         {
             name: 'Gender',
-            selector: row => row.ap_gender,
+            selector: row => row.p_gender,
             sortable: true,
         },
         {
             name: 'Status',
-            selector: row => row.ap_reason,
+            selector: row => row.p_status,
             sortable: true,
         },
         {
@@ -187,24 +113,19 @@ const ArchivedPets =()=>{
             ),
         },
     ];
- 
 
-    return(
+    return (
         <>
-        <div className="petlistbox">
-
+            <div className="petlistbox">
                 <div className="navbox">
-                <NavigationBar/>
+                    <NavigationBar />
                 </div>
-
                 <div className="petlistbox2">
-                    <TaskBar/>
-
+                    <TaskBar />
                     <div className="petlistbox3">
-                    <div className="petlistbox4">
-
-                        <h2 className="petlistings">ARCHIVED PETS</h2>
-                        <input
+                        <div className="petlistbox4">
+                            <h2 className="petlistings">ARCHIVED PETS</h2>
+                            <input
                                 type="text"
                                 className="petsearch"
                                 placeholder="Find a pet"
@@ -212,10 +133,8 @@ const ArchivedPets =()=>{
                                 onChange={handleSearchChange}
                             />
                         </div>
-                        
-                        
                         <div className="pltable">
-                        <DataTable
+                            <DataTable
                                 columns={columns}
                                 data={filteredPets}
                                 paginationPerPage={13}
@@ -234,28 +153,27 @@ const ArchivedPets =()=>{
                             <Modal.Body>
                                 {selectedPetForView && (
                                     <>
-                                        {/* Display Multiple Pet Images if Available */}
-                                        {selectedPetForView.ap_img && selectedPetForView.ap_img.length > 0 && (
-                                            selectedPetForView.ap_img.map((img, index) => (
-                                                <Image
-                                                    key={index}
-                                                    src={`${config.address}${img}`} // Construct full URL for images
-                                                    alt={`Archived Pet Image ${index + 1}`}
-                                                    className="ulimg-preview"
-                                                    style={{ marginBottom: '10px', maxWidth: '100%' }} 
-                                                />
-                                            ))
-                                        )}
-                                        <p>Pet ID: {selectedPetForView.ap_id}</p>
-                                        <p>Pet Name: {selectedPetForView.ap_name}</p>
-                                        <p>Species: {selectedPetForView.ap_type}</p>
-                                        <p>Breed: {selectedPetForView.ap_breed}</p>
-                                        <p>Age: {selectedPetForView.ap_age}</p>
-                                        <p>Gender: {selectedPetForView.ap_gender}</p>
-                                        <p>Weight: {selectedPetForView.ap_weight}</p>
-                                        <p>Medical History: {selectedPetForView.ap_medicalhistory}</p>
-                                        <p>Vaccines: {selectedPetForView.ap_vaccines}</p>
-                                        <p>Archive Reason: {selectedPetForView.ap_reason}</p>
+                                    {selectedPetForView.pet_img && selectedPetForView.pet_img.length > 0 && (
+                                        selectedPetForView.pet_img.map((img, index) => (
+                                            <Image
+                                                key={index}
+                                                src={`${config.address}${img}`} // Construct full URL for images
+                                                alt={`Pet Image ${index + 1}`}
+                                                className="ulimg-preview"
+                                                style={{ marginBottom: '10px', maxWidth: '100%' }} 
+                                            />
+                                        ))
+                                    )}
+                                        <p>Pet ID: {selectedPetForView.p_id}</p>
+                                        <p>Pet Name: {selectedPetForView.p_name}</p>
+                                        <p>Species: {selectedPetForView.p_type}</p>
+                                        <p>Breed: {selectedPetForView.p_breed}</p>
+                                        <p>Age: {selectedPetForView.p_age}</p>
+                                        <p>Gender: {selectedPetForView.p_gender}</p>
+                                        <p>Weight: {selectedPetForView.p_weight}</p>
+                                        <p>Medical History: {selectedPetForView.p_medicalhistory}</p>
+                                        <p>Vaccines: {selectedPetForView.p_vaccines}</p>
+                                        <p>Archive Reason: {selectedPetForView.p_reason}</p>
                                     </>
                                 )}
                             </Modal.Body>
@@ -264,7 +182,7 @@ const ArchivedPets =()=>{
                 </div>
             </div>
         </>
-    )
+    );
 }
 
-export default ArchivedPets ;
+export default ArchivedPets;

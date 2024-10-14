@@ -32,7 +32,7 @@ const PetSchema = new mongoose.Schema({
         type: String
     },
     p_vaccines: {
-        type: Array
+        type: [String]
     },
     p_status: {
         type: String,

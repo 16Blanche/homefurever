@@ -30,7 +30,7 @@ const MyPosts = () => {
     const [description, setDescription] = useState(""); 
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredPets, setFilteredPets] = useState([]);
-
+    const token = localStorage.getItem('token');
     useEffect(() => {
         axios.get(`${config.address}/api/pet/all`)
             .then((response) => {
@@ -69,26 +69,37 @@ const MyPosts = () => {
     };
 
     
-
     const handleConfirmPost = async () => {
+        setLoading(true); // Set loading to true
         try {
             await axios.put(`${config.address}/api/pet/update-status/${selectedPet._id}`, {
                 p_status: 'For Adoption',
-                p_description: description, 
+                p_description: description,
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             });
-
+    
             const updatedPets = allPets.map(pet =>
                 pet._id === selectedPet._id ? { ...pet, p_status: 'For Adoption', p_description: description } : pet
             );
-
+    
             setAllPets(updatedPets);
             window.alert("Pet successfully posted!");
             setPets(updatedPets.filter(pet => pet.p_status === 'For Adoption'));
             setShowConfirmModal(false);
             setShowViewModal(false);
             setShowAddModal(false);
+    
+            // Log the action
+            console.log(`Pet ID: ${selectedPet._id} has been posted for adoption with description: ${description}`);
         } catch (err) {
-            console.log(err);
+            console.error("Error posting pet for adoption:", err);
+            window.alert("Failed to post pet for adoption. Please try again.");
+        } finally {
+            setLoading(false); // Reset loading state
         }
     };
 
@@ -98,18 +109,32 @@ const MyPosts = () => {
     };
 
     const confirmRemove = async () => {
+        setLoading(true); // Set loading to true
         try {
-            await axios.put(`${config.address}/api/pet/update-status/${selectedPet._id}`, { p_status: 'None' });
+            await axios.put(`${config.address}/api/pet/update-status/${selectedPet._id}`, { p_status: 'None' }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
             const updatedPets = allPets.map(pet =>
                 pet._id === selectedPet._id ? { ...pet, p_status: 'None' } : pet
             );
+    
             setAllPets(updatedPets);
             setPets(updatedPets.filter(pet => pet.p_status === 'For Adoption'));
             window.alert("Post successfully removed.");
-            setShowConfirmRemoveModal(false); 
+            setShowConfirmRemoveModal(false);
             setShowViewPostModal(false);
+    
+            // Log the removal action
+            console.log(`Pet ID: ${selectedPet._id} has been removed from adoption.`);
         } catch (err) {
-            console.log(err);
+            console.error("Error removing pet from adoption:", err);
+            window.alert("Failed to remove pet from adoption. Please try again.");
+        } finally {
+            setLoading(false); // Reset loading state
         }
     };
 

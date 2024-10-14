@@ -114,7 +114,7 @@
     font-size: 30px;
     font-weight: bold;
     color: black;
-    margin-right: 450px; 
+    margin-right:450px; 
     background-color:black;
   }
 .navlink-container{
@@ -143,7 +143,22 @@
     width: 100%;
     padding: 0;
     margin: 0;
+    
 }
+
+.navcontainer1{
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    justify-items: right;
+    align-items: center;
+    width: 100%;
+    margin-right: 0;
+}
+.shift-right {
+    margin-left: 13%;
+}
+
 .navlink {
     color: black;
     text-decoration: none;
@@ -3334,4 +3349,17 @@
 .sapicker{
     width: 10rem;
     height: 2.2rem;
+}
+.satable{
+    height: 46rem !important;
+    overflow-y: auto; 
+    overflow-x: hidden;
+}
+.satable th, .satable td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+.satable tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
 }

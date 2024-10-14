@@ -29,6 +29,8 @@ const Adoptions = () => {
 
     const [pendingStartIndex, setPendingStartIndex] = useState(0);
     const [activeStartIndex, setActiveStartIndex] = useState(0);
+
+    const token = localStorage.getItem('token');
     const cardsToShow = 5;
 
     const fetchAdoptions = () => {
@@ -85,45 +87,76 @@ const Adoptions = () => {
         setShowRejectModal(true);
     };
 
-    const handleRejectConfirmation = () => {
-        axios.patch(`${config.address}/api/adoption/decline/${selectedAdoption._id}`, { rejection_reason: rejectionReason === 'Other' ? otherReason : rejectionReason })
-            .then(() => {
-                setPendingAdoptions(prev => prev.filter(adopt => adopt._id !== selectedAdoption._id));
-                setShowRejectModal(false);
-                setSelectedAdoption(null);
-                setRejectionReason('');
-                setOtherReason('');
-                alert('Adoption rejected successfully.');
-                fetchAdoptions();
-            })
-            .catch(err => console.error("Error rejecting adoption:", err));
+    const handleRejectConfirmation = async () => {
+        try {
+            const rejectionReasonToSend = rejectionReason === 'Other' ? otherReason : rejectionReason;
+    
+            await axios.patch(`${config.address}/api/adoption/decline/${selectedAdoption._id}`, { rejection_reason: rejectionReasonToSend }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Include authorization if necessary
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            setPendingAdoptions(prev => prev.filter(adopt => adopt._id !== selectedAdoption._id));
+            setShowRejectModal(false);
+            setSelectedAdoption(null);
+            setRejectionReason('');
+            setOtherReason('');
+            alert('Adoption rejected successfully.');
+            fetchAdoptions();
+        } catch (err) {
+            console.error("Error rejecting adoption:", err);
+            alert('Failed to reject adoption. Please try again.'); // User-friendly error message
+        }
     };
-
-    const handleSubmitDate = () => {
-        axios.patch(`${config.address}/api/adoption/approve/${selectedAdoption._id}`, { visitDate, visitTime })
-            .then(() => {
-                setPendingAdoptions(prev => prev.filter(adopt => adopt._id !== selectedAdoption._id));
-                setShowDateModal(false);
-                setVisitDate('');
-                setVisitTime('');
-                alert('Adoption approved and visit scheduled.');
-                fetchAdoptions(); 
-            })
-            .catch(err => console.error("Error approving adoption:", err));
+    
+    const handleSubmitDate = async () => {
+        try {
+            await axios.patch(`${config.address}/api/adoption/approve/${selectedAdoption._id}`, { visitDate, visitTime }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Include authorization if necessary
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            setPendingAdoptions(prev => prev.filter(adopt => adopt._id !== selectedAdoption._id));
+            setShowDateModal(false);
+            setVisitDate('');
+            setVisitTime('');
+            alert('Adoption approved and visit scheduled.');
+            fetchAdoptions(); 
+        } catch (err) {
+            console.error("Error approving adoption:", err);
+            alert('Failed to approve adoption. Please try again.'); // User-friendly error message
+        }
     };
+    
+    
 
-    const handleCompleteAdoption = () => {
+    const handleCompleteAdoption = async () => { 
         if (!selectedActiveAdoption || !selectedActiveAdoption._id) {
             console.error("No active adoption selected or missing adoption ID");
             return;
         }
-        axios.patch(`${config.address}/api/adoption/complete/${selectedActiveAdoption._id}`)
-            .then(() => {
-                alert('Adoption marked as complete.');
-                fetchAdoptions();
-                setShowActiveModal(false);
-            })
-            .catch(err => console.error("Error completing adoption:", err));
+        
+        try {
+            const token = localStorage.getItem('token'); // Retrieve the token
+            
+            await axios.patch(`${config.address}/api/adoption/complete/${selectedActiveAdoption._id}`, {}, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Include authorization token
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            alert('Adoption marked as complete.');
+            fetchAdoptions();
+            setShowActiveModal(false);
+        } catch (err) {
+            console.error("Error completing adoption:", err);
+            alert('Failed to mark adoption as complete. Please try again.'); // User-friendly error message
+        }
     };
 
     const handleFailAdoption = () => {
@@ -131,18 +164,31 @@ const Adoptions = () => {
         setShowFailedModal(true);
     };
 
-    const handleSubmitFailed = () => {
-        axios.patch(`${config.address}/api/adoption/fail/${selectedActiveAdoption._id}`, { reason: failedReason === 'Other' ? otherFailedReason : failedReason })
-            .then(() => {
-                alert('Adoption marked as failed.');
-                fetchAdoptions();
-                setShowFailedModal(false);
-                setFailedReason('');
-                setOtherFailedReason('');
-                setShowActiveModal(false);
-            })
-            .catch(err => console.error("Error failing adoption:", err));
+    const handleSubmitFailed = async () => {
+        try {
+            const token = localStorage.getItem('token'); // Retrieve the token
+            
+            await axios.patch(`${config.address}/api/adoption/fail/${selectedActiveAdoption._id}`, { 
+                reason: failedReason === 'Other' ? otherFailedReason : failedReason 
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Include authorization token
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            alert('Adoption marked as failed.');
+            fetchAdoptions();
+            setShowFailedModal(false);
+            setFailedReason('');
+            setOtherFailedReason('');
+            setShowActiveModal(false);
+        } catch (err) {
+            console.error("Error failing adoption:", err);
+            alert('Failed to mark adoption as failed. Please try again.'); // User-friendly error message
+        }
     };
+    
 
     const handlePendingNext = () => {
         if (pendingStartIndex + cardsToShow < pendingAdoptions.length) {

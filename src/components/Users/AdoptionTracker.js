@@ -87,7 +87,6 @@ const AdoptionTracker = () => {
                     }
                 });
 
-                // Sort adoptions by submitted date (assuming 'submittedDate' exists) in descending order
                 const sortedAdoptions = response.data.sort((a, b) => new Date(b.a_submitted_at) - new Date(a.a_submitted_at));
 
                 setAdoptions(sortedAdoptions);
@@ -275,7 +274,7 @@ const AdoptionTracker = () => {
             </div>
             <div className="trackerbox1">
                 <div className="trackerbox2">
-                    {/* Display User Information */}
+
                     {userProfile && (
                         <div className="tracker-profile-box">
                             <div className="tracker-profile-imgbox">
@@ -296,7 +295,6 @@ const AdoptionTracker = () => {
                         </div>
                     </div>
 
-                    {/* Dropdown for filtering based on status */}
                     <div className="filter-container">
                         <Form.Select 
                             aria-label="Filter adoptions by status"
@@ -313,7 +311,6 @@ const AdoptionTracker = () => {
                         </Form.Select>
                     </div>
 
-                    {/* Adoption cards */}
                     <div className="tracker-adoption-container">
                         {filteredAdoptions.length > 0 ? (
                             filteredAdoptions.map((adoption) => (
@@ -325,7 +322,7 @@ const AdoptionTracker = () => {
                                         {adoption.p_id && adoption.p_id.pet_img && adoption.p_id.pet_img.length > 0 && (
                                             <div className="tracker-petimg-ph">
                                                 <Image
-                                                    src={`${config.address}${adoption.p_id.pet_img[0]}`} // Use the first image in the pet_img array
+                                                    src={`${config.address}${adoption.p_id.pet_img[0]}`} 
                                                     className="tracker-petimg-preview"
                                                     alt={adoption.p_id.p_name}
                                                 />
@@ -364,7 +361,7 @@ const AdoptionTracker = () => {
                             <div className="tracker-pet-details">
                             {selectedPet.pet_img && selectedPet.pet_img.length > 0 && (
                                 <Image
-                                    src={`${config.address}${selectedPet.pet_img[0]}`} // Use the first image in the pet_img array
+                                    src={`${config.address}${selectedPet.pet_img[0]}`} 
                                     className="tracker-pet-img"
                                     alt={selectedPet.p_name}
                                 />
@@ -385,14 +382,14 @@ const AdoptionTracker = () => {
                                     const isStepCompleted = index < currentStep;
                                     const isStepActive = index === currentStep;
                                     const isStepFailed = (selectedAdoption?.status === 'rejected' && index === 1) || (selectedAdoption?.status === 'failed' && index === 2);
-                                    const stepColor = isStepFailed ? 'red' : (isStepCompleted ? '#ff66b2' : 'gray'); // Red for failed, pink for completed, gray for upcoming
+                                    const stepColor = isStepFailed ? 'red' : (isStepCompleted ? '#ff66b2' : 'gray'); 
 
                                     return (
                                         <Step key={label} completed={isStepCompleted}>
                                             <StepLabel
                                                 StepIconProps={{
                                                     style: { color: stepColor },
-                                                    component: isStepFailed ? Close : undefined  // Use the 'Close' icon component only when the step is failed
+                                                    component: isStepFailed ? Close : undefined 
                                                 }}
                                             >
                                                 {label}
@@ -410,12 +407,10 @@ const AdoptionTracker = () => {
                                 <div />
                                 <p className="tracker-progressmsg">{getStatusMessage(selectedAdoption.status, selectedAdoption.visitDate, selectedAdoption.visitTime)}</p>
 
-                                {/* Rejection reason for rejected status */}
                                 {selectedAdoption.status === 'rejected' && (
                                     <p className="tracker-progressmsg">Reason: {selectedAdoption.rejection_reason}</p>
                                 )}
 
-                                {/* Failed reason for failed status */}
                                 {selectedAdoption.status === 'failed' && (
                                     <p className="tracker-progressmsg">Reason: {selectedAdoption.failedReason}</p>
                                 )}

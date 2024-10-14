@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -10,6 +10,7 @@ import axios from 'axios';
 import DataTable from 'react-data-table-component';
 import * as XLSX from 'xlsx';
 import config from '../config';
+import AuthContext from '../../context/AuthContext';
 
 const BarangayTable = () => {
   const [barangays, setBarangays] = useState([]);
@@ -22,6 +23,10 @@ const BarangayTable = () => {
   const [editingCell, setEditingCell] = useState(null);
   const [editValue, setEditValue] = useState(''); 
   const [editError, setEditError] = useState(null);
+  const [currentFilterValue, setCurrentFilterValue] = useState('');
+
+  const { user, token } = useContext(AuthContext);
+
   const [formData, setFormData] = useState({
     b_barangay: '',
     b_ownername: '',
@@ -61,45 +66,52 @@ const BarangayTable = () => {
     setEditValue(e.target.value);
   };
   
-  const handleEditSave = (row) => {
+  const handleEditSave = async (row) => {
     if (!editingCell) return;
-  
-    // Validation: Check if the edit value is empty
+
     if (editValue.trim() === '') {
-      setEditError('This field cannot be blank'); // Set validation error
-      return; // Prevent saving the empty value
+        setEditError('This field cannot be blank'); 
+        return; 
     }
-  
-    setEditError(null); // Clear validation error if any
-  
+
+    setEditError(null); 
+
     if (editValue !== row[editingCell.columnName]) {
-      const updatedBarangays = barangays.map((barangay) =>
-        barangay._id === row._id ? { ...barangay, [editingCell.columnName]: editValue } : barangay
-      );
-  
-      setBarangays(updatedBarangays);
-      setFilteredBarangays(updatedBarangays);
-  
-      axios
-        .put(`${config.address}/api/barangay/update/${row._id}`, { [editingCell.columnName]: editValue })
-        .then((response) => {
-          console.log('PUT request successful. Response from backend:', response.data);
-  
-          const updatedBarangay = response.data.updatedBarangay;
-          setBarangays((prevBarangays) =>
-            prevBarangays.map((barangay) => (barangay._id === row._id ? updatedBarangay : barangay))
-          );
-          setFilteredBarangays((prevBarangays) =>
-            prevBarangays.map((barangay) => (barangay._id === row._id ? updatedBarangay : barangay))
-          );
-        })
-        .catch((error) => {
-          console.error('Error updating data with axios.put:', error);
-        });
+        const updatedBarangays = barangays.map((barangay) =>
+            barangay._id === row._id ? { ...barangay, [editingCell.columnName]: editValue } : barangay
+        );
+
+        setBarangays(updatedBarangays);
+        setFilteredBarangays(updatedBarangays);
+
+        try {
+            const token = localStorage.getItem('token'); 
+            const response = await axios.put(`${config.address}/api/barangay/update/${row._id}`, { [editingCell.columnName]: editValue }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                }
+            });
+
+            console.log('PUT request successful. Response from backend:', response.data);
+
+            const updatedBarangay = response.data.updatedBarangay;
+
+            setBarangays((prevBarangays) =>
+                prevBarangays.map((barangay) => (barangay._id === row._id ? updatedBarangay : barangay))
+            );
+            setFilteredBarangays((prevBarangays) =>
+                prevBarangays.map((barangay) => (barangay._id === row._id ? updatedBarangay : barangay))
+            );
+        } catch (error) {
+            console.error('Error updating data with axios.put:', error);
+            alert('Failed to update the row. Please check the console for details.');
+        }
     }
-  
+
     setEditingCell(null);
-  };
+};
+
     
   const EditableCell = ({ row, columnName }) => {
     const isEditing = editingCell?.rowId === row._id && editingCell?.columnName === columnName;
@@ -144,15 +156,26 @@ const BarangayTable = () => {
   
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.post(`${config.address}/api/barangay/new`, formData)
-      .then(response => {
+
+    const token = localStorage.getItem('token');
+    console.log('Token:', token); 
+    axios.post(`${config.address}/api/barangay/new`, formData, {
+        headers: {
+            'Authorization': `Bearer ${token}`, 
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
         setBarangays(prevBarangays => [...prevBarangays, response.data.savedBarangay]);
         setFilteredBarangays(prevBarangays => [...prevBarangays, response.data.savedBarangay]);
         window.alert("Row successfully added.");
         handleClose();
-      })
-      .catch(error => console.error('Error adding new row:', error));
-  };
+    })
+    .catch(error => console.error('Error adding new row:', error));
+};
+
+
+
 
   const columns = [
     { name: 'ID', selector: row => row.b_id, sortable: true, width: '70px' },
@@ -220,54 +243,93 @@ const BarangayTable = () => {
     reader.readAsArrayBuffer(file);
   };
 
-  const handleSubmitImportedData = () => {
-    fileData.forEach((row) => {
-      const formattedRow = {
-        b_barangay: row['Barangay'],
-        b_ownername: row['Owner Name'],
-        b_petname: row['Pet Name'],
-        b_pettype: row['Species'],
-        b_petgender: row['Sex'],
-        b_petage: row['Age'],
-        b_color: row['Color'],
-        b_address: row['Address/Barangay/Zone'],
-      };
+  const handleSubmitImportedData = async () => { 
+    const token = localStorage.getItem('token'); 
+    const savedBarangays = []; 
 
-      axios.post(`${config.address}/api/barangay/new`, formattedRow)
-        .then(response => {
-          setBarangays(prevBarangays => [...prevBarangays, response.data.savedBarangay]);
-          setFilteredBarangays(prevBarangays => [...prevBarangays, response.data.savedBarangay]);
-        })
-        .catch(error => console.error('Error saving imported data to database:', error));
-    });
+    for (const row of fileData) {
+        const formattedRow = {
+            b_barangay: row['Barangay'],
+            b_ownername: row['Owner Name'],
+            b_petname: row['Pet Name'],
+            b_pettype: row['Species'],
+            b_petgender: row['Sex'],
+            b_petage: row['Age'],
+            b_color: row['Color'],
+            b_address: row['Address/Barangay/Zone'],
+        };
 
-    setFileData([]);
+        try {
+            const response = await axios.post(`${config.address}/api/barangay/new`, formattedRow, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, 
+                    'Accept': 'application/json'
+                }
+            });
+            savedBarangays.push(response.data.savedBarangay._id); 
+            setBarangays(prevBarangays => [...prevBarangays, response.data.savedBarangay]);
+            setFilteredBarangays(prevBarangays => [...prevBarangays, response.data.savedBarangay]);
+        } catch (error) {
+            console.error('Error saving imported data to database:', error);
+            alert('Failed to save some rows. Please check the console for details.');
+        }
+    }
+
+    setFileData([]); 
     window.alert("File successfully imported.");
     handleCloseImportModal();
     alert('Data successfully imported and saved to the database!');
   };
-  
-  const handleExport = () => {
+
+  useEffect(() => {
+    if (filterText === '') {
+        setFilteredBarangays(barangays);
+        setCurrentFilterValue(''); 
+    } else {
+        const filteredData = barangays.filter(item => item.b_barangay.toString() === filterText);
+        setFilteredBarangays(filteredData);
+        setCurrentFilterValue(filterText); 
+    }
+  }, [filterText, barangays]);
+
+  const handleExport = async () => { 
+    const token = localStorage.getItem('token'); 
+    const isFiltered = filteredBarangays.length < barangays.length;
+    const filterValue = isFiltered ? currentFilterValue : 'N/A'; 
+    const entityIds = filteredBarangays.map(item => item._id); 
+
+    await axios.post(`${config.address}/api/barangay/export`, { isFiltered, filterValue, entityIds }, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+        }
+    }).catch(error => {
+        console.error('Error logging export activity:', error);
+        alert('Failed to log export activity. Proceeding with export.');
+    });
+
     const exportData = filteredBarangays.map(item => ({
-      'ID': item.b_id,                         
-      'Barangay': item.b_barangay,               
-      'Owner Name': item.b_ownername,            
-      'Address/Barangay/Zone': item.b_address,  
-      'Pet Name': item.b_petname,               
-      'Species': item.b_pettype,                
-      'Age': item.b_petage,                   
-      'Sex': item.b_petgender,                
-      'Color': item.b_color,                  
-      'Date Added': item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A',
+        'ID': item.b_id,                         
+        'Barangay': item.b_barangay,               
+        'Owner Name': item.b_ownername,            
+        'Address/Barangay/Zone': item.b_address,  
+        'Pet Name': item.b_petname,               
+        'Species': item.b_pettype,                
+        'Age': item.b_petage,                    
+        'Sex': item.b_petgender,                
+        'Color': item.b_color,                   
+        'Date Added': item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A',
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(exportData);
-
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Barangays');
 
     XLSX.writeFile(workbook, 'BarangaysData.xlsx');
   };
+
+
+
 
   return (
     <>
@@ -346,8 +408,8 @@ const BarangayTable = () => {
         </Modal.Footer>
       </Modal>
 
-{/* Modal for adding a new row */}
-<Modal show={show} onHide={handleClose}>
+      {/* Modal for adding a new row */}
+      <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Add New Information</Modal.Title>
         </Modal.Header>
@@ -364,7 +426,7 @@ const BarangayTable = () => {
                     value={formData.b_barangay}
                     onChange={handleChange}
                     min="1"
-                    max="201"  // Limit to range 1-201
+                    max="201"  
                     required
                     className='b-brgy-inp'
                   />
@@ -378,7 +440,7 @@ const BarangayTable = () => {
                   required
                   className='b-type-inp'
                   >
-                  <option value="">Pet Type</option> {/* Placeholder */}
+                  <option value="">Pet Type</option> 
                   <option value="Dog">Dog</option>
                   <option value="Cat">Cat</option>
                   </Form.Select>
@@ -418,7 +480,7 @@ const BarangayTable = () => {
                   className="b-gender-inp"
                   required
                 >
-                  <option value="">Select</option> {/* Placeholder */}
+                  <option value="">Select</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                 </Form.Select>

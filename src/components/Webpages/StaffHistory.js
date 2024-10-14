@@ -41,12 +41,12 @@ const StaffHistory = () => {
     // Search Filter
     if (searchTerm) {
       logs = logs.filter(log => 
-        log.adminId?.a_username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        log.description.toLowerCase().includes(searchTerm.toLowerCase())
+          (log.adminId?.a_username && log.adminId.a_username.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (log.description && log.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (log.entityName && log.entityName.toLowerCase().includes(searchTerm.toLowerCase()))
       );
-    }
+  }  
 
-    // Action Filter
     if (selectedAction) {
       logs = logs.filter(log => log.action === selectedAction);
     }
@@ -71,26 +71,37 @@ const StaffHistory = () => {
       name: 'ID',
       selector: row => row.log_id || 'N/A',
       sortable: true,
+      width: '120px'
     },
     {
-      name: 'Admin Username',
+      name: 'Username',
       selector: row => row.adminId?.a_username || 'N/A',
       sortable: true,
+      width: '200px'
     },
     {
       name: 'Date',
       selector: row => new Date(row.timestamp).toLocaleDateString() || 'N/A',
       sortable: true,
+      width: '200px'
     },
     {
       name: 'Time',
       selector: row => new Date(row.timestamp).toLocaleTimeString() || 'N/A',
       sortable: true,
+      width: '200px'
     },
     {
       name: 'Action',
       selector: row => row.action || 'N/A',
       sortable: true,
+      width: '200px'
+    },
+    {
+      name: 'Entity Name',
+      selector: row => row.entityName,
+      sortable: true,
+      width: '200px'
     },
     {
       name: 'Description',
@@ -117,9 +128,12 @@ const StaffHistory = () => {
               <div className="sasearch">
                 <Form.Control
                   type="text"
-                  placeholder="Search by Admin Username or Description"
+                  placeholder="Search"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  paginationPerPage={13}
+                  paginationRowsPerPageOptions={[5, 10, 13]}
+                  highlightOnHover
                 />
               </div>
 
@@ -159,7 +173,7 @@ const StaffHistory = () => {
             </div>
 
             {/* DataTable */}
-            <div className="pltable">
+            <div className="satable">
               <DataTable
                 columns={columns}
                 data={filteredLogs}

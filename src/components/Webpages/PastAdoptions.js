@@ -141,12 +141,6 @@ const PastAdoptions = () => {
                     </Modal.Header>
                     <Modal.Body>
                         <h4>Pet Information</h4>
-                        <p><strong>Name:</strong> {selectedAdoption.p_id?.p_name}</p>
-                        <p><strong>Type:</strong> {selectedAdoption.p_id?.p_type}</p>
-                        <p><strong>Age:</strong> {selectedAdoption.p_id?.p_age}</p>
-                        <p><strong>Gender:</strong> {selectedAdoption.p_id?.p_gender}</p>
-
-                        {/* Display pet image as URL */}
                         {selectedAdoption.p_id?.pet_img && (
                             <Image
                                 src={`${config.address}${selectedAdoption.p_id.pet_img[0]}`} // URL for the image
@@ -155,7 +149,11 @@ const PastAdoptions = () => {
                                 className="adoption-pet-image"
                             />
                         )}
-
+                        <p><strong>Name:</strong> {selectedAdoption.p_id?.p_name}</p>
+                        <p><strong>Type:</strong> {selectedAdoption.p_id?.p_type}</p>
+                        <p><strong>Age:</strong> {selectedAdoption.p_id?.p_age}</p>
+                        <p><strong>Gender:</strong> {selectedAdoption.p_id?.p_gender}</p>
+                        
                         <h4>Adopter Information</h4>
                         <p><strong>Full Name:</strong> {selectedAdoption.v_id?.v_fname} {selectedAdoption.v_id?.v_mname} {selectedAdoption.v_id?.v_lname}</p>
                         <p><strong>Occupation:</strong> {selectedAdoption.occupation || 'N/A'}</p>
@@ -171,10 +169,6 @@ const PastAdoptions = () => {
                         <p><strong>Allergic to Pets:</strong> {selectedAdoption.allergic_to_pets ? 'Yes' : 'No'}</p>
                         <p><strong>Household Description:</strong> {selectedAdoption.household_description || 'N/A'}</p>
                     </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="success" onClick={() => console.log('Complete adoption clicked')}>Complete</Button>
-                        <Button variant="danger" onClick={() => console.log('Fail adoption clicked')}>Fail</Button>
-                    </Modal.Footer>
                 </Modal>
             )}
         </>

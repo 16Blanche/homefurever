@@ -22,7 +22,6 @@ const convertToBase64 = (buffer) => {
 
 const PetListings =()=>{
     const navigate = useNavigate();
-    const { user } = useContext(AuthContext);
     const [allPets,setAllPets] =useState([]);
     const [filteredPets, setFilteredPets] = useState([]); 
 
@@ -45,7 +44,8 @@ const PetListings =()=>{
     const [selectedPetForArchive, setSelectedPetForArchive] = useState(null);
 
     const [searchQuery, setSearchQuery] = useState(''); 
-    
+
+    const { user, token } = useContext(AuthContext);
 
     const handleViewButton = (pet) => {
         console.log("View Button Clicked");
@@ -81,10 +81,17 @@ const PetListings =()=>{
     
         console.log("Updated Pet Data:", updatedPet); 
     
-        axios.put(`${config.address}/api/pet/update/${selectedPet._id}`, updatedPet)
+        const token = localStorage.getItem('token');
+        
+        axios.put(`${config.address}/api/pet/update/${selectedPet._id}`, updatedPet, {
+            headers: {
+                'Authorization': `Bearer ${token}`,  
+                'Content-Type': 'application/json'
+            }
+        })
             .then(response => {
                 console.log("Update Response:", response);
-
+    
                 setAllPets(prevPets => 
                     prevPets.map(pet => 
                         pet._id === selectedPet._id ? { ...pet, ...updatedPet } : pet
@@ -101,8 +108,6 @@ const PetListings =()=>{
                 }
             });
     };
-    
-    
     
       const handleDeleteButton = (pet) => {
         setSelectedPetForDelete(pet);
@@ -137,45 +142,72 @@ const PetListings =()=>{
     };
 
     const handleArchiveSubmit = () => {
-        axios.delete(`${config.address}/api/pet/delete/transfer/${selectedPetForArchive._id}/${archiveReason}`)
-            .then((response) => {
-                setAllPets(prevPets => prevPets.filter(pet => pet._id !== selectedPetForArchive._id));
-                console.log(response.data.message);
-                window.alert("Pet successfully archived!");
-                handleArchiveModalClose();
-            })
-            .catch((err) => {
-                console.log(err);
-                handleArchiveModalClose();
-            });
+        const token = localStorage.getItem('token'); 
+        if (!token) {
+            console.error("No authorization token found");
+            return; 
+        }
+    
+        axios.put(`${config.address}/api/pet/archive/${selectedPetForArchive._id}`, {
+            reason: archiveReason
+        }, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then((response) => {
+            setAllPets(prevPets => prevPets.map(pet => 
+                pet._id === selectedPetForArchive._id ? { ...pet, p_status: archiveReason } : pet
+            ));
+            console.log(response.data.message);
+            window.alert("Pet successfully archived!");
+            handleArchiveModalClose();
+        })
+        .catch((err) => {
+            console.error("Error archiving pet:", err);
+            handleArchiveModalClose();
+        });
     };
     
-    
-
     const handleReasonChange = (event) => {
         setArchiveReason(event.target.value);
     };
       
 
     useEffect(() => {
-        axios.get(`${config.address}/api/pet/all`)
-            .then((response) => {
-                console.log(response.data.thePet);
-                setAllPets(response.data.thePet);
-                setFilteredPets(response.data.thePet);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, []);
+        axios.get(`${config.address}/api/pet/all`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        })
+        .then((response) => {
+            console.log(response.data.thePet);
+            const fetchedPets = Array.isArray(response.data.thePet) ? response.data.thePet : [];
+            setAllPets(fetchedPets);
+
+            const filtered = fetchedPets.filter(pet => 
+                pet.p_status === 'none' || pet.p_status === 'For Adoption'
+            );
+            setFilteredPets(filtered);
+        })
+        .catch((err) => {
+            console.error("Error fetching pet data:", err);
+            setAllPets([]);
+            setFilteredPets([]);
+        });
+    }, [token]);
 
     useEffect(() => {
-        const results = allPets.filter(pet =>
-            pet.p_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            pet.p_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            pet.p_breed.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        setFilteredPets(results);
+        if (Array.isArray(allPets)) {
+            const results = allPets.filter(pet =>
+                (pet.p_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                pet.p_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                pet.p_breed.toLowerCase().includes(searchQuery.toLowerCase())) &&
+                (pet.p_status === 'none' || pet.p_status === 'For Adoption') 
+            );
+            setFilteredPets(results);
+        }
     }, [searchQuery, allPets]); 
 
     const handleSearchChange = (e) => {
@@ -298,20 +330,18 @@ const PetListings =()=>{
                         <Modal.Body>
                             {selectedPetForView && (
                                 <>
-                                    {/* Display Multiple Pet Images if Available */}
                                     {selectedPetForView.pet_img && selectedPetForView.pet_img.length > 0 && (
                                         selectedPetForView.pet_img.map((img, index) => (
                                             <Image
                                                 key={index}
-                                                src={`${config.address}${img}`} // Construct full URL for images
+                                                src={`${config.address}${img}`}
                                                 alt={`Pet Image ${index + 1}`}
                                                 className="ulimg-preview"
                                                 style={{ marginBottom: '10px', maxWidth: '100%' }} 
                                             />
                                         ))
                                     )}
-                                    
-                                    {/* Display Pet Information */}
+
                                     <p>Pet ID: {selectedPetForView.p_id}</p>
                                     <p>Pet Name: {selectedPetForView.p_name}</p>
                                     <p>Species: {selectedPetForView.p_type}</p>
@@ -403,8 +433,6 @@ const PetListings =()=>{
                                 <Button variant="primary" onClick={handleArchiveSubmit}>Archive</Button>
                             </Modal.Footer>
                         </Modal>
-
-
                     </div>
                 </div>
             </div>

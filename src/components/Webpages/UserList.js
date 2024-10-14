@@ -189,7 +189,7 @@ const UserList=()=>{
                                         <div className="ulleft-column">
                                             {selectedUserForView.v_img && (
                                                 <img
-                                                    src={`${config.address}${selectedUserForView.v_img}`} // Use path for image display
+                                                    src={`${config.address}${selectedUserForView.v_img}`} 
                                                     alt="User Image"
                                                     className="ulimg-preview"
                                                 />
@@ -209,7 +209,7 @@ const UserList=()=>{
                                             <p>Valid ID:</p>
                                             {selectedUserForView.v_validID && (
                                                 <img
-                                                    src={`${config.address}${selectedUserForView.v_validID}`} // Use path for valid ID display
+                                                    src={`${config.address}${selectedUserForView.v_validID}`}
                                                     alt="Valid ID"
                                                     className="ulidimg-preview"
                                                     onClick={handleValidIDClick}
@@ -229,7 +229,7 @@ const UserList=()=>{
                             <Modal.Body>
                                 {selectedUserForView && selectedUserForView.v_validID && (
                                     <img
-                                        src={`${config.address}${selectedUserForView.v_validID}`} // Use path for large valid ID display
+                                        src={`${config.address}${selectedUserForView.v_validID}`} 
                                         alt="Valid ID"
                                         className="ulmodal-image"
                                     />

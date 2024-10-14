@@ -2,10 +2,11 @@ import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import Form from 'react-bootstrap/Form'; // Import Form
 import './Homepage.css';
 import TaskBar from "./TaskBar";
 import NavigationBar from "./NavigationBar";
-import Modal from 'react-bootstrap/Modal';
 import DeleteModal from "./DeleteModal";
 import DataTable from 'react-data-table-component';
 import config from '../config';
@@ -19,11 +20,49 @@ const NewUsers = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedUserForDelete, setSelectedUserForDelete] = useState(null);
     const [showLargeIDModal, setShowLargeIDModal] = useState(false);
+    
+    // Decline modal state
+    const [showDeclineModal, setShowDeclineModal] = useState(false);
+    const [declineReason, setDeclineReason] = useState('');
+    const [otherReason, setOtherReason] = useState('');
+    const [userEmail, setUserEmail] = useState('');
+
+    // Approval modal state
+    const [showApproveModal, setShowApproveModal] = useState(false);
+    const [selectedUserForApprove, setSelectedUserForApprove] = useState(null);
 
     const handleViewButton = (user) => {
         console.log("View Button Clicked");
         setSelectedUserForView(user); 
         setShowViewModal(true); 
+    };
+
+    const handleApproveButton = (user) => {
+        setSelectedUserForApprove(user);
+        setShowApproveModal(true);
+    };
+
+    const handleApproveConfirm = () => {
+        const emailData = {
+            to: selectedUserForApprove.p_emailadd,
+            subject: 'Your Application Status',
+            text: `Good Day,${selectedUserForApprove.p_fname}!\n\nWe are pleased to inform you that your application for an account has been approved. You are now eligible to send adoption applications through our platform.\n\nThank you for your commitment to providing a loving home for a pet!\n\nBest regards,\nPasay Animal Shelter`,
+        };
+
+        axios.post(`${config.address}/api/send-email`, emailData)
+            .then(response => {
+                console.log('Approval email sent:', response.data);
+                setShowApproveModal(false);
+                setAllUsers(allUsers.filter(user => user._id !== selectedUserForApprove._id)); 
+            })
+            .catch(error => {
+                console.error('Error sending approval email:', error);
+                alert('Failed to send approval email.');
+            });
+    };
+
+    const handleApproveCancel = () => {
+        setShowApproveModal(false);
     };
 
     const handleApprove = (userId) => {
@@ -86,6 +125,34 @@ const NewUsers = () => {
         setShowLargeIDModal(true);
     };
 
+    const handleDeclineButton = (user) => {
+        setUserEmail(user.p_emailadd); // Set the user's email for sending the decline reason
+        setShowDeclineModal(true);
+    };
+
+    const handleDeclineConfirm = () => {
+        const reasonToSend = declineReason === 'Other' ? otherReason : declineReason;
+        
+        // Prepare the email data
+        const emailData = {
+            to: userEmail,
+            subject: 'Your Application Status',
+            text: `Good Day, ${selectedUserForView.p_fname}!\n\nWe appreciate your interest in adopting a pet through our platform. After careful consideration, we regret to inform you that your application for an account has been declined.\n\nThe reason for this decision is as follows: ${reasonToSend}.\n\nWe encourage you to correct the noted reason and consider signing up again. If you have any questions or would like more details about this decision, please do not hesitate to reach out.\n\nThank you for your understanding.\n\nBest regards,\nPasay Animal Shelter`,
+        };
+
+        // Send the email
+        axios.post(`${config.address}/api/send-email`, emailData)
+            .then(response => {
+                console.log('Email sent:', response.data);
+                setShowDeclineModal(false);
+                // Optionally, refresh or update the user list
+            })
+            .catch(error => {
+                console.error('Error sending email:', error);
+                alert('Failed to send decline email.');
+            });
+    };
+
     const columns = [
         {
             name: 'User ID',
@@ -117,8 +184,8 @@ const NewUsers = () => {
             cell: row => (
                 <>
                     <Button className="nuviewbtn" onClick={() => handleViewButton(row)}>View</Button>
-                    <Button className="nuapprovebtn" onClick={() => handleApprove(row._id)}>Approve</Button>
-                    <Button className="nudeclinebtn" onClick={() => handleDeleteButton(row)}>Decline</Button>
+                    <Button className="nuapprovebtn" onClick={() => handleApproveButton(row)}>Approve</Button>
+                    <Button className="nudeclinebtn" onClick={() => handleDeclineButton(row)}>Decline</Button>
                 </>
             ),
         },
@@ -206,6 +273,59 @@ const NewUsers = () => {
                                     />
                                 )}
                             </Modal.Body>
+                        </Modal>
+
+                        {/* Decline Modal */}
+                        <Modal show={showDeclineModal} onHide={() => setShowDeclineModal(false)} className="nucustom-modal">
+                            <Modal.Header closeButton>
+                                <Modal.Title>Decline User</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <Form.Group controlId="declineReason">
+                                    <Form.Label>Reason for Declining:</Form.Label>
+                                    <Form.Control as="select" value={declineReason} onChange={(e) => setDeclineReason(e.target.value)}>
+                                        <option value="">Select a reason</option>
+                                        <option value="Invalid details">Invalid details</option>
+                                        <option value="Not qualified">Not qualified</option>
+                                        <option value="Other">Other</option>
+                                    </Form.Control>
+                                    {declineReason === 'Other' && (
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Please specify"
+                                            value={otherReason}
+                                            onChange={(e) => setOtherReason(e.target.value)}
+                                            style={{ marginTop: '10px' }}
+                                        />
+                                    )}
+                                </Form.Group>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={() => setShowDeclineModal(false)}>
+                                    Cancel
+                                </Button>
+                                <Button variant="primary" onClick={handleDeclineConfirm}>
+                                    Confirm Decline
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
+
+                        {/* Approve Modal */}
+                        <Modal show={showApproveModal} onHide={handleApproveCancel} className="nucustom-modal">
+                            <Modal.Header closeButton>
+                                <Modal.Title>Approve User</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <p>Are you sure you want to approve this user?</p>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={handleApproveCancel}>
+                                    Cancel
+                                </Button>
+                                <Button variant="primary" onClick={handleApproveConfirm}>
+                                    Confirm Approval
+                                </Button>
+                            </Modal.Footer>
                         </Modal>
 
                         <DeleteModal

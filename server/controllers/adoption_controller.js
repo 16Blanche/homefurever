@@ -2,6 +2,7 @@ const Pet = require('../models/pets_model');
 const Adoption = require('../models/adoption_model');
 const Verified = require('../models/verified_model');
 const Feedback = require('../models/feedback_model');
+const {logActivity} = require('./activitylog_controller');
 
 const submitAdoptionForm = async (req, res) => {
     console.log('Submit adoption form called');
@@ -58,55 +59,110 @@ const submitAdoptionForm = async (req, res) => {
 };
 
 
-// Admin approves an adoption application (status -> 'active')
-const approveAdoption = async (req, res) => {
+const approveAdoption = async (req, res) => { 
     try {
         const adoptionId = req.params.id;
         const { visitDate, visitTime } = req.body;
 
-        // Find the adoption form by ID and update the status to 'active'
+        // Find the adoption record and populate the pet and volunteer details
         const adoption = await Adoption.findByIdAndUpdate(adoptionId, {
             status: 'accepted',
             visitDate,
             visitTime
-        }, { new: true });
-        
+        }, { new: true })
+        .populate('p_id')  // Populate pet details
+        .populate('v_id'); // Populate volunteer (user) details
+
         if (!adoption) {
             return res.status(404).json({ message: 'Adoption form not found' });
         }
 
+        const adminId = req.user && (req.user._id || req.user.id); 
+        if (!adminId) {
+            console.error('Unauthorized: Admin ID not found in req.user');
+            return res.status(401).json({ message: 'Unauthorized: Admin ID not found' });
+        }
+
+        // Access the pet's name and user's full name
+        const petName = adoption.p_id.p_name; // Access pet's name
+        const userName = `${adoption.v_id.v_fname} ${adoption.v_id.v_lname}`; // Combine first and last name
+
+        const logMessage = `Approved adoption application for ${petName}.`;
+
+        await logActivity(
+            adminId,
+            'ACCEPT',
+            'Adoptions',
+            adoptionId,
+            userName, // Logging pet's name
+            logMessage
+        );
+
+        console.log('Activity logged successfully for adoption approval:', logMessage);
+
         res.status(200).json({ message: 'Adoption approved and visit scheduled', adoption });
     } catch (err) {
+        console.error("Error approving adoption:", err);
         res.status(500).json({ message: 'Error approving adoption', error: err.message });
     }
 };
+
+
+
+
 
 const declineAdoption = async (req, res) => {
     try {
         const adoptionId = req.params.id;
         const { rejection_reason } = req.body;
 
+        // Find the adoption record and populate the pet and volunteer details
         const adoption = await Adoption.findByIdAndUpdate(adoptionId, { 
             status: 'rejected',
             rejection_reason 
-        }, { new: true });
-        
+        }, { new: true })
+        .populate('p_id')  // Populate pet details
+        .populate('v_id'); // Populate volunteer (user) details
+
         if (!adoption) {
             return res.status(404).json({ message: 'Adoption form not found' });
         }
 
+        const adminId = req.user && (req.user._id || req.user.id); 
+        if (!adminId) {
+            console.error('Unauthorized: Admin ID not found in req.user');
+            return res.status(401).json({ message: 'Unauthorized: Admin ID not found' });
+        }
+
+        // Access the pet's name through adoption.p_id
+        const petName = adoption.p_id.p_name; // Access pet's name
+        const userName = `${adoption.v_id.v_fname} ${adoption.v_id.v_lname}`;
+
+        const logMessage = `Declined adoption for ${petName}.`;
+
+        await logActivity(
+            adminId,
+            'REJECT',
+            'Adoptions',
+            adoptionId,
+            userName, // Logging pet's name
+            logMessage
+        );
+
+        console.log('Activity logged successfully for adoption decline:', logMessage);
+
         res.status(200).json({ message: 'Adoption declined', adoption });
     } catch (err) {
+        console.error("Error declining adoption:", err);
         res.status(500).json({ message: 'Error declining adoption', error: err.message });
     }
 };
 
 
 
-// Get all pending adoption applications
 const getPendingAdoptions = async (req, res) => {
     try {
-        // Populate the v_id and p_id to retrieve associated user and pet details
+
         const pendingAdoptions = await Adoption.find({ status: 'pending' })
             .populate('v_id', 'v_fname v_lname v_mname v_add v_emailadd v_contactnumber v_username v_gender v_birthdate v_img') // Select relevant fields from 'Verified'
             .populate('p_id', 'pet_img p_name p_type p_age p_gender p_breed'); // Select relevant fields from 'Pet'
@@ -118,7 +174,6 @@ const getPendingAdoptions = async (req, res) => {
 };
 
 
-// Get all active adoption applications
 const getActiveAdoptions = async (req, res) => {
     try {
         const activeAdoptions = await Adoption.find({ status: 'accepted' })
@@ -139,13 +194,15 @@ const getDeclinedAdoptions = async (req, res) => {
     }
 };
 
-// Mark adoption as complete and update pet's status to 'adopted'
 const completeAdoption = async (req, res) => {
     try {
         const adoptionId = req.params.id;
-        
-        // Find the adoption by ID
-        const adoption = await Adoption.findById(adoptionId);
+
+        // Find the adoption record and populate the pet and volunteer details
+        const adoption = await Adoption.findById(adoptionId)
+            .populate('p_id')  // Populate pet details
+            .populate('v_id'); // Populate volunteer details
+
         if (!adoption) {
             return res.status(404).json({ message: 'Adoption not found' });
         }
@@ -154,35 +211,92 @@ const completeAdoption = async (req, res) => {
         adoption.status = 'complete';
         await adoption.save();
 
-        // Update the pet's status to 'adopted'
+        // Update pet status to adopted
         const pet = await Pet.findByIdAndUpdate(adoption.p_id, { p_status: 'adopted' }, { new: true });
         if (!pet) {
             return res.status(404).json({ message: 'Pet not found' });
         }
 
+        const adminId = req.user && (req.user._id || req.user.id); 
+        if (!adminId) {
+            console.error('Unauthorized: Admin ID not found in req.user');
+            return res.status(401).json({ message: 'Unauthorized: Admin ID not found' });
+        }
+
+        // Access the pet's name and user's full name
+        const petName = pet.p_name; // Access pet's name
+        const userName = `${adoption.v_id.v_fname} ${adoption.v_id.v_lname}`; // Combine first and last name
+
+        const logMessage = `Completed adoption for ${petName}.`;
+
+        await logActivity(
+            adminId,
+            'COMPLETE',
+            'Adoptions',
+            adoptionId,
+            userName, // Logging pet's name
+            logMessage
+        );
+
+        console.log('Activity logged successfully for adoption completion:', logMessage);
+
         res.status(200).json({ message: 'Adoption marked as complete and pet status updated to adopted', adoption, pet });
     } catch (err) {
+        console.error("Error completing adoption:", err);
         res.status(500).json({ message: 'Error completing adoption', error: err.message });
     }
 };
 
 
-// Mark adoption as failed
 const failAdoption = async (req, res) => {
     try {
         const adoptionId = req.params.id;
         const { reason } = req.body;
-        const adoption = await Adoption.findByIdAndUpdate(adoptionId, { status: 'failed', failedReason: reason }, { new: true });
+
+        // Find the adoption record and populate the pet and volunteer details
+        const adoption = await Adoption.findById(adoptionId)
+            .populate('p_id')  // Populate pet details
+            .populate('v_id'); // Populate volunteer details
 
         if (!adoption) {
             return res.status(404).json({ message: 'Adoption not found' });
         }
 
-        res.status(200).json({ message: 'Adoption marked as failed', adoption });
+        // Update the adoption record to mark it as failed
+        adoption.status = 'failed';
+        adoption.failedReason = reason;
+        const updatedAdoption = await adoption.save();
+
+        const adminId = req.user && (req.user._id || req.user.id); 
+        if (!adminId) {
+            console.error('Unauthorized: Admin ID not found in req.user');
+            return res.status(401).json({ message: 'Unauthorized: Admin ID not found' });
+        }
+
+        // Access the pet's name and user's full name
+        const petName = adoption.p_id.p_name; // Access pet's name
+        const userName = `${adoption.v_id.v_fname} ${adoption.v_id.v_lname}`; // Combine first and last name
+
+        const logMessage = `Failed adoption for ${petName}.`;
+
+        await logActivity(
+            adminId,
+            'FAIL',
+            'Adoptions',
+            adoptionId,
+            userName, // Logging pet's name
+            logMessage
+        );
+
+        console.log('Activity logged successfully for adoption failure:', logMessage);
+
+        res.status(200).json({ message: 'Adoption marked as failed', adoption: updatedAdoption });
     } catch (err) {
+        console.error("Error marking adoption as failed:", err);
         res.status(500).json({ message: 'Error marking adoption as failed', error: err.message });
     }
 };
+
 
 const getPastAdoptions = async (req, res) => {
     try {

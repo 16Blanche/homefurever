@@ -14,19 +14,23 @@ const ActivityLogSchema = new mongoose.Schema({
   action: {
     type: String,
     required: true,
-    enum: ['ADD', 'UPDATE', 'DELETE', 'ARCHIVED', 'POSTED'],
+    enum: ['ADD', 'UPDATE', 'DELETE', 'ARCHIVE', 'POST', 'ACCEPT', 'REJECT', 'COMPLETE', 'FAIL', 'EXPORT'],
     default: 'ADD',
   },
   entity: {
     type: String,
     required: true,
-    enum: ['Pet', 'User', 'Event', 'Services', 'Adoptions', 'Barangays'],
+    enum: ['Pet', 'User', 'Events', 'Services', 'Adoptions', 'Barangays'],
     default: 'Pet',
   },
   entityId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: [mongoose.Schema.Types.ObjectId],
     required: true,
-    refPath: 'entity', // Dynamically reference the model based on 'entity' value
+    refPath: 'entity',
+  },
+  entityName: { // <-- Add the new field here
+    type: String,
+    required: true,
   },
   description: {
     type: String,

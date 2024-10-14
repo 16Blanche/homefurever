@@ -1,11 +1,10 @@
 const Nearby = require('../models/service_model');
+const {logActivity} = require('./activitylog_controller');
 
 const createNearbyService = async (req, res) => {
-    console.log('Request body:', req.body);
-    console.log('Uploaded file:', req.file);
-
     const { ns_name, ns_address, ns_type, ns_pin } = req.body;
     const ns_image = req.file ? `/uploads/images/${req.file.filename}` : null; 
+    const adminId = req.user && (req.user._id || req.user.id); 
 
     try {
         if (!ns_name || !ns_address || !ns_type || !ns_image) {
@@ -22,17 +21,15 @@ const createNearbyService = async (req, res) => {
 
         const savedService = await service.save();
 
-        console.log('Service saved successfully:', savedService);
-
+        const logMessage = `Added nearby service.`;
+        await logActivity(adminId, 'ADD', 'Services', savedService._id, ns_name, logMessage);
+        
         res.status(201).json({ savedService, status: "Service successfully inserted" });
     } catch (err) {
         console.error("Error creating nearby service:", err);
         res.status(500).json({ message: 'Something went wrong', error: err.message });
     }
 };
-
-
-
 
 const getAllNearbyServices = async (req, res) => {
     try {
@@ -61,7 +58,8 @@ const getNearbyServiceById = async (req, res) => {
 const editNearbyService = async (req, res) => {
     const { id } = req.params;
     const { ns_name, ns_address, ns_type, ns_pin } = req.body;
-    const ns_image = req.file ? `${config.address}/uploads/images/${req.file.filename}` : null; // Update to store URL
+    const ns_image = req.file ? `/uploads/images/${req.file.filename}` : null; 
+    const adminId = req.user && (req.user._id || req.user.id); 
 
     try {
         const service = await Nearby.findById(id);
@@ -74,11 +72,16 @@ const editNearbyService = async (req, res) => {
         service.ns_address = ns_address || service.ns_address;
         service.ns_type = ns_type || service.ns_type;
         service.ns_pin = ns_pin || service.ns_pin;
+
         if (ns_image) {
             service.ns_image = ns_image; // Update image if a new one is provided
         }
 
         const updatedService = await service.save();
+
+        const logMessage = `Updated nearby service.`;
+        await logActivity(adminId, 'UPDATE', 'Services', updatedService._id, updatedService.ns_name, logMessage);
+
         res.status(200).json({ updatedService, status: 'Service successfully updated' });
     } catch (err) {
         console.error('Error editing nearby service:', err);
@@ -88,6 +91,7 @@ const editNearbyService = async (req, res) => {
 
 const deleteNearbyService = async (req, res) => {
     const { id } = req.params;
+    const adminId = req.user && (req.user._id || req.user.id); 
 
     try {
         const service = await Nearby.findByIdAndDelete(id);
@@ -95,6 +99,9 @@ const deleteNearbyService = async (req, res) => {
         if (!service) {
             return res.status(404).json({ message: 'Service not found' });
         }
+
+        const logMessage = `Deleted nearby service.`;
+        await logActivity(adminId, 'DELETE', 'Services', service._id, service.ns_name, logMessage);
 
         res.status(200).json({ message: 'Service successfully deleted' });
     } catch (err) {

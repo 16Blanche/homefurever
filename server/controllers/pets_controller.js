@@ -6,14 +6,9 @@ const {logActivity} = require('./activitylog_controller');
 const newPet = async (req, res) => {
     console.log("Request body:", req.body);
     console.log("Files received:", req.files);
-
-    // Log the entire req.user object to understand its structure
     console.log("Decoded user from JWT in newPet function:", req.user);
 
-    // Extract adminId from req.user, using either _id or id property
     const adminId = req.user && (req.user._id || req.user.id);
-
-    // Log the extracted adminId to ensure it's correctly set
     console.log("Admin ID extracted from req.user:", adminId);
 
     if (!adminId) {
@@ -21,19 +16,17 @@ const newPet = async (req, res) => {
         return res.status(401).json({ message: 'Unauthorized: Admin ID not found' });
     }
 
-    // Destructure pet details from the request body
     const { p_name, p_type, p_gender, p_age, p_breed, p_weight, p_medicalhistory, p_vaccines } = req.body;
-    // Extract image paths instead of buffers
+
     const pet_img = req.files ? req.files.map(file => `/uploads/images/${file.filename}`) : [];
     console.log("Extracted image paths:", pet_img);
 
     try {
-        // Validate that at least one image is uploaded
+
         if (pet_img.length === 0) {
             return res.status(400).json({ error: 'No images uploaded' });
         }
 
-        // Create a new Pet instance and save it to the database
         const pet = new Pet({
             p_name,
             p_type,
@@ -43,35 +36,27 @@ const newPet = async (req, res) => {
             p_weight,
             p_medicalhistory,
             p_vaccines,
-            pet_img // Store the image paths
+            pet_img 
         });
 
         const savedPet = await pet.save();
-
         console.log('Pet saved successfully:', savedPet);
 
-        // Log activity using the extracted adminId
         await logActivity(
             adminId, 
             'ADD',
             'Pet',
             savedPet._id, 
-            `Added new pet: ${savedPet.p_name}`
+            p_name, 
+            `Added new pet`
         );
         console.log('Activity logged successfully');
-
-        // Return a success response with the saved pet data
         res.status(201).json({ savedPet, status: "successfully inserted" });
     } catch (err) {
         console.error("Error creating pet:", err);
         res.status(500).json({ message: 'Something went wrong', error: err.message });
     }
 };
-
-  
-
-
-
 
 
 const findAllPet = (req, res) => {
@@ -94,26 +79,56 @@ const findPetsForAdoption = (req, res) => {
         });
 };
 
-const updatePetStatus = (req, res) => {
+const updatePetStatus = async (req, res) => {
     const petId = req.params.id;
     const { p_status, p_description } = req.body;
 
-    Pet.findByIdAndUpdate(
-        petId,
-        { 
-            p_status: p_status, 
-            p_description: p_description 
-        },
-        { new: true }
-    )
-    .then((updatedPet) => {
-        res.status(200).json(updatedPet);
-    })
-    .catch((err) => {
-        res.status(500).json({ error: err.message });
-    });
-};
+    try {
+        console.log("Decoded user from JWT in updatePetStatus function:", req.user);
 
+        if (!p_status) {
+            return res.status(400).json({ message: 'Status is required' });
+        }
+
+        const pet = await Pet.findById(petId);
+        if (!pet) {
+            return res.status(404).json({ message: 'Pet not found' });
+        }
+
+        const adminId = req.user && (req.user._id || req.user.id);
+        if (!adminId) {
+            console.error('Unauthorized: Admin ID not found in req.user');
+            return res.status(401).json({ message: 'Unauthorized: Admin ID not found' });
+        }
+
+        pet.p_status = p_status;
+        pet.p_description = p_description;
+
+        const updatedPet = await pet.save();
+
+        const message = p_status === 'For Adoption'
+            ? `Posted  for adoption`
+            : p_status === 'None'
+                ? `Removed  adoption post`
+                : `Updated status of ${updatedPet.p_name}`;
+
+        await logActivity(
+            adminId,
+            'UPDATE',
+            'Pet',
+            updatedPet._id,
+            updatedPet.p_name,
+            message 
+        );
+
+        console.log('Activity logged successfully for pet status update:', message);
+
+        res.status(200).json(updatedPet);
+    } catch (err) {
+        console.error("Error updating pet status:", err);
+        res.status(500).json({ message: 'Error updating pet status', error: err.message });
+    }
+};
  
 const findPetByName = (req, res) => {
     Pet.findOne({p_name:req.params.pname})
@@ -156,7 +171,7 @@ const findPetByBreed = (req, res) => {
 }
 
 const findPetById = (req, res) => {
-    const { id } = req.params; // Extract pet ID from request parameters
+    const { id } = req.params; 
 
     Pet.findById(id)
         .then((thePet) => {
@@ -182,16 +197,118 @@ const findPetByIdDelete = (req, res) => {
         });
 }
 
-const updatePet = (req, res) => {
-    Pet.findOneAndUpdate({_id:req.params.id},req.body, 
-        { new: true, runValidators: true })
-        .then((updatedPet) => {
-            res.json({ theUpdatePet: updatedPet, status: "Successfully updated the pet" })
-        })
-        .catch((err) => {
-            res.json({ message: 'Something went wrong', error: err })
-        });
-}
+const arraysEqual = (a, b) => {
+    if (a.length !== b.length) return false;
+    const sortedA = [...a].sort();
+    const sortedB = [...b].sort();
+    return sortedA.every((val, index) => val === sortedB[index]);
+};
+
+const updatePet = async (req, res) => {
+    try {
+        console.log("Decoded user from JWT in updatePet function:", req.user);
+        
+        const originalPet = await Pet.findById(req.params.id);
+        if (!originalPet) {
+            return res.status(404).json({ message: 'Pet not found' });
+        }
+
+        const adminId = req.user && (req.user._id || req.user.id);
+        if (!adminId) {
+            console.error('Unauthorized: Admin ID not found in req.user');
+            return res.status(401).json({ message: 'Unauthorized: Admin ID not found' });
+        }
+
+        const updatedPet = await Pet.findOneAndUpdate(
+            { _id: req.params.id },
+            req.body,
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedPet) {
+            return res.status(404).json({ message: 'Pet not found' });
+        }
+
+        const fieldMap = {
+            p_name: 'Name',
+            p_type: 'Type',
+            p_gender: 'Gender',
+            p_age: 'Age',
+            p_breed: 'Breed',
+            p_weight: 'Weight',
+            p_medicalhistory: 'Medical History',
+            p_vaccines: 'Vaccines',
+            pet_img: 'Image',
+        };
+
+        const updatedFields = Object.keys(req.body).filter(field => {
+            if (Array.isArray(originalPet[field]) && Array.isArray(updatedPet[field])) {
+                return !arraysEqual(originalPet[field], updatedPet[field]);
+            }
+            return originalPet[field] !== updatedPet[field]; 
+        }).map(field => fieldMap[field]);
+
+        const changesDescription = updatedFields.join(', ');
+
+        await logActivity(
+            adminId,
+            'UPDATE',
+            'Pet',
+            updatedPet._id,
+            updatedPet.p_name,
+            changesDescription
+        );
+        console.log('Activity logged successfully for pet update');
+
+        res.json({ theUpdatePet: updatedPet, status: "Successfully updated the pet" });
+    } catch (err) {
+        console.error("Error updating pet:", err);
+        res.status(500).json({ message: 'Something went wrong', error: err.message });
+    }
+};
+
+const archivePet = async (req, res) => {
+    try {
+        console.log("Decoded user from JWT in archivePet function:", req.user);
+        
+        const petId = req.params.id;
+        const archiveReason = req.body.reason; 
+
+        const pet = await Pet.findById(petId);
+        if (!pet) {
+            return res.status(404).json({ message: 'Pet not found' });
+        }
+
+        const adminId = req.user && (req.user._id || req.user.id);
+        if (!adminId) {
+            console.error('Unauthorized: Admin ID not found in req.user');
+            return res.status(401).json({ message: 'Unauthorized: Admin ID not found' });
+        }
+
+        pet.p_status = archiveReason || 'Archived'; 
+
+        const updatedPet = await pet.save();
+
+        await logActivity(
+            adminId,
+            'ARCHIVE',
+            'Pet',
+            updatedPet._id,
+            updatedPet.p_name, 
+            `Archived with reason: ${updatedPet.p_status}`
+        );
+
+        console.log('Activity logged successfully for pet archiving');
+
+        res.json({ theArchivedPet: updatedPet, status: "Successfully archived the pet" });
+    } catch (err) {
+        console.error("Error archiving pet:", err);
+        res.status(500).json({ message: 'Something went wrong', error: err.message });
+    }
+};
+
+
+
 
 const restorePetFromArchive = (req, res) => {
     console.log('Received request to restore pet with ID:', req.params.id);
@@ -204,7 +321,6 @@ const restorePetFromArchive = (req, res) => {
 
             console.log('Found Archived Pet:', archivedPet);
 
-            // Create a new document in the Pet collection
             const restoredPet = new Pet({
                 p_name: archivedPet.ap_name,
                 p_img: archivedPet.ap_img,
@@ -223,7 +339,6 @@ const restorePetFromArchive = (req, res) => {
                 .then((restoredPet) => {
                     console.log('Restored Pet saved successfully:', restoredPet);
 
-                    // Delete the document from the ArchivedPet collection
                     Archived.findByIdAndDelete(req.params.id)
                         .then(() => {
                             console.log('Archived Pet deleted successfully');
@@ -247,7 +362,7 @@ const restorePetFromArchive = (req, res) => {
 
 const resetCounter = async (req, res) => {
     try {
-        await Counter.resetCounter('pet_id'); // Adjust 'pet_id' based on your counter _id
+        await Counter.resetCounter('pet_id'); 
         res.status(200).json({ message: 'Pet counter reset successfully.' });
     } catch (err) {
         console.error('Error resetting pet counter:', err);
@@ -268,5 +383,6 @@ module.exports = {
     restorePetFromArchive,
     resetCounter,
     findPetsForAdoption,
-    updatePetStatus
+    updatePetStatus,
+    archivePet
 }

@@ -37,10 +37,13 @@ const NavigationBar = () => {
         },
 
     ];
+
     const handleLogout = async () => {
         await logout();
         navigate('/login'); 
     };
+
+    const isNearbyServicesVisible = user && user.role === 'super-admin';
 
     return (
         <div>
@@ -48,15 +51,18 @@ const NavigationBar = () => {
                 <Image src={TheLogo} className="logo" />
                 <Container className="navcontainer">
                     <Navbar.Brand className="navtitle"></Navbar.Brand>
+                    <div className={`navcontainer1 ${!isNearbyServicesVisible ? 'shift-right' : ''}`}>
                     <div className="navlink-container">
                         <NavLink to="/home" className="navlink">Home</NavLink>
                     </div>
                     <div className="navlink-container">
                         <NavLink to="/admin/aboutus" className="navlink">About Us</NavLink>
                     </div>
-                    <div className="navlink-container">
-                        <NavLink to="/nearby-services" className="navlink">Nearby Services</NavLink>
-                    </div>
+                    {user && user.role === 'super-admin' && ( 
+                        <div className="navlink-container">
+                            <NavLink to="/nearby-services" className="navlink">Nearby Services</NavLink>
+                        </div>
+                    )}
                     <div className="navlink-container">
                         <NavLink to="/chat" className="navlink">Messages</NavLink>
                     </div>
@@ -93,6 +99,7 @@ const NavigationBar = () => {
                     </Button>
                     <Nav className="me-auto">
                     </Nav>
+                    </div>
                 </Container>
             </Navbar>
         </div>

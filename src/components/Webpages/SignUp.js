@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "axios"; 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Form from 'react-bootstrap/Form';
@@ -30,8 +30,8 @@ const SignUp = () => {
     const [pbirthdate, setPbirthdate] = useState("");
     const [pvalidID, setPvalidID] = useState(null);
     const [errors, setErrors] = useState({});
-    const [showModal, setShowModal] = useState(false); // to show the modal
-    const [privacyAccepted, setPrivacyAccepted] = useState(false); // to track checkbox state
+    const [showModal, setShowModal] = useState(false); 
+    const [privacyAccepted, setPrivacyAccepted] = useState(false); 
 
     const validate = () => {
         const newErrors = {};
@@ -56,11 +56,11 @@ const SignUp = () => {
             setErrors(newErrors);
             return;
         }
-        setShowModal(true); // Show the modal
+        setShowModal(true); 
     };
 
     const handleAcceptAndSubmit = () => {
-        if (!privacyAccepted) return; // Ensure the user accepted the privacy terms
+        if (!privacyAccepted) return; 
 
         const newUser = {
             pending_id: undefined,
@@ -95,6 +95,15 @@ const SignUp = () => {
         })
         .then((response) => {
             console.log(response.data);
+            const emailData = {
+                to: pemailadd,
+                subject: 'Account Application Status',
+                text: `Good Day,${pfname}!\n\nThank you for signing up with us!\n\nPlease note that your account is currently pending verification. Our admin team will review your credentials shortly. In the meantime, you are welcome to browse through the wonderful pets available on our platform.\n\nIf you have any questions or need assistance, feel free to reach out.\n\nBest regards,\nPasay Animal Shelter`,
+            };
+
+            return axios.post(`${config.address}/api/send-email`, emailData);
+        })
+        .then(() => {
             setShowModal(false);
             window.alert("Sign up successful! You may now log in to your account.");
             navigate("/login");
@@ -254,7 +263,6 @@ const SignUp = () => {
                     <p>Here's a summary of how we handle your information:</p>
                     <h4>What We Collect:</h4>
                     <ul>
-
                         <li>Basic info like name, email, phone, and address.</li>
                         <li>Additional details about your preferences and usage of our app.</li>
                     </ul>

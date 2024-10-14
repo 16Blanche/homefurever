@@ -1,30 +1,34 @@
 const mongoose = require('mongoose');
 const ActivityLog = require('../models/activitylog_model');
 
-const logActivity = async (adminId, action, entity, entityId, description) => {
-  console.log('logActivity function called'); // <-- Add this log
+const logActivity = async (adminId, action, entity, entityId, entityName, description) => {
+  console.log('logActivity function called'); 
   try {
-    console.log('Logging activity:'); // <-- Add this log
-    console.log('Admin ID:', adminId); // <-- Add this log
-    console.log('Action:', action); // <-- Add this log
-    console.log('Entity:', entity); // <-- Add this log
-    console.log('Entity ID:', entityId); // <-- Add this log
-    console.log('Description:', description); // <-- Add this log
+    console.log('Logging activity:'); 
+    console.log('Admin ID:', adminId);
+    console.log('Action:', action);
+    console.log('Entity:', entity);
+    console.log('Entity ID(s):', entityId); 
+    console.log('Entity Name:', entityName);
+    console.log('Description:', description);
 
     const newLog = new ActivityLog({
       adminId,
       action,
       entity,
-      entityId,
+      entityId: Array.isArray(entityId) ? entityId : [entityId], 
+      entityName, 
       description,
     });
 
-    await newLog.save(); // <-- This is where the save happens
-    console.log('Activity logged successfully:', newLog); // <-- Add this log
+    await newLog.save();
+    console.log('Activity logged successfully:', newLog); 
   } catch (error) {
     console.error('Error logging activity:', error);
   }
 };
+
+
 
 const getAllActivityLogs = async (req, res) => {
   try {
@@ -39,8 +43,8 @@ const getAllActivityLogs = async (req, res) => {
       // })
       .exec();
 
-    console.log('Sending Logs from Backend:', logs); // Log data being sent from the backend
-    res.status(200).json(logs); // Send logs as JSON
+    console.log('Sending Logs from Backend:', logs); 
+    res.status(200).json(logs); 
   } catch (error) {
     console.error('Error retrieving activity logs:', error);
     res.status(500).json({ error: 'Error retrieving activity logs' });

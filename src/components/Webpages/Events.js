@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -13,6 +13,7 @@ import './Homepage.css';
 import { PencilSquare, Trash } from 'react-bootstrap-icons';
 import { Image } from 'react-bootstrap';
 import config from '../config';
+import AuthContext from '../../context/AuthContext';
 
 const Events = () => {
     const [events, setEvents] = useState([]);
@@ -27,6 +28,9 @@ const Events = () => {
     const [hoveredEvent, setHoveredEvent] = useState(null);
     const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 }); 
     const [tooltipWidth, setTooltipWidth] = useState(0);
+    const { user, token } = useContext(AuthContext);
+    const [currentFilterValue, setCurrentFilterValue] = useState(''); // New state for current filter value
+
 
     useEffect(() => {
         fetchEvents();
@@ -109,44 +113,67 @@ const Events = () => {
         formData.append("e_location", newEvent.location);
         formData.append("e_description", newEvent.description);
         formData.append("e_date", newEvent.date);
-        formData.append("e_image", newEvent.image);
+        
+        // Handle image based on whether it's a new upload or not
+        if (newEvent.image instanceof File) {
+            formData.append("e_image", newEvent.image); // If it's a new file, append it
+        } else if (selectedEvent) {
+            // If editing an existing event and no new image is provided, retain the existing image
+            formData.append("e_image", selectedEvent.e_image); 
+        }
     
         try {
-            const response = await fetch(url, {
+            const token = localStorage.getItem('token'); // Retrieve the token
+    
+            const response = await axios({
                 method,
-                body: formData
+                url,
+                data: formData,
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Include authorization token
+                    'Accept': 'application/json',
+                    // Content-Type for FormData is automatically set by Axios
+                }
             });
     
-            // Check if the response is OK
-            if (!response.ok) {
-                const errorText = await response.text(); // Get the error response text
-                console.error('Error saving event:', errorText);
-                alert('Failed to save event. Please try again.');
-                return;
+            // Expect JSON response if successful
+            const savedEvent = response.data.theUpdateEvent || response.data.savedEvent; // Adjust based on your backend response
+    
+            // Update the state with the new or updated event
+            if (selectedEvent) {
+                // Update existing event in the state
+                const updatedEvents = events.map(event =>
+                    event._id === selectedEvent.id ? savedEvent : event
+                );
+                setEvents(updatedEvents);
+            } else {
+                // Add new event to the state
+                setEvents([...events, savedEvent]);
             }
     
-            const savedEvent = await response.json(); // Expect JSON response if successful
             setShowModal(false);
             setNewEvent({ title: '', description: '', date: '', image: null });
             setSelectedEvent(null);
-            fetchEvents();
-            fetchEventsByDate(selectedDate);
+            fetchEvents(); // Optionally fetch the updated list
+            fetchEventsByDate(selectedDate); // If you need to refresh events by date
         } catch (error) {
             console.error('Error saving event:', error);
             alert('An unexpected error occurred. Please try again later.');
         }
     };
     
+    
 
-    const handleEditEvent = (event) => {
-        setSelectedEvent(event);
-        setNewEvent({
-            title: event.e_title,
-            description: event.e_description,
-            date: event.e_date
-        });
-        setShowModal(true);
-    };
+const handleEditEvent = (event) => {
+    setSelectedEvent(event);
+    setNewEvent({
+        title: event.e_title,
+        description: event.e_description,
+        date: event.e_date,
+        location: event.e_location
+    });
+    setShowModal(true);
+};
 
     const handleDeleteEvent = (event) => {
         setSelectedEvent(event);
@@ -155,17 +182,27 @@ const Events = () => {
 
     const confirmDeleteEvent = async () => {
         if (!selectedEvent) return;
-
+    
         try {
-            await axios.delete(`${config.address}/api/events/delete/${selectedEvent.id}`);
+            const token = localStorage.getItem('token'); // Retrieve the token
+    
+            await axios.delete(`${config.address}/api/events/delete/${selectedEvent.id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Include authorization token
+                    'Accept': 'application/json'
+                }
+            });
+            
             setShowConfirmModal(false);
             setSelectedEvent(null);
             fetchEvents();
             fetchEventsByDate(selectedDate);
         } catch (error) {
             console.error('Error deleting event:', error);
+            alert('An unexpected error occurred while deleting the event. Please try again later.');
         }
     };
+    
 
     const handleMouseEnter = (info) => { 
         const eventRect = info.el.getBoundingClientRect(); 
@@ -345,6 +382,8 @@ const Events = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            
         </div>
     );
 };
