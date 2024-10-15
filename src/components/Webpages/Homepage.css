@@ -610,6 +610,13 @@
 
 
 /*HOMEPAGE*/
+.box{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: white !important;
+}
 .homebox{
     width: 100%;
     height: 100vh;
