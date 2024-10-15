@@ -156,7 +156,7 @@ const Homepage = () => {
 
     return (
         <>
-            <div className="box">
+            <div className="homebox">
                 <div className="navbox">
                 <NavigationBar/>
                 </div>
