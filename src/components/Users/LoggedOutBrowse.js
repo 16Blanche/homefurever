@@ -12,16 +12,7 @@ import LoggedOutNavbar from "./LoggedOutNavBar";
 import AuthContext from '../../context/AuthContext';
 
 
-const getRandomEvents = (array) => {
-    return array.sort(() => Math.random() - 0.5);
-};
-
-const getRandomServices = (services, count) => {
-    const shuffled = [...services].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
-};
-
-const BrowsePets = () => {
+const LoggedOutBrowse = () => {
     const [selectedPet, setSelectedPet] = useState(null);
     const [showViewPostModal, setShowViewPostModal] = useState(false);
     const [pets, setPets] = useState([]);
@@ -33,9 +24,6 @@ const BrowsePets = () => {
     const petsPerPage = 10;
     const navigate = useNavigate();
 
-    const [events, setEvents] = useState([]);
-    const [clinics, setClinics] = useState([]);
-    const [services, setServices] = useState([]);
     const [randomServices, setRandomServices] = useState([]);
 
     const { user} = useContext(AuthContext);
@@ -52,26 +40,6 @@ const BrowsePets = () => {
                 console.error(err);
                 setLoading(false);
             });
-    }, []);
-    
-    useEffect(() => {
-        const fetchServices = async () => {
-            try {
-                const response = await axios.get(`${config.address}/api/service/all`);
-                
-                console.log('Fetched services:', response.data); // Check if data is being fetched correctly
-
-                const fetchedServices = response.data;
-                setServices(fetchedServices);
-
-                // Select two random services
-                const randomTwo = getRandomServices(fetchedServices, 2);
-                setRandomServices(randomTwo);
-            } catch (error) {
-                console.error('Error fetching services:', error);
-            }
-        };
-        fetchServices();
     }, []);
 
     useEffect(() => {
@@ -102,14 +70,6 @@ const BrowsePets = () => {
         navigate(`/pet/profile/${petId}`);
     };
 
-    const handleEventClick = () => {
-        navigate('/pet/events');
-    };
-
-    const handleServiceClick = () => {
-        navigate('/nearbyservices');
-    };
-
     const handleTypeChange = (event) => {
         setSelectedType(event.target.value);
     };
@@ -118,42 +78,18 @@ const BrowsePets = () => {
         setSearchQuery(event.target.value);
     };
 
-
-    useEffect(() => {
-        axios.get(`${config.address}/api/events/all`)
-            .then((response) => {
-                const upcomingEvents = response.data.theEvent.filter(event => new Date(event.e_date) >= new Date());
-                const shuffledEvents = getRandomEvents(upcomingEvents);
-                setEvents(shuffledEvents.slice(0, 2)); 
-            })
-            .catch((err) => {
-                console.error('Error fetching events:', err);
-            });
-    }, []);
-    
-
-    const formatDate = (eventDate) => {
-        const date = new Date(eventDate);
-        const day = date.getDate();
-        const dayOfWeek = date.toLocaleString('default', { weekday: 'long' });
-        const month = date.toLocaleString('default', { month: 'short' });
-        const year = date.getFullYear();
-        const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        return { day, dayOfWeek, month, year, time };
-    };
-
     if (loading) {
-        return <div>Loading...</div>; // Optional loading indicator
+        return <div>Loading...</div>;
     }
 
     return (
         <>
             <div className="bpbox1">
                 <div className="pnavbox">
-                <PinkNavigationBar/>
+                <LoggedOutNavbar/>
                 </div>
-                <div className="bpbox2">
-                    <div className="bpboxx">
+                <div className="lobpbox2">
+                    <div className="lobpboxx">
                         <div className="bpbox3">
                             <h1 className="bptitle">
                                 <span className="bptitle1">Adopt</span>
@@ -268,67 +204,11 @@ const BrowsePets = () => {
                             )}
                         </Modal.Body>
                     </Modal>
-                    <div className="bpbox7">
-                            <h2 className="bpbox7title">Events</h2>
-                                {events.map(event => {
-                                    const { day, dayOfWeek, month, year, time } = formatDate(event.e_date);
-                                    return (
-                                        <Button onClick={handleEventClick} className="bpeventscontainer" key={event._id}>
-                                            <div className="bpeventsline" />
-                                            <div className="bpeventsimgbox">
-                                            <Image 
-                                            src={event.e_image && event.e_image.length > 0 
-                                                    ? `${config.address}${event.e_image}` 
-                                                    : imgpholder
-                                                }
-                                                className="bpeventsimg" 
-                                                alt={event.e_title} 
-                                            />
-                                            </div>
-                                            <p className="bpeventsday">{day}</p>
-                                            <div className="bpeventsbox4">
-                                                <h2>{dayOfWeek}</h2>
-                                                <h4>{month}, {year}</h4>
-                                                <p>{time}</p>
-                                                </div>
-                                                <div className="bpeventsbox5">
-                                                <h2>{event.e_title}</h2>
-                                                <p>{event.e_description}</p>
-                                            </div>
-                                            
-                                        </Button>
-                                    );
-                                })}
-                            <h2 className="bpbox7title2">Nearby Services</h2>
-                            <div className='availableClinics'>
-                            {randomServices.length > 0 ? (
-                                <div className='bpclinicsContainer'>
-                                    {randomServices.map((service, index) => (
-                                        <div className='bpclinicBox' key={index} onClick={handleServiceClick}>
-                                            <div className="bpeventsline" />
-                                            <Image 
-                                                src={service.ns_image && service.ns_image.length > 0
-                                                    ? `${config.address}${service.ns_image}` 
-                                                    : imgpholder
-                                                } 
-                                                alt={service.ns_name} 
-                                            />
-                                            <div className='bpclinicInfo'>
-                                                <h5>{service.ns_name}</h5>
-                                                <p>{service.ns_address}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p>No nearby services available</p> 
-                            )}
-                        </div>
-                        </div>
+
                 </div>
             </div>
         </>
     );
 };
 
-export default BrowsePets;
+export default LoggedOutBrowse;

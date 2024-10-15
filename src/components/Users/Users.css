@@ -8,7 +8,10 @@
   max-height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: #F6F4F4;
+  background-image: url("./assets/bgimage.png");
+  background-size:cover;
+  background-position:top;
+  background-repeat: no-repeat;
 }
 
 /*PINK NAVBAR*/
@@ -68,7 +71,7 @@
   color: white;
   text-decoration: none;
   font-size: 16px;
-  max-width: 12rem;
+  max-width: 15rem;
   text-align: center;
   display: inline-block;
   transition: font-weight 0.2s; 
@@ -88,6 +91,9 @@
   height: 5% !important;
 }
 
+.shift-right {
+  margin-left: 13%;
+}
 /* ABOUT US */
 
 .aboutusbox{
@@ -170,9 +176,6 @@
   width: 50%;
 }
 
-
-
-
 .bpbox1 {
     width: 100%;
     min-height: 100vh;
@@ -182,6 +185,21 @@
     background-color: #F6F4F4;
     background-image: url('./assets/catdogbg.png');
     
+}
+
+.lobpboxx{
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+}
+
+.lobpbox2{
+  width: auto;
+  padding: 50px;
+  margin-top: 3%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .bpbox2{
@@ -1353,11 +1371,36 @@
 
 
 /*ACCOUNT*/
+.accmainbox{
+  width: 100%;
+  min-height: 100vh;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+    background-image: url("./assets/bgimage.png");
+  background-size:cover;
+  background-position:top;
+  background-repeat: no-repeat;
+
+}
 .accbox{
   width: 100%;
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+}
+.accwbox{
+  width: 65%;
+  height: 87%;
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
 }
 .text-center1 {
   text-align: left;
@@ -1367,36 +1410,62 @@
   
 }
 
+.accmabtn{
+  margin-top: 2rem;
+  background-color: transparent;
+  border: 0;
+  width: 100%;
+  height: 5.5%;
+  border-radius: 0;
+  border-left: .2rem;
+  border-left-color: #ff66b2;
+  border-left-style: solid;
+  color: black;
+  font-size: 1.5rem;
+  font-weight: bold;
+  align-items: center;
+  display: flex;
+  text-align: left;
+
+}
+/* .accmabtn:hover {
+  background-color: #ff85c1;
+} */
 .profile-header {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
+  flex-direction: column;
+  margin-top: 0;
 }
 .accbox1{
   text-align: left;
   padding: 3%;
-  padding-left: 5%;
-  width: 50%;
+  width: 27%;
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  border-right-color: #d1d1d1;
+  border-right-style: solid;
+  border-right-width:.1rem;
 }
 .accbox2{
   text-align: left;
   padding: 3%;
-  padding-left: 5%;
   justify-content: center;
-  width: 50%;
+  width: 73%;
 }
 .profile-info {
   text-align: left;
   margin-right: auto;
-  margin-left: 2rem;
-  margin-top: 6rem;
+  margin-top: 1rem;
 }
 
 .account-profile-image {
   width: 10rem;
   height: 10rem;
   object-fit: cover;
-  margin-top: 3rem;
+  margin-top: 1rem;
   border-radius: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.301);
 }
@@ -1412,29 +1481,29 @@ margin-top: 20px;
   margin-right: 550px;
   
 }
-
 .basic-info {
-  margin-top: 5rem;
+  margin-top: 1rem;
 }
 .basic-info h2{
   font-size: 1.6rem;
   font-weight: bold;
+
 }
 .basic-info-content{
   padding: 1rem;
 }
 .basic-info-content p{
   font-size: 1rem;
-  padding-left: .5rem;
+  padding-left: 1rem;
   color: #575757;
 }
 .basic-info-content h2{
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight:normal;
 }
 
 .contact-info {
-  margin-top: 5rem;
+  margin-top: 1rem;
 }
 .contact-info h2{
   font-size:1.6rem;
@@ -1449,7 +1518,7 @@ margin-top: 20px;
   color: #575757;
 }
 .contact-info-content h2{
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight:normal;
 }
 .basic-info1 {
@@ -1496,7 +1565,7 @@ margin-right: 200px;
   object-fit: cover;
 }
 
-.sign-out-btn {
+.accsobtn {
   display: block;
   width: 15%;
   background-color: #ff69b4;
@@ -1509,7 +1578,14 @@ margin-right: 200px;
   text-align: center;
 }
 
-.sign-out-btn:hover {
+.accsout{
+  margin-top: 3rem;
+  width: 98%;
+  display: flex;
+  justify-content: right;
+}
+
+.accsobtn:hover {
   background-color: #ff85c1;
 }
 
@@ -2021,8 +2097,6 @@ margin-right: 200px;
   display: flex;
   flex-direction: row;
   height: 100%;
-  background-image: url('./assets/bgimage.png');
-  background-size: cover;
   padding: 3%;
   justify-content: space-between;
 }
@@ -2033,7 +2107,7 @@ margin-right: 200px;
   border-radius: 15px;
   position: relative;
   padding: 2%;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add box shadow */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
 
 }
 .trackerbox3 {

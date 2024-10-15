@@ -72,44 +72,49 @@ const Account = () => {
                 <PinkNavigationBar />
             </div>
             <div className="accbox">
-                <div className="accbox1">
-                    <h1>Profile</h1>
-                    <div className="profile-header">
-                        <Image 
-                            src={profileData.profileImage ? `${config.address}${profileData.profileImage}` : 'fallback-image-url'} 
-                            roundedCircle 
-                            className="account-profile-image" 
-                        />
-                        <div className="profile-info">
-                            <h1>{profileData.username}</h1>
+                <div className="accwbox">
+                    <div className="accbox1">
+                        {/* <h1>Profile</h1> */}
+                        <div className="profile-header">
+                            <Image 
+                                src={profileData.profileImage ? `${config.address}${profileData.profileImage}` : 'fallback-image-url'} 
+                                roundedCircle 
+                                className="account-profile-image" 
+                            />
+                            <div className="profile-info">
+                                <h1>{profileData.username}</h1>
+                            </div>
                         </div>
+                            <Button onClick={handleTracker} className="accmabtn">MY ADOPTIONS</Button>
+
                     </div>
+                    <div className="accbox2">
                     <div className="basic-info">
-                        <h2>User Information</h2>
-                        <div className="basic-info-content">
-                            <h2>{`${profileData.firstName} ${profileData.lastName}`}</h2>
-                            <p>Full Name</p>
-                            <h2>{profileData.birthday}</h2>
-                            <p>Birthday</p>
-                            <h2>{profileData.gender}</h2>
-                            <p>Gender</p>
-                            <h2>{profileData.address}</h2>
-                            <p>Address</p>
+                            <h2>User Information</h2>
+                            <div className="basic-info-content">
+                                <h2>{`${profileData.firstName} ${profileData.lastName}`}</h2>
+                                <p>Full Name</p>
+                                <h2>{profileData.birthday}</h2>
+                                <p>Birthday</p>
+                                <h2>{profileData.gender}</h2>
+                                <p>Gender</p>
+                                <h2>{profileData.address}</h2>
+                                <p>Address</p>
+                            </div>
+                        </div>
+                        <div className="basic-info">
+                            <h2>Contact Information</h2>
+                            <div className="basic-info-content">                            
+                                <h2>{profileData.contactNumber}</h2>
+                                <p>Mobile</p>
+                                <h2>{profileData.email}</h2>
+                                <p>Email</p>
+                            </div>
+                        </div>
+                        <div className="accsout">
+                            <Button variant="pink" className="accsobtn" onClick={handleSignOut}>Sign Out</Button>
                         </div>
                     </div>
-                </div>
-                <div className="accbox2">
-                    <div className="contact-info">
-                        <h2>Contact Information</h2>
-                        <div className="contact-info-content">                            
-                            <h2>{profileData.contactNumber}</h2>
-                            <p>Mobile</p>
-                            <h2>{profileData.email}</h2>
-                            <p>Email</p>
-                        </div>
-                    </div>
-                    <Button onClick={handleTracker}>My Adoptions</Button>
-                    <Button variant="pink" className="sign-out-btn" onClick={handleSignOut}>Sign Out</Button>
                 </div>
             </div>
         </div>

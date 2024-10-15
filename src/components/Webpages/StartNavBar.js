@@ -24,10 +24,10 @@ const StartNavBar = () => {
                 <Container className="startnavcontainer">
                 
                     <div className="startnavlink-container">
-                        <NavLink to="/browse/pets" className="startnavlink">Browse</NavLink>
+                        <NavLink to="/pets/browse" className="startnavlink">Browse</NavLink>
                     </div>
                     <div className="startnavlink-container">
-                        <NavLink to="/aboutus" className="startnavlink">About Us</NavLink>
+                        <NavLink to="/about/us" className="startnavlink">About Us</NavLink>
                     </div>
                     <div className="startnavlink-container">
                         <NavLink to="/login" className="startnavlink">Login</NavLink>

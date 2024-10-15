@@ -50,6 +50,8 @@ import AdoptionTracker from './components/Users/AdoptionTracker';
 import UserEvents from './components/Users/UserEvents';
 import UpdateCredentials from './components/Webpages/UpdateCredentials';
 import UpdateMessage from './components/Webpages/UpdateMessage';
+import LoggedOutBrowse from './components/Users/LoggedOutBrowse';
+import LoggedOutAboutUs from './components/Users/LoggedOutAboutUs';
 
 
 function App() {
@@ -88,17 +90,19 @@ function App() {
               {/* USER */}
               <Route path='/homepageuser' element={<ProtectedRoute roles={['pending','verified']}> <HomePageUser/> </ProtectedRoute>}></Route>
               <Route path='/account' element={<ProtectedRoute roles={['pending','verified']}> <Account/> </ProtectedRoute>}></Route>
-              <Route path='/aboutus' element={<ProtectedRoute roles={['pending','verified']}> <AboutUs/> </ProtectedRoute>}></Route>
-              <Route path="/browse/pets" element={<ProtectedRoute roles={['pending','verified']}> <BrowsePets/> </ProtectedRoute>}></Route>
+              <Route path='/aboutus' element={<ProtectedRoute roles={['pending','verified']}><AboutUs/> </ProtectedRoute>}></Route>
+              <Route path="/browse/pets" element={<ProtectedRoute roles={['pending','verified']}><BrowsePets/></ProtectedRoute>}></Route>
               <Route path="/pet/profile/:id" element={<ProtectedRoute roles={['pending','verified']}> <PetProfile/> </ProtectedRoute>}></Route>
               <Route path="/pet/adoption/success" element={<ProtectedRoute roles={['verified']}> <Adopt/> </ProtectedRoute>}></Route>
               <Route path="/message" element={<ProtectedRoute roles={['pending','verified']}> <Messages/> </ProtectedRoute>}></Route>
-              <Route path='/dataprivacy' element={<DataPrivacy/>}></Route>
-              <Route path='/continue/adoption' element={<ContinueAdoption/>}></Route>
+              {/* <Route path='/dataprivacy' element={<DataPrivacy/>}></Route> */}
+              {/* <Route path='/continue/adoption' element={<ContinueAdoption/>}></Route> */}
               <Route path='/nearbyservices' element={<ProtectedRoute roles={['pending','verified']}> <UserNearbyServices/> </ProtectedRoute>}></Route>
               <Route path='/pet/adoption-form/:id' element={<ProtectedRoute roles={['pending','verified']}> <AdoptionForm/> </ProtectedRoute>}></Route>
               <Route path='/adoption/tracker' element={<ProtectedRoute roles={['pending','verified']}> <AdoptionTracker/> </ProtectedRoute>}></Route>
               <Route path='/pet/events' element={<ProtectedRoute roles={['pending','verified']}> <UserEvents/> </ProtectedRoute>}></Route>
+              <Route path='/pets/browse' element={ <LoggedOutBrowse/>}></Route>
+              <Route path='/about/us' element={ <LoggedOutAboutUs/>}></Route>
 
 
 
