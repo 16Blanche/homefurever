@@ -6,9 +6,8 @@ const PetSchema = new mongoose.Schema({
         type: Number, 
         unique: true 
     },
-    // Change from Buffer to String to store file paths
     pet_img: {
-        type: [String] // Store image paths as an array of strings
+        type: [String]
     },
     p_name: {
         type: String
@@ -29,10 +28,12 @@ const PetSchema = new mongoose.Schema({
         type: String
     },
     p_medicalhistory: {
-        type: String
+        type: [String],
+        default: 'none'
     },
     p_vaccines: {
-        type: [String]
+        type: [String],
+        default: 'none'
     },
     p_status: {
         type: String,

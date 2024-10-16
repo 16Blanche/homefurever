@@ -11,12 +11,6 @@ import TaskBar from "./TaskBar";
 import './Homepage.css';
 import config from '../config';
 
-const convertToBase64 = (buffer) => {
-    return btoa(
-        new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-    );
-};
-
 const MyPosts = () => {
     const [pets, setPets] = useState([]);
     const [selectedPet, setSelectedPet] = useState(null);
@@ -70,7 +64,7 @@ const MyPosts = () => {
 
     
     const handleConfirmPost = async () => {
-        setLoading(true); // Set loading to true
+        setLoading(true); 
         try {
             await axios.put(`${config.address}/api/pet/update-status/${selectedPet._id}`, {
                 p_status: 'For Adoption',
@@ -92,14 +86,13 @@ const MyPosts = () => {
             setShowConfirmModal(false);
             setShowViewModal(false);
             setShowAddModal(false);
-    
-            // Log the action
+
             console.log(`Pet ID: ${selectedPet._id} has been posted for adoption with description: ${description}`);
         } catch (err) {
             console.error("Error posting pet for adoption:", err);
             window.alert("Failed to post pet for adoption. Please try again.");
         } finally {
-            setLoading(false); // Reset loading state
+            setLoading(false);
         }
     };
 
@@ -157,7 +150,7 @@ const MyPosts = () => {
 
     return (
         <>
-            <div className="box">
+            <div className="mpmainbox">
                 <div className="navbox">
                     <NavigationBar />
                 </div>

@@ -13,12 +13,8 @@ import DataTable from 'react-data-table-component';
 import AuthContext from '../../context/AuthContext';
 import { Image } from "react-bootstrap";
 import config from '../config';
+import { ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
 
-const convertToBase64 = (buffer) => {
-    return btoa(
-        new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-    );
-};
 
 const PetListings =()=>{
     const navigate = useNavigate();
@@ -46,6 +42,20 @@ const PetListings =()=>{
     const [searchQuery, setSearchQuery] = useState(''); 
 
     const { user, token } = useContext(AuthContext);
+
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    const handlePreviousImage = () => {
+        if (currentImageIndex > 0) {
+            setCurrentImageIndex(currentImageIndex - 1);
+        }
+    };
+
+    const handleNextImage = () => {
+        if (selectedPetForView && currentImageIndex < selectedPetForView.pet_img.length - 1) {
+            setCurrentImageIndex(currentImageIndex + 1);
+        }
+    };
 
     const handleViewButton = (pet) => {
         console.log("View Button Clicked");
@@ -322,39 +332,64 @@ const PetListings =()=>{
                             />
                         </div>
 
-                    {/* View Modal */}
-                    <Modal show={showViewModal} onHide={() => setShowViewModal(false)}>
-                        <Modal.Header closeButton>
-                            <Modal.Title>View Pet Information</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            {selectedPetForView && (
-                                <>
-                                    {selectedPetForView.pet_img && selectedPetForView.pet_img.length > 0 && (
-                                        selectedPetForView.pet_img.map((img, index) => (
-                                            <Image
-                                                key={index}
-                                                src={`${config.address}${img}`}
-                                                alt={`Pet Image ${index + 1}`}
-                                                className="ulimg-preview"
-                                                style={{ marginBottom: '10px', maxWidth: '100%' }} 
-                                            />
-                                        ))
-                                    )}
+                        <Modal show={showViewModal} onHide={() => setShowViewModal(false)} className="plviewmodalwidth">
+                            <Modal.Header closeButton>
+                                <Modal.Title>View Pet Information</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body className="plviewmodal">
+                                {selectedPetForView && (
+                                    <>
+                                        {selectedPetForView.pet_img && selectedPetForView.pet_img.length > 0 && (
+                                            <div className="pl-image-wrapper">
+                                                <div className="pl-img-container">
+                                                    <div className="pppagebtn">
+                                                        <Button
+                                                            onClick={handlePreviousImage}
+                                                            disabled={currentImageIndex === 0}
+                                                            className="pagination-button-left"
+                                                        >
+                                                            <ChevronLeft />
+                                                        </Button>
+                                                    </div>
 
-                                    <p>Pet ID: {selectedPetForView.p_id}</p>
-                                    <p>Pet Name: {selectedPetForView.p_name}</p>
-                                    <p>Species: {selectedPetForView.p_type}</p>
-                                    <p>Breed: {selectedPetForView.p_breed}</p>
-                                    <p>Age: {selectedPetForView.p_age}</p>
-                                    <p>Gender: {selectedPetForView.p_gender}</p>
-                                    <p>Weight: {selectedPetForView.p_weight}</p>
-                                    <p>Medical History: {selectedPetForView.p_medicalhistory}</p>
-                                    <p>Vaccines: {selectedPetForView.p_vaccines.join(", ")}</p>
-                                </>
-                            )}
-                        </Modal.Body>
-                    </Modal>
+                                                    <Image
+                                                        src={`${config.address}${selectedPetForView.pet_img[currentImageIndex]}`}
+                                                        alt={`Pet Image ${currentImageIndex + 1}`}
+                                                        className="pl-image"
+                                                    />
+
+                                                    <div className="pppagebtn">
+                                                        <Button
+                                                            onClick={handleNextImage}
+                                                            disabled={currentImageIndex === selectedPetForView.pet_img.length - 1}
+                                                            className="pagination-button-right"
+                                                        >
+                                                            <ChevronRight />
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="plvmodaldetbox">
+                                            <div className="plvmodaldetbox2">
+                                                <p>Pet ID: {selectedPetForView.p_id}</p>
+                                                <p>Pet Name: {selectedPetForView.p_name}</p>
+                                                <p>Species: {selectedPetForView.p_type}</p>
+                                                <p>Breed: {selectedPetForView.p_breed}</p>
+                                                <p>Age: {selectedPetForView.p_age}</p>
+                                                <p>Gender: {selectedPetForView.p_gender}</p>
+                                            </div>
+                                            <div className="plvmodaldetbox2">
+                                                <p>Weight: {selectedPetForView.p_weight}</p>
+                                                <p>Medical History: {selectedPetForView.p_medicalhistory}</p>
+                                                <p>Vaccines: {selectedPetForView.p_vaccines.join(", ")}</p>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </Modal.Body>
+                        </Modal>
 
 
                         {/* Edit Modal */}

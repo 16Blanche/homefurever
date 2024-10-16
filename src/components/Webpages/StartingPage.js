@@ -33,9 +33,9 @@ const StartingPage = () => {
                         </p>
                         <p className="starttitle3 sbox2titlediv">to grow.</p>
                     </div>
-                    <div className="startimgbox">
+                    {/* <div className="startimgbox">
                         <Image src={DogCatImg} className="startimg"></Image>
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="start-box-container">

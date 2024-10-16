@@ -6,6 +6,22 @@ import Form from 'react-bootstrap/Form';
 import TaskBar from "./TaskBar";
 import NavigationBar from "./NavigationBar";
 import config from '../config';
+import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
+
+const vaccineOptions = [
+    { value: "Rabies", label: "Rabies" },
+    { value: "Parvovirus", label: "Parvovirus" },
+    { value: "Distemper", label: "Distemper" },
+    { value: "Adenovirus", label: "Adenovirus" },
+    { value: "Leptospirosis", label: "Leptospirosis" },
+    { value: "Bordetella", label: "Bordetella" },
+    { value: "Parainfluenza", label: "Parainfluenza" },
+    { value: "Lyme disease", label: "Lyme disease" },
+    { value: "Feline Leukemia", label: "Feline Leukemia" },
+    { value: "Calicivirus", label: "Calicivirus" }
+  ];
+
 
 const NewPet = () => {
     const navigate = useNavigate();
@@ -15,9 +31,15 @@ const NewPet = () => {
     const [page, setPage] = useState(0);
     const [pweight, setPweight] = useState(0);
     const [pbreed, setPbreed] = useState("");
-    const [pmedicalhistory, setPmedicalhistory] = useState("");
-    const [pvaccines, setPvaccines] = useState("");
+    const [pmedicalhistory, setPmedicalhistory] = useState([]);
+    const [pvaccines, setPvaccines] = useState([]);    
     const [pimg, setPimg] = useState([]);
+
+    const [medicalHistoryInput, setMedicalHistoryInput] = useState(""); 
+    const [vaccineInput, setVaccineInput] = useState("");
+    const [selectedVaccine, setSelectedVaccine] = useState(null);
+
+    const [showDropdown, setShowDropdown] = useState(false);
 
     const [errors, setErrors] = useState({});
 
@@ -31,19 +53,18 @@ const NewPet = () => {
         if (!pweight) newErrors.pweight = "Please specify weight.";
         if (!pmedicalhistory) newErrors.pmedicalhistory = "Please specify medical history.";
         if (!pvaccines) newErrors.pvaccines = "Please specify vaccines.";
-        if (pimg.length === 0) newErrors.pimg = "Please upload at least one image."; // Change to check for array length
+        if (pimg.length === 0) newErrors.pimg = "Please upload at least one image."; 
         return newErrors;
     };
 
     const registerPet = () => {
-        // Step 1: Validate the input fields
+
         const newErrors = validate();
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
-    
-        // Step 2: Create FormData to hold pet data
+
         const formData = new FormData();
         formData.append("p_name", pname);
         formData.append("p_type", ptype);
@@ -53,32 +74,64 @@ const NewPet = () => {
         formData.append("p_weight", pweight);
         formData.append("p_medicalhistory", pmedicalhistory);
         formData.append("p_vaccines", pvaccines);
-    
-        // Append each image file to the formData
+
         pimg.forEach((img) => {
-            formData.append("pet_img", img); // No change needed here; keeps it the same
+            formData.append("pet_img", img);
         });
-    
-        // Step 3: Retrieve the JWT token from local storage (or another storage mechanism)
-        const token = localStorage.getItem('token'); // Make sure to set the JWT token during login
-    
-        // Step 4: Make the Axios request with the Authorization header
+
+        const token = localStorage.getItem('token'); 
+
         axios.post(`${config.address}/api/pet/new`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${token}`, // Add the JWT token here
+                Authorization: `Bearer ${token}`,
             },
         })
         .then((response) => {
             console.log("Response:", response.data);
             window.alert("Successfully added a pet!");
-            navigate("/pet/all"); // Navigate to the desired page after success
+            navigate("/pet/all"); 
         })
         .catch((err) => {
             console.error("Error during Axios request:", err.response ? err.response.data : err.message);
         });
     };
+
+    const handleAddMedicalHistory = () => {
+        if (medicalHistoryInput.trim() !== "" && !pmedicalhistory.includes(medicalHistoryInput)) {
+            setPmedicalhistory([...pmedicalhistory, medicalHistoryInput]);
+            setMedicalHistoryInput("");
+        }
+    };
+
+    const handleRemoveMedicalHistory = (indexToRemove) => {
+        setPmedicalhistory(pmedicalhistory.filter((_, index) => index !== indexToRemove));
+    };
+
+    const handleAddVaccine = () => {
+        if (selectedVaccine && !pvaccines.includes(selectedVaccine)) {
+          setPvaccines([...pvaccines, selectedVaccine]); 
+          setSelectedVaccine(""); 
+        }
+      };
+
+      const handleSelectChange = (newValue) => {
+        if (newValue) {
+          setSelectedVaccine(newValue.value || newValue);
+        }
+      };
     
+      const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault(); 
+          handleAddVaccine(); 
+        }
+      };
+
+      const handleRemoveVaccine = (indexToRemove) => {
+        setPvaccines(pvaccines.filter((_, index) => index !== indexToRemove));
+      };
+
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
         setPimg(files);
@@ -86,7 +139,7 @@ const NewPet = () => {
     
     return (
         <>
-            <div className="box">
+            <div className="npmainbox">
                 <div className="navbox">
                     <NavigationBar />
                 </div>
@@ -181,30 +234,51 @@ const NewPet = () => {
                             <br />
                             <div className="detailstwo">
                                 <Form >
-                                    <Form.Group className="npinptitle">Medical History</Form.Group>
-                                    <Form.Group className="mb-3">
+                                <Form.Group className="npinptitle">Medical History</Form.Group>
+                                    <Form.Group className="npinpbtn mb-3">
                                         <Form.Control
-                                            onChange={(e) => { setPmedicalhistory(e.target.value) }}
                                             type="text"
-                                            placeholder="Medical History"
+                                            placeholder="Enter medical history"
+                                            value={medicalHistoryInput}
+                                            onChange={(e) => setMedicalHistoryInput(e.target.value)}
+                                            onKeyDown={(e) => e.key === "Enter" ? (e.preventDefault(), handleAddMedicalHistory()) : null}
                                             isInvalid={errors.pmedicalhistory}
                                         />
-                                        <Form.Group className="nperror">
-                                            <Form.Label>{errors.pmedicalhistory}</Form.Label>
-                                        </Form.Group>
+                                        <Button variant="primary" onClick={handleAddMedicalHistory}>Add</Button>
+                                    </Form.Group>
+                                    <Form.Group className="nptags-container">
+                                        {pmedicalhistory.map((history, index) => (
+                                            <div key={index} className="tag">
+                                                <span>{history}</span>
+                                                <button type="button" onClick={() => handleRemoveMedicalHistory(index)}>x</button>
+                                            </div>
+                                        ))}
                                     </Form.Group>
 
+
                                     <Form.Group className="npinptitle">Vaccines</Form.Group>
-                                    <Form.Group className="mb-3">
-                                        <Form.Control
-                                            onChange={(e) => { setPvaccines(e.target.value) }}
-                                            type="text"
-                                            placeholder="Vaccines"
-                                            isInvalid={errors.pvaccines}
+                                    <Form.Group className="npinpbtn mb-3">
+                                        <CreatableSelect
+                                        options={vaccineOptions} 
+                                        onChange={handleSelectChange} 
+                                        placeholder="Enter or select a vaccine"
+                                        isClearable
+                                        styles={customStyles} 
+                                        value={selectedVaccine ? { value: selectedVaccine, label: selectedVaccine } : null} 
+                                        onKeyDown={handleKeyDown} 
                                         />
-                                        <Form.Group className="nperror">
-                                            <Form.Label>{errors.pvaccines}</Form.Label>
-                                        </Form.Group>
+                                        <Button variant="primary" onClick={handleAddVaccine}>Add</Button>
+                                    </Form.Group>
+
+                                    <Form.Group className="nptags-container">
+                                        {pvaccines.map((vaccine, index) => (
+                                        <div key={index} className="tag">
+                                            <span>{vaccine}</span>
+                                            <button type="button" onClick={() => handleRemoveVaccine(index)}>
+                                            x
+                                            </button>
+                                        </div>
+                                        ))}
                                     </Form.Group>
 
                                     <Form.Group className="np2inrow">
@@ -267,5 +341,21 @@ const NewPet = () => {
         </>
     );
 }
+const customStyles = {
+    control: (base) => ({
+      ...base,
+      minWidth: '245px', 
+      maxWidth: '245px',
+    }),
+    menu: (base) => ({
+      ...base,
+      minWidth: '245px',
+      maxWidth: '245px', 
+    }),
+    singleValue: (base) => ({
+      ...base,
+      minWidth: '245px',
+    })
+  };
 
 export default NewPet;

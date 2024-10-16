@@ -1,4 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Antic&display=swap');
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+}
 
 /*NAVBAR*/
 /* .navbar{
@@ -1425,6 +1433,13 @@
 
 
 /*NEW PET*/
+.npmainbox{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: white !important;
+}
 .npbox3{
     width: 88%;
     height: 100%;
@@ -1475,6 +1490,10 @@
     font-size: 16px;
     padding: 5px;
 }
+.npinpbtn{
+    display: flex;
+    flex-direction: row;
+}
 .npinpstitle{
     text-align: left;
     font-size: 16px;
@@ -1510,9 +1529,65 @@
     width: 95%;
     margin-left: 5%;
 }
+.nptags-container{
+    display: flex;
+    flex-direction: row;
+    height: 1.25rem !important;
+    font-size: .8rem;
+    text-align: left;
+    flex-wrap: wrap;
+    max-width: 100%;
+    margin-top: 10px;
+    gap: 10px;
+    margin-top: 10px;
+}
+.tag {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f1f1f1; 
+    border: 1px solid #ccc; 
+    border-radius: 8px; 
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #333;
+    width: auto; 
+    min-width: 1.5rem; 
+    height: 1.5rem;
+    box-sizing: border-box;
+    margin-top: -.5rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 
+.tag button {
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: #888;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.tag button:hover {
+    color: #ff4d4d; 
+}
+
+.tag span {
+    flex-grow: 1;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 /* MY POSTS */
+.mpmainbox{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: white !important;
+}
 .mpbox3 {
     width: 88%;
     height: 100%;
@@ -1663,14 +1738,51 @@
     width: 100%;
 }
 
-.ulimg-preview {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    border-radius: 10px;
+.plimg-preview {
+    width: auto; 
+    height: 17rem;
+    border-radius: 0;
 }
-
-
+.plviewmodal{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.plvmodaldetbox{
+    padding: 3%;
+    text-align: left;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+.plvmodaldetbox2{
+    width: 50%;
+    padding-left:3.5% ;
+    font-size: 1.1rem;
+}
+.plviewmodalwidth .modal-dialog{
+    max-width: 40%;
+}
+.pl-image-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .pl-img-container {
+    position: relative;
+    width: 40rem;
+    height: 22rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ebebeb;
+  }
+  .pl-image {
+    width: auto; 
+    height: 22rem;
+    border-radius: 0;
+  }
 
 /* FEEDBACKS */
 .fbbox2{
@@ -2341,84 +2453,80 @@
 
 
 /* ABOUT US */
-.aboutusbox{
+.adaboutusbox{
     width: 100%;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: white;
+    background-image: url('./assets/catdogbg.png');
+    background-size: cover;
+    background-position: top;
+    background-repeat: no-repeat;
 }
-.aboutush1 {
-    text-align: center;
+
+.adaboutusbox4 {
+    display: flex;
+    flex-direction: row !important;
+    width: 100%;
+    height: auto; /* Change this to auto to adjust based on content */
+    padding: 6%;
+    padding-top: 3%;
+    padding-bottom: 2.8%;
+    justify-content: space-between;
+}
+
+  .adaboutusbox4 p{
+    font-size: 4rem;
     font-weight: bold;
-    margin-top: 15%;
-    font-size: 280%;
-    margin-bottom: 2%;
-    
   }
-.aboutuscatdog{
-    width: 55%;
-    height: auto;
-    display: block;
-    margin: auto;
-}
-.aboutusbox5{
-    width: 50%;
-    height: 17%;
-    background-color: #F6F4F4;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 5%;
-}
-.aboutusbox7{
-    width: 50%;
-    height: 14%;
-    background-color: #F6F4F4;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 5%;
-}
-.aboutustext {
-    font-size: 135%;
-    font-weight: 300;
-    padding: 5%;
-}
-.aboutusbox6{
-    width: 50%;
-    height: 100%;
+  .adaboutusbox5{
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    border-radius: 5%;
-    margin-top: 6%;
-    margin-left: 9%;
-}
-.aboutusbox8{
-    display: flex;
-    flex-direction: row;
-}
-.aboutuscontact{
+    justify-content: space-around;
+    width: 22%;
+    background-color: rgb(255, 255, 255) !important;
+    border-radius: 1rem;
+    padding: 1rem;
+  }
+  .adaboutusbox5 p{
+    font-size: 1rem;
+    font-weight: normal;
+    margin-bottom: 0;
+    margin-top: .2rem;
     text-align: left;
-    font-size: 110%;
-}
-.aboutusicons{
-    width: auto;
-    height: 25px;
-    margin-right: 5%;
-}
-  .aboutusbox3{
-    display: flex;
-    flex-direction: row;
-    height: 100%;
+    padding-left: 1rem;
   }
-  .aboutusbox4{
+  .adaboutusbox5 h1{
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  .adaboutusbox6{
     display: flex;
     flex-direction: column;
-    width: 50%;
+    width: 55%;
+    text-align: justify;
+    font-size: 1.1rem;
+    border-radius: 1rem;
+    padding: 1rem;
   }
-  
+  .adaboutusbox3{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    align-items: center;
+  }
+  .adaboutusbox7{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 2.5rem;
+  }
+  .adaboutusbox7Img{
+    width: 18rem;
+    height: auto;
+    border-radius: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
 /* CHATROOM */
 .crbox {
     display: flex;
