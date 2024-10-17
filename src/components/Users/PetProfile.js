@@ -71,9 +71,8 @@ const PetProfile = () => {
     if (userRole === 'pending') {
       // Show modal if user's account is still pending
       setShowPendingModal(true);
-    } else if (userVerification !== 'verified') {
-      // Show modal if user's verification status is not verified
-      setShowNotVerifiedModal(true);
+    } else if (userVerification == 'verified') {
+      navigate(`/pet/adoption-form/${id}`);
     } else {
       // Navigate to adoption form if user is verified and not pending
       navigate(`/pet/adoption-form/${id}`);

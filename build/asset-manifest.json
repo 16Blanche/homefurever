@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.8a8bbd83.css",
-    "main.js": "/static/js/main.7385d809.js",
+    "main.js": "/static/js/main.4addf5b2.js",
     "static/js/787.b7c72ddf.chunk.js": "/static/js/787.b7c72ddf.chunk.js",
     "static/media/mainbg.png": "/static/media/mainbg.cae244e746e91e622b8b.png",
     "static/media/vaccination.png": "/static/media/vaccination.4c4eb3a97dd2632ec6b2.png",
@@ -41,11 +41,11 @@
     "static/media/animalgraph.png": "/static/media/animalgraph.a77abeac87945d695198.png",
     "index.html": "/index.html",
     "main.8a8bbd83.css.map": "/static/css/main.8a8bbd83.css.map",
-    "main.7385d809.js.map": "/static/js/main.7385d809.js.map",
+    "main.4addf5b2.js.map": "/static/js/main.4addf5b2.js.map",
     "787.b7c72ddf.chunk.js.map": "/static/js/787.b7c72ddf.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.8a8bbd83.css",
-    "static/js/main.7385d809.js"
+    "static/js/main.4addf5b2.js"
   ]
 }
