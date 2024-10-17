@@ -302,7 +302,7 @@ const NewUsers = () => {
                         </Modal>
 
                         {/* Decline Modal */}
-                        <Modal show={showDeclineModal} onHide={() => setShowDeclineModal(false)} className="nucustom-modal">
+                        <Modal show={showDeclineModal} onHide={() => setShowDeclineModal(false)}>
                             <Modal.Header closeButton>
                                 <Modal.Title>Decline User</Modal.Title>
                             </Modal.Header>
@@ -337,7 +337,7 @@ const NewUsers = () => {
                         </Modal>
 
                         {/* Approve Modal */}
-                        <Modal show={showApproveModal} onHide={handleApproveCancel} className="nucustom-modal">
+                        <Modal show={showApproveModal} onHide={handleApproveCancel}>
                             <Modal.Header closeButton>
                                 <Modal.Title>Approve User</Modal.Title>
                             </Modal.Header>

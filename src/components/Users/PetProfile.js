@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import "./Users.css";
 import PinkNavigationBar from './PinkNavigationBar';
-import { Button, Image } from 'react-bootstrap';
+import { Button, Image, Modal } from 'react-bootstrap';
 import { ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
 import config from '../config';
+import AuthContext from '../../context/AuthContext'; // Assuming AuthContext provides user info
 
 const PetProfile = () => {
   const { id } = useParams();
@@ -14,7 +15,13 @@ const PetProfile = () => {
   const [randomPets, setRandomPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showPendingModal, setShowPendingModal] = useState(false); // Modal state for pending role
+  const [showNotVerifiedModal, setShowNotVerifiedModal] = useState(false); // Modal state for non-verified users
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext); // Assuming user context is available
+  
+  const handleClosePendingModal = () => setShowPendingModal(false);
+  const handleCloseNotVerifiedModal = () => setShowNotVerifiedModal(false);
 
   useEffect(() => {
     setLoading(true);
@@ -58,7 +65,19 @@ const PetProfile = () => {
   }
 
   const handleAdopt = () => {
-    navigate(`/pet/adoption-form/${id}`); 
+    const userRole = user?.p_role;
+    const userVerification = user?.v_role;
+
+    if (userRole === 'pending') {
+      // Show modal if user's account is still pending
+      setShowPendingModal(true);
+    } else if (userVerification !== 'verified') {
+      // Show modal if user's verification status is not verified
+      setShowNotVerifiedModal(true);
+    } else {
+      // Navigate to adoption form if user is verified and not pending
+      navigate(`/pet/adoption-form/${id}`);
+    }
   };
 
   const handleNextImage = () => {
@@ -70,7 +89,7 @@ const PetProfile = () => {
   };
 
   const handleViewProfile = (petId) => {
-    navigate(`/pet/profile/${petId}`); 
+    navigate(`/pet/profile/${petId}`);
   };
 
   return (
@@ -84,17 +103,16 @@ const PetProfile = () => {
 
           {pet.pet_img && pet.pet_img.length > 0 && (
             <div className="pp-image-wrapper">
-
               <div className='pp-img-container'>
-              <div className='pppagebtn'>
-                <Button
-                  onClick={handlePreviousImage}
-                  disabled={currentImageIndex === 0}
-                  className="pagination-button-left"
-                >
-                  <ChevronLeft />
-                </Button>
-              </div>
+                <div className='pppagebtn'>
+                  <Button
+                    onClick={handlePreviousImage}
+                    disabled={currentImageIndex === 0}
+                    className="pagination-button-left"
+                  >
+                    <ChevronLeft />
+                  </Button>
+                </div>
                 <Image
                   src={`${config.address}${pet.pet_img[currentImageIndex]}`}
                   alt={`Pet Image ${currentImageIndex + 1}`}
@@ -110,7 +128,6 @@ const PetProfile = () => {
                   </Button>
                 </div>
               </div>
-
             </div>
           )}
 
@@ -144,9 +161,9 @@ const PetProfile = () => {
                 <div className="ppotherimgbox">
                   {pet.pet_img && pet.pet_img.length > 0 && (
                     <Image 
-                      src={`${config.address}${pet.pet_img[0]}`} // Use the image URL directly
+                      src={`${config.address}${pet.pet_img[0]}`}
                       rounded 
-                      className="clickable-image" 
+                      className="clickable-image"
                       loading="lazy"
                     />
                   )}
@@ -160,6 +177,32 @@ const PetProfile = () => {
             ))}
           </div>
         </div>
+
+        {/* Pending Account Modal */}
+        <Modal show={showPendingModal} onHide={handleClosePendingModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Adoption Unavailable</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Your account is still pending approval. You cannot adopt a pet until your account is fully activated.</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClosePendingModal}>Close</Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Not Verified Account Modal */}
+        <Modal show={showNotVerifiedModal} onHide={handleCloseNotVerifiedModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Adoption Unavailable</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Your account is not yet verified. Only verified users can adopt pets.</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseNotVerifiedModal}>Close</Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     </div>
   );

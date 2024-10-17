@@ -10,6 +10,7 @@ import NavigationBar from "./NavigationBar";
 import TaskBar from "./TaskBar";
 import './Homepage.css';
 import config from '../config';
+import { ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
 
 const MyPosts = () => {
     const [pets, setPets] = useState([]);
@@ -25,6 +26,8 @@ const MyPosts = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredPets, setFilteredPets] = useState([]);
     const token = localStorage.getItem('token');
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
     useEffect(() => {
         axios.get(`${config.address}/api/pet/all`)
             .then((response) => {
@@ -148,6 +151,18 @@ const MyPosts = () => {
         setFilteredPets(filtered);
     };
 
+    const handlePreviousImage = () => {
+        if (currentImageIndex > 0) {
+            setCurrentImageIndex(currentImageIndex - 1);
+        }
+    };
+
+    const handleNextImage = () => {
+        if (selectedPet && currentImageIndex < selectedPet.pet_img.length - 1) {
+            setCurrentImageIndex(currentImageIndex + 1);
+        }
+    };
+
     return (
         <>
             <div className="mpmainbox">
@@ -226,14 +241,37 @@ const MyPosts = () => {
                             <Modal.Body>
                                 {selectedPet && (
                                     <>
-                                        {selectedPet.pet_img && selectedPet.pet_img.length > 0 && (
-                                            <Image
-                                                src={`${config.address}${selectedPet.pet_img[0]}`}
-                                                alt="Pet Image"
-                                                rounded
-                                                className="ulimg-preview"
-                                            />
-                                        )}
+                                    {selectedPet.pet_img && selectedPet.pet_img.length > 0 && (
+                                        <div className="pl-image-wrapper">
+                                            <div className="pl-img-container">
+                                                <div className="pppagebtn">
+                                                    <Button
+                                                        onClick={handlePreviousImage}
+                                                        disabled={currentImageIndex === 0}
+                                                        className="pagination-button-left"
+                                                    >
+                                                        <ChevronLeft />
+                                                    </Button>
+                                                </div>
+
+                                                <Image
+                                                    src={`${config.address}${selectedPet.pet_img[currentImageIndex]}`}
+                                                    alt={`Pet Image ${currentImageIndex + 1}`}
+                                                    className="pl-image"
+                                                />
+
+                                                <div className="pppagebtn">
+                                                    <Button
+                                                        onClick={handleNextImage}
+                                                        disabled={currentImageIndex === selectedPet.pet_img.length - 1}
+                                                        className="pagination-button-right"
+                                                    >
+                                                        <ChevronRight />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                         <p><strong>Name:</strong> {selectedPet.p_name}</p>
                                         <p><strong>Species:</strong> {selectedPet.p_type}</p>
                                         <p><strong>Gender:</strong> {selectedPet.p_gender}</p>
@@ -278,14 +316,37 @@ const MyPosts = () => {
                             <Modal.Body>
                                 {selectedPet && (
                                     <>
-                                        {selectedPet.pet_img && selectedPet.pet_img.length > 0 && (
-                                            <Image
-                                            src={`${config.address}${selectedPet.pet_img[0]}`}
-                                                alt="Pet Image"
-                                                rounded
-                                                className="ulimg-preview"
-                                            />
-                                        )}
+                                    {selectedPet.pet_img && selectedPet.pet_img.length > 0 && (
+                                        <div className="pl-image-wrapper">
+                                            <div className="pl-img-container">
+                                                <div className="pppagebtn">
+                                                    <Button
+                                                        onClick={handlePreviousImage}
+                                                        disabled={currentImageIndex === 0}
+                                                        className="pagination-button-left"
+                                                    >
+                                                        <ChevronLeft />
+                                                    </Button>
+                                                </div>
+
+                                                <Image
+                                                    src={`${config.address}${selectedPet.pet_img[currentImageIndex]}`}
+                                                    alt={`Pet Image ${currentImageIndex + 1}`}
+                                                    className="pl-image"
+                                                />
+
+                                                <div className="pppagebtn">
+                                                    <Button
+                                                        onClick={handleNextImage}
+                                                        disabled={currentImageIndex === selectedPet.pet_img.length - 1}
+                                                        className="pagination-button-right"
+                                                    >
+                                                        <ChevronRight />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                         <p><strong>Name:</strong> {selectedPet.p_name}</p>
                                         <p><strong>Species:</strong> {selectedPet.p_type}</p>
                                         <p><strong>Gender:</strong> {selectedPet.p_gender}</p>

@@ -1443,6 +1443,7 @@ html, body {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
+  justify-content: center;
   margin-top: 0;
 }
 .accbox1{
@@ -1464,8 +1465,10 @@ html, body {
   width: 73%;
 }
 .profile-info {
-  text-align: left;
-  margin-right: auto;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  display: flex;
   margin-top: 1rem;
 }
 

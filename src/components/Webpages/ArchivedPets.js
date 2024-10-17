@@ -11,6 +11,7 @@ import { Image } from "react-bootstrap";
 import config from '../config';
 import React, { useContext } from "react";
 import AuthContext from '../../context/AuthContext';
+import { ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
 
 const ArchivedPets = () => {
     const navigate = useNavigate();
@@ -23,6 +24,8 @@ const ArchivedPets = () => {
     const [showViewModal, setShowViewModal] = useState(false);
 
     const { user, token } = useContext(AuthContext);
+
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     const handleViewButton = (pet) => {
         console.log("View Button Clicked");
@@ -77,6 +80,18 @@ const ArchivedPets = () => {
                 console.log(err);
             });
     }, [apname]); 
+
+    const handlePreviousImage = () => {
+        if (currentImageIndex > 0) {
+            setCurrentImageIndex(currentImageIndex - 1);
+        }
+    };
+
+    const handleNextImage = () => {
+        if (selectedPetForView && currentImageIndex < selectedPetForView.pet_img.length - 1) {
+            setCurrentImageIndex(currentImageIndex + 1);
+        }
+    };
 
     const columns = [
         {
@@ -146,7 +161,7 @@ const ArchivedPets = () => {
                         </div>
 
                         {/* View Modal */}
-                        <Modal show={showViewModal} onHide={() => setShowViewModal(false)}>
+                        <Modal show={showViewModal} onHide={() => setShowViewModal(false)} className="alviewmodalwidth">
                             <Modal.Header closeButton>
                                 <Modal.Title>View Pet Information</Modal.Title>
                             </Modal.Header>
@@ -154,26 +169,52 @@ const ArchivedPets = () => {
                                 {selectedPetForView && (
                                     <>
                                     {selectedPetForView.pet_img && selectedPetForView.pet_img.length > 0 && (
-                                        selectedPetForView.pet_img.map((img, index) => (
-                                            <Image
-                                                key={index}
-                                                src={`${config.address}${img}`} // Construct full URL for images
-                                                alt={`Pet Image ${index + 1}`}
-                                                className="ulimg-preview"
-                                                style={{ marginBottom: '10px', maxWidth: '100%' }} 
-                                            />
-                                        ))
+                                        <div className="pl-image-wrapper">
+                                            <div className="pl-img-container">
+                                                <div className="pppagebtn">
+                                                    <Button
+                                                        onClick={handlePreviousImage}
+                                                        disabled={currentImageIndex === 0}
+                                                        className="pagination-button-left"
+                                                    >
+                                                        <ChevronLeft />
+                                                    </Button>
+                                                </div>
+
+                                                <Image
+                                                    src={`${config.address}${selectedPetForView.pet_img[currentImageIndex]}`}
+                                                    alt={`Pet Image ${currentImageIndex + 1}`}
+                                                    className="pl-image"
+                                                />
+
+                                                <div className="pppagebtn">
+                                                    <Button
+                                                        onClick={handleNextImage}
+                                                        disabled={currentImageIndex === selectedPetForView.pet_img.length - 1}
+                                                        className="pagination-button-right"
+                                                    >
+                                                        <ChevronRight />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     )}
-                                        <p>Pet ID: {selectedPetForView.p_id}</p>
-                                        <p>Pet Name: {selectedPetForView.p_name}</p>
-                                        <p>Species: {selectedPetForView.p_type}</p>
-                                        <p>Breed: {selectedPetForView.p_breed}</p>
-                                        <p>Age: {selectedPetForView.p_age}</p>
-                                        <p>Gender: {selectedPetForView.p_gender}</p>
-                                        <p>Weight: {selectedPetForView.p_weight}</p>
-                                        <p>Medical History: {selectedPetForView.p_medicalhistory}</p>
-                                        <p>Vaccines: {selectedPetForView.p_vaccines}</p>
-                                        <p>Archive Reason: {selectedPetForView.p_reason}</p>
+                                    <div className="plvmodaldetbox">
+                                        <div className="plvmodaldetbox2">
+                                            <p>Pet ID: {selectedPetForView.p_id}</p>
+                                            <p>Pet Name: {selectedPetForView.p_name}</p>
+                                            <p>Species: {selectedPetForView.p_type}</p>
+                                            <p>Breed: {selectedPetForView.p_breed}</p>
+                                            <p>Age: {selectedPetForView.p_age}</p>
+                                            <p>Gender: {selectedPetForView.p_gender}</p>
+                                        </div>
+                                        <div className="plvmodaldetbox2">
+                                            <p>Weight: {selectedPetForView.p_weight}</p>
+                                            <p>Medical History: {selectedPetForView.p_medicalhistory}</p>
+                                            <p>Vaccines: {selectedPetForView.p_vaccines}</p>
+                                            <p>Status: {selectedPetForView.p_status}</p>
+                                        </div>
+                                        </div>
                                     </>
                                 )}
                             </Modal.Body>

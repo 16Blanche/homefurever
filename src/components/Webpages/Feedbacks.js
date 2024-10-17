@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import StarRatings from 'react-star-ratings'; // Import the StarRatings component
+import StarRatings from 'react-star-ratings'; 
 import './Homepage.css';
 import TaskBar from "./TaskBar";
 import NavigationBar from "./NavigationBar";
@@ -12,7 +12,7 @@ const Feedbacks = () => {
     useEffect(() => {
         const fetchFeedbacks = async () => {
             try {
-                const response = await axios.get(`${config.address}/api/feedback`); // replace with your endpoint
+                const response = await axios.get(`${config.address}/api/feedback`); 
                 setFeedbacks(response.data);
             } catch (error) {
                 console.error('Error fetching feedbacks:', error);
@@ -22,7 +22,7 @@ const Feedbacks = () => {
     }, []);
 
     return (
-        <div className="box">
+        <div className="fbmainbox">
             <div className="navbox">
                 <NavigationBar />
             </div>

@@ -6,7 +6,6 @@ import Form from 'react-bootstrap/Form';
 import TaskBar from "./TaskBar";
 import NavigationBar from "./NavigationBar";
 import config from '../config';
-import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 
 const vaccineOptions = [

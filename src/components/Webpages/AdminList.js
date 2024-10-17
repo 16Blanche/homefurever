@@ -358,7 +358,7 @@ const AdminList = () => {
                         </div>
 
                         {/* View Modal */}
-                        <Modal show={showViewModal} onHide={() => setShowViewModal(false)}>
+                        <Modal show={showViewModal} onHide={() => setShowViewModal(false)} className="plviewmodalwidth">
                             <Modal.Header closeButton>
                                 <Modal.Title>View Admin Information</Modal.Title>
                             </Modal.Header>
@@ -366,18 +366,18 @@ const AdminList = () => {
                                 {selectedUserForView && (
                                     <div className="nuview-modal-content">
                                         <div className="nuleft-column"> 
-                                            <p>User ID: {selectedUserForView.s_id}</p>
+                                            {/* <p>User ID: {selectedUserForView.a_id}</p> */}
                                             <p>Username: {selectedUserForView.a_username}</p>
-                                            <p>Email: {selectedUserForView.s_email}</p>
-                                            <p>First Name: {selectedUserForView.firstName}</p>
-                                            <p>Last Name: {selectedUserForView.lastName}</p>
-                                            <p>Middle Name: {selectedUserForView.middleName}</p>
+                                            <p>First Name: {selectedUserForView.a_fname}</p>
+                                            <p>Last Name: {selectedUserForView.a_lname}</p>
+                                            <p>Middle Name: {selectedUserForView.a_mname}</p>
+                                            <p>Email: {selectedUserForView.a_email}</p>
                                         </div>
                                         <div className="nuright-column">
-                                            <p>Address: {selectedUserForView.address}</p>
-                                            <p>Gender: {selectedUserForView.gender}</p>
-                                            <p>Date of Birth: {selectedUserForView.dateOfBirth}</p>
-                                            <p>Phone Number: {selectedUserForView.contactNumber}</p>
+                                            <p>Address: {selectedUserForView.a_add}</p>
+                                            <p>Gender: {selectedUserForView.a_gender}</p>
+                                            <p>Date of Birth: {selectedUserForView.a_birthdate}</p>
+                                            <p>Phone Number: {selectedUserForView.a_contactnumber}</p>
                                         </div>
                                     </div>
                                 )}

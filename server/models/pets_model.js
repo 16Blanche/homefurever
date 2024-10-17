@@ -39,6 +39,10 @@ const PetSchema = new mongoose.Schema({
         type: String,
         default: 'none'
     },
+    p_status: {
+        type: String,
+        default: 'none'
+    },
     p_description: {
         type: String
     }
