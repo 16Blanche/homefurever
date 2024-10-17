@@ -42,7 +42,7 @@ const AdminList = () => {
     
     
     const generatePassword = () => {
-        const randomBytes = CryptoJS.lib.WordArray.random(16); 
+        const randomBytes = CryptoJS.lib.WordArray.random(10); 
         return randomBytes.toString(CryptoJS.enc.Hex); 
     };
 
@@ -199,7 +199,7 @@ const AdminList = () => {
     
                 if (response.data && Array.isArray(response.data.admins)) {
                     // Filter admins to only include those with s_role === 'admin'
-                    const filteredAdmins = response.data.admins.filter(admin => admin.s_role === 'admin');
+                    const filteredAdmins = response.data.admins.filter(admin => admin.s_role === 'admin' || admin.s_role === 'pending-admin');
                     
                     console.log("Number of admins with s_role 'admin' retrieved:", filteredAdmins.length);
                     setAllAdmins(filteredAdmins); // Set state with only the filtered admins
