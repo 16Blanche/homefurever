@@ -313,7 +313,7 @@ const Staff = () => {
                                 <p className="staddsttxt">Admins</p>
                             </Button>
                             <Button className="staddstbtn" onClick={handleHistory}>
-                                <p className="staddsttxt">Admin Activity</p>
+                                <p className="staddsttxt">Activity Log</p>
                             </Button>
                         </div>
                         <div className="nutable">

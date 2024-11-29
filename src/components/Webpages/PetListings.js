@@ -64,6 +64,8 @@ const PetListings = () => {
     const [medicalHistoryInput, setMedicalHistoryInput] = useState("");
     const [selectedVaccine, setSelectedVaccine] = useState(null);
 
+    const [otherArchiveReason, setOtherArchiveReason] = useState('');
+
     const handlePreviousImage = () => {
         if (currentImageIndex > 0) {
             setCurrentImageIndex(currentImageIndex - 1);
@@ -171,8 +173,10 @@ const PetListings = () => {
 
     const handleArchiveSubmit = () => {
         const token = localStorage.getItem('token');
+        const reasonToSend = archiveReason === 'Other' ? otherArchiveReason : archiveReason;
+    
         axios.put(`${config.address}/api/pet/archive/${selectedPetForArchive._id}`, {
-            reason: archiveReason
+            reason: reasonToSend
         }, {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -181,7 +185,7 @@ const PetListings = () => {
         })
             .then((response) => {
                 setAllPets(prevPets => prevPets.map(pet =>
-                    pet._id === selectedPetForArchive._id ? { ...pet, p_status: archiveReason } : pet
+                    pet._id === selectedPetForArchive._id ? { ...pet, p_status: reasonToSend } : pet
                 ));
                 window.alert("Pet successfully archived!");
                 handleArchiveModalClose();
@@ -191,6 +195,7 @@ const PetListings = () => {
                 handleArchiveModalClose();
             });
     };
+    
 
     const handleReasonChange = (event) => {
         setArchiveReason(event.target.value);
@@ -528,13 +533,26 @@ const PetListings = () => {
                                             <option value="Adopted">Adopted</option>
                                             <option value="Euthanized">Euthanized</option>
                                             <option value="Passed Away">Passed Away</option>
+                                            <option value="Other">Other</option>
                                         </Form.Select>
                                     </Form.Group>
+
+                                    {archiveReason === 'Other' && (
+                                        <Form.Group controlId="otherArchiveReason" className="mt-3">
+                                            <Form.Label>Please specify the reason</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                placeholder="Enter the reason"
+                                                value={otherArchiveReason}
+                                                onChange={(e) => setOtherArchiveReason(e.target.value)}
+                                            />
+                                        </Form.Group>
+                                    )}
                                 </Form>
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button variant="secondary" onClick={handleArchiveModalClose}>Close</Button>
-                                <Button variant="primary" onClick={handleArchiveSubmit}>Archive</Button>
+                                <Button variant="primary" onClick={handleArchiveSubmit} disabled={archiveReason === '' || (archiveReason === 'Other' && otherArchiveReason === '')}>Archive</Button>
                             </Modal.Footer>
                         </Modal>
                     </div>

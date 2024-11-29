@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form'; // Import Form
+import Form from 'react-bootstrap/Form';
 import './Homepage.css';
 import TaskBar from "./TaskBar";
 import NavigationBar from "./NavigationBar";
@@ -20,14 +20,12 @@ const NewUsers = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedUserForDelete, setSelectedUserForDelete] = useState(null);
     const [showLargeIDModal, setShowLargeIDModal] = useState(false);
-    
-    // Decline modal state
+
     const [showDeclineModal, setShowDeclineModal] = useState(false);
     const [declineReason, setDeclineReason] = useState('');
     const [otherReason, setOtherReason] = useState('');
     const [userEmail, setUserEmail] = useState('');
 
-    // Approval modal state
     const [showApproveModal, setShowApproveModal] = useState(false);
     const [selectedUserForApprove, setSelectedUserForApprove] = useState(null);
 
@@ -45,28 +43,24 @@ const NewUsers = () => {
     const handleApproveConfirm = () => {
         if (!selectedUserForApprove) {
             console.error('No user selected for approval.');
-            return; // Exit if no user selected for approval
+            return;
         }
-    
-        // Delete the user first
+
         axios.delete(`${config.address}/api/user/delete/transfer/${selectedUserForApprove._id}`)
             .then((response) => {
                 console.log('User deleted:', response.data.message);
-    
-                // Prepare the email data for approval
+
                 const emailData = {
                     to: selectedUserForApprove.p_emailadd,
                     subject: 'Your Application Status',
                     text: `Good Day, ${selectedUserForApprove.p_fname}!\n\nWe are pleased to inform you that your application for an account has been approved. You are now eligible to send adoption applications through our platform.\n\nThank you for your commitment to providing a loving home for a pet!\n\nBest regards,\nPasay Animal Shelter\n\nBest Regards,\n\nPasay Animal Shelter`,
                 };
-    
-                // Send the approval email after successful deletion
+
                 return axios.post(`${config.address}/api/send-email`, emailData);
             })
             .then((emailResponse) => {
                 console.log('Approval email sent:', emailResponse.data);
                 setShowApproveModal(false);
-                // Update the UI: remove the approved user from the list
                 setAllUsers(allUsers.filter(user => user._id !== selectedUserForApprove._id));
             })
             .catch(error => {
@@ -136,8 +130,8 @@ const NewUsers = () => {
             return;
         }
         
-        setUserEmail(user.p_emailadd); // Set the user's email for sending the decline reason
-        setSelectedUserForView(user); // Set the user to be viewed for decline
+        setUserEmail(user.p_emailadd);
+        setSelectedUserForView(user); 
         setShowDeclineModal(true);
     };
     
@@ -145,30 +139,27 @@ const NewUsers = () => {
     const handleDeclineConfirm = () => {
         if (!selectedUserForView) {
             console.error('No user selected for decline.');
-            return; // Exit if there's no user selected
+            return; 
         }
         
         const reasonToSend = declineReason === 'Other' ? otherReason : declineReason;
-    
-        // Delete the user first
+
         axios.delete(`${config.address}/api/user/delete/${selectedUserForView._id}`)
             .then((response) => {
                 console.log('User deleted:', response.data);
-    
-                // Prepare the email data for decline
+
                 const emailData = {
                     to: userEmail,
                     subject: 'Your Application Status',
                     text: `Good Day, ${selectedUserForView.p_fname}!\n\nWe appreciate your interest in adopting a pet through our platform. After careful consideration, we regret to inform you that your application for an account has been declined.\n\nThe reason for this decision is as follows: ${reasonToSend}.\n\nWe encourage you to correct the noted reason and consider signing up again. If you have any questions or would like more details about this decision, please do not hesitate to reach out.\n\nThank you for your understanding.\n\nBest regards,\nPasay Animal Shelter`,
                 };
-    
-                // Send the decline email
+
                 return axios.post(`${config.address}/api/send-email`, emailData);
             })
             .then((emailResponse) => {
                 console.log('Decline email sent:', emailResponse.data);
                 setShowDeclineModal(false);
-                setAllUsers(allUsers.filter(user => user._id !== selectedUserForView._id)); // Update UI
+                setAllUsers(allUsers.filter(user => user._id !== selectedUserForView._id)); 
             })
             .catch(error => {
                 console.error('Error during decline process:', error);

@@ -10,7 +10,7 @@ const mongoose = require('mongoose');
  * @returns {boolean} - True if valid, otherwise false.
  */
 const isValidObjectId = (id) => {
-    return mongoose.Types.ObjectId.isValid(id); // Use Mongoose's built-in validation
+    return mongoose.Types.ObjectId.isValid(id); 
 };
 
 
@@ -23,11 +23,12 @@ const newBarangayInfo = async (req, res) => {
         b_petgender, 
         b_petage, 
         b_color, 
-        b_address 
+        b_address,
+        b_vreason
     } = req.body;
 
-    const adminId = req.user && (req.user._id || req.user.id); // Get admin ID from request
-    console.log('Admin ID:', adminId); // Debug log to check if adminId is populated
+    const adminId = req.user && (req.user._id || req.user.id); 
+    console.log('Admin ID:', adminId); 
 
     try {
         const barangay = new Barangay({
@@ -38,13 +39,13 @@ const newBarangayInfo = async (req, res) => {
             b_petgender,
             b_petage,
             b_color,
-            b_address
+            b_address,
+            b_vreason
         });
 
         const savedBarangay = await barangay.save();
 
-        // Modify logMessage to indicate a range even for a single entry
-        const logMessage = `Added a barangay record (ID: ${savedBarangay.b_id}).`; // Using savedBarangay._id for clarity
+        const logMessage = `Added a barangay record (ID: ${savedBarangay.b_id}).`;
         await logActivity(adminId, 'ADD', 'Barangays', savedBarangay._id, 'N/A', logMessage);
 
         res.status(201).json({ savedBarangay, status: "successfully inserted" });
@@ -55,26 +56,23 @@ const newBarangayInfo = async (req, res) => {
 };
 
 const updateBarangayInfo = async (req, res) => {
-    const { id } = req.params; // Extract the ID from the request parameters
-    const updateData = req.body; // Get the data to update from the request body
+    const { id } = req.params;
+    const updateData = req.body; 
 
-    const adminId = req.user && (req.user._id || req.user.id); // Get admin ID from request
+    const adminId = req.user && (req.user._id || req.user.id); 
 
     try {
-        // Log the ID and update data for debugging
+
         console.log('Update Request - ID:', id, 'Update Data:', updateData);
 
-        // Find the barangay by ID and update with new data
         const updatedBarangay = await Barangay.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
 
         if (!updatedBarangay) {
             return res.status(404).json({ message: 'Barangay not found' });
         }
 
-        // Log the updated barangay data
         console.log('Barangay successfully updated:', updatedBarangay);
 
-        // Log the update activity
         const logMessage = `Updated barangay record (ID: ${updatedBarangay.b_id}).`;
         await logActivity(adminId, 'UPDATE', 'Barangays', updatedBarangay._id, 'N/A', logMessage);
 
@@ -96,10 +94,9 @@ const findAllInfo = (req, res) => {
 }
 
 const logExportActivity = async (req, res) => {
-    const adminId = req.user && (req.user._id || req.user.id); // Get admin ID from request
-    const { isFiltered, filterValue, entityIds } = req.body; // Get export details
+    const adminId = req.user && (req.user._id || req.user.id);
+    const { isFiltered, filterValue, entityIds } = req.body; 
 
-    // Prepare the log message
     const logMessage = isFiltered 
         ? `Exported filtered barangay ${filterValue} data.` 
         : `Exported entire barangay data`;
@@ -117,7 +114,7 @@ const logExportActivity = async (req, res) => {
 
 const resetCounter = async (req, res) => {
     try {
-        await Counter.resetCounter('b_id'); // Adjust 'pet_id' based on your counter _id
+        await Counter.resetCounter('b_id'); 
         res.status(200).json({ message: 'Pet counter reset successfully.' });
     } catch (err) {
         console.error('Error resetting pet counter:', err);

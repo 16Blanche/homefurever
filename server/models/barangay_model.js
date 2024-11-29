@@ -46,20 +46,24 @@ const BarangaySchema = new mongoose.Schema({
     type: String
   },
 
+  b_vreason: {
+    type: String
+  },
+
   createdAt: {
     type: Date,
-    default: Date.now // Automatically set the date when the document is created
+    default: Date.now 
   }
 });
 
 BarangaySchema.pre('save', function(next) {
   const doc = this;
   Counter.findByIdAndUpdate(
-    { _id: 'barangayId' }, // Use 'barangayId' as the identifier in the counter collection
-    { $inc: { seq: 1 } }, // Increment the sequence by 1
-    { new: true, upsert: true } // Options: return updated counter or create if it doesn't exist
+    { _id: 'barangayId' }, 
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true } 
   ).then(function(counter) {
-    doc.b_id = counter.seq; // Assign the new sequence number to the b_id field
+    doc.b_id = counter.seq; 
     next();
   }).catch(function(err) {
     console.error('Error during counter increment:', err);

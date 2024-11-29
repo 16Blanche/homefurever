@@ -13,7 +13,8 @@ import UserPh from './assets/userph.jpg';
 import AuthContext from '../../context/AuthContext';
 
 const PinkNavigationBar=()=>{
-    const { user, loading } = useContext(AuthContext);
+    const { user, loading, logout } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const notifications = [
         {
@@ -24,6 +25,12 @@ const PinkNavigationBar=()=>{
         }
 
     ];
+
+    const handleAccountRedirect = () => navigate('/account');
+    const handleLogout = () => {
+        logout(); // Call logout function
+        navigate('/'); // Redirect to the homepage or login after logging out
+    };
 
     return (
         <div id="user-nav">
@@ -60,7 +67,7 @@ const PinkNavigationBar=()=>{
                                         <p className="pnotifheader">Notifications</p>
                                     </Dropdown.Toggle>
 
-                                    <Dropdown.Menu className="pnotifications-menu">
+                                    <Dropdown.Menu className="pnotifications-menu" style={{ marginTop: '.7rem' }}>
                                         <Dropdown.Header>Notifications</Dropdown.Header>
                                         {notifications.map(notification => (
                                             <Dropdown.Item key={notification.id} className="pnotification-item">
@@ -82,8 +89,22 @@ const PinkNavigationBar=()=>{
                             </div>
                             
                             <div className="pnavlink-container">
-                                <NavLink to="/account" className="pnavlink">Account</NavLink>
-                            </div>
+                        <Dropdown align="end">
+                            <Dropdown.Toggle as={CustomToggle} id="account-dropdown">
+                                <p className="pnotifheader">Account</p>
+                            </Dropdown.Toggle>
+
+                            <Dropdown.Menu style={{ marginTop: '.7rem' }}>
+                                <Dropdown.Item onClick={handleAccountRedirect}>
+                                    My Account
+                                </Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item onClick={handleLogout}>
+                                    Logout
+                                </Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </div>
                     <Nav className="me-auto">
                     </Nav>
                 </Container>

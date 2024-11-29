@@ -99,7 +99,7 @@ const PastAdoptions = () => {
                     <TaskBar />
                     <div className="pastadoptbox2">
                         <div className="pastadoptbox4">
-                            <h2 className="petlistings">PAST ADOPTIONS</h2>
+                            <h2 className="petlistings">ARCHIVED ADOPTIONS</h2>
                             <input
                                 type="text"
                                 className="petsearch"

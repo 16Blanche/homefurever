@@ -2102,6 +2102,16 @@ html, body {
     color: white !important;
     height: 30px !important; 
 }
+.custom-tabs .nav-link {
+    background-color: rgb(207, 207, 207); 
+    color: rgb(80, 80, 80);
+}
+
+.custom-tabs .nav-link.active {
+    background-color: white; 
+    color: black; 
+}
+
 
 /* STAFF */
 .staffbox{
@@ -3094,6 +3104,21 @@ html, body {
     border: none;
 }
 
+.custom-table-wrapper {
+    overflow-x: auto; 
+    -webkit-overflow-scrolling: touch;
+    max-width: 97rem;  
+    margin-top: .8rem;
+    align-self: flex-start;
+}
+
+.custom-table-wrapper .rdt_Table {
+    min-width: 100%;      
+}
+
+
+
+
 /*ADMIN LIST*/
 .adminbox{
     width: 100%;
@@ -3204,22 +3229,41 @@ html, body {
     margin-bottom: 1%;
     font-family: 'Inter', sans-serif;
 }
+.adoptions-search{
+    width: 35%;
+    height: 31px;
+    margin-left: 40px;
+    margin-top: 5px;
+    margin-right: 2rem;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px;
+    border-color: #545454;
+    border-style: solid;
+}
 .adoptions-titlenbtn{
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
+    width: 70%;
 }
 .adoptions-feedbackbtn{
-    height: 70%;
-    width: 45%;
-    margin-top: .5%;
-    background-color: #f851b8;
-    border: #f851b8;
+    height: 67%;
+    width: 35%;
+    margin-top: .7%;
+    background-color:#FF66C4;
+    border: #FF66C4;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.adoptions-archbtn{
+    height: 67%;
+    width: 56%;
+    margin-top: .7%;
+    background-color:#FF66C4;
+    border: #FF66C4;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 .adoptions-btns{
-    width: 22%;
+    width: 30%;
     display: flex;
     justify-content: space-between;
 }

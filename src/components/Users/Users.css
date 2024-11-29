@@ -23,6 +23,7 @@ html, body {
 }
 
 /*PINK NAVBAR*/
+
 #user-nav .pinknavbar {
   height: 5%;
   width: 100%;
@@ -2102,6 +2103,14 @@ margin-right: 200px;
   align-items: center;
   width: 100%;
 }
+
+.readonly {
+  filter: grayscale(100%);
+  background-color: #f9f9f9; /* Light grey background for better contrast */
+  color: #6c757d; /* Grey text color */
+  pointer-events: none; /* Prevent focus or click interactions */
+}
+
 
 /* ADOPTION TRACKER */
 .trackerbox1{

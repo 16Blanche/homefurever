@@ -128,6 +128,13 @@ const AdoptionForm = () => {
         return Object.keys(newErrors).length === 0;
     };
 
+    const formatContactNumber = (number) => {
+        const numStr = String(number); // Ensure the input is a string
+        if (!numStr.startsWith('63')) return numStr; // Handle unexpected formats
+        return `+63 ${numStr.slice(2, 5)} ${numStr.slice(5, 8)} ${numStr.slice(8)}`;
+    };
+      
+
     return (
         <div className='box'>
             <div className="pnavbox">
@@ -149,11 +156,11 @@ const AdoptionForm = () => {
                                 </div>
                             </div>
                         )}
-                        <h3 className='form-subtitle'>Adopter Information</h3>
+                        <h3 className='form-subtitle'>Adopter Information</h3> 
                         <Form.Group className='form-input-group'>
                             <Form.Label>Full Name:</Form.Label>
                             <Form.Control 
-                                className='form-input-box'
+                                className='form-input-box readonly'
                                 value={userInfo.full_name || ''} 
                                 readOnly 
                             />
@@ -171,7 +178,7 @@ const AdoptionForm = () => {
                         <Form.Group className='form-input-group'>
                             <Form.Label>Address:</Form.Label>
                             <Form.Control 
-                                className='form-input-box'
+                                className='form-input-box readonly'
                                 value={userInfo.address || ''} 
                                 readOnly 
                             />
@@ -179,17 +186,18 @@ const AdoptionForm = () => {
                         <Form.Group className='form-input-group'>
                             <Form.Label>Email:</Form.Label>
                             <Form.Control 
-                                className='form-input-box2'
+                                className='form-input-box2 readonly'
                                 value={userInfo.email || ''} 
                                 readOnly 
                             />
                             <Form.Label>Contact Number:</Form.Label>
                             <Form.Control 
-                                className='form-input-box2'
-                                value={userInfo.contactNumber || ''} 
+                                className='form-input-box2 readonly'
+                                value={formatContactNumber(userInfo.contactNumber || '')} 
                                 readOnly 
                             />
                         </Form.Group>
+
 
                         <h3 className='form-subtitle2'>Family & Housing</h3>
                         <Form.Group className='form-input-group'>

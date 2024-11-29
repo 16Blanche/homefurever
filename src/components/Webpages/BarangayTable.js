@@ -9,8 +9,16 @@ import NavigationBar from './NavigationBar';
 import axios from 'axios';
 import DataTable from 'react-data-table-component';
 import * as XLSX from 'xlsx';
+import Select from 'react-select';
 import config from '../config';
 import AuthContext from '../../context/AuthContext';
+
+const options = [
+  { value: 'Routine Checkup', label: 'Routine Checkup' },
+  { value: 'Vaccination', label: 'Vaccination' },
+  { value: 'Emergency', label: 'Emergency' },
+  { value: 'Other', label: 'Other' },
+];
 
 const BarangayTable = () => {
   const [barangays, setBarangays] = useState([]);
@@ -24,8 +32,11 @@ const BarangayTable = () => {
   const [editValue, setEditValue] = useState(''); 
   const [editError, setEditError] = useState(null);
   const [currentFilterValue, setCurrentFilterValue] = useState('');
+  const [selectedReason, setSelectedReason] = useState('');
 
   const { user, token } = useContext(AuthContext);
+
+
 
   const [formData, setFormData] = useState({
     b_barangay: '',
@@ -35,7 +46,8 @@ const BarangayTable = () => {
     b_petgender: '',
     b_petage: '',
     b_color: '',
-    b_address: ''
+    b_address: '',
+    b_vreason: ''
   });
 
   const navigate = useNavigate();
@@ -53,8 +65,17 @@ const BarangayTable = () => {
   const handleShow = () => setShow(true);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevData => ({ ...prevData, [name]: value }));
+    if (e && e.target) {
+      const { name, value } = e.target;
+      setFormData((prevData) => ({ ...prevData, [name]: value }));
+    }
+  };
+
+  const handleSelectChange = (selectedOption) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      b_vreason: selectedOption ? selectedOption.value : '',
+    }));
   };
 
   const handleCellClick = (row, columnName) => {
@@ -175,23 +196,22 @@ const BarangayTable = () => {
 };
 
 
-
-
   const columns = [
     { name: 'ID', selector: row => row.b_id, sortable: true, width: '70px' },
-    { name: 'Barangay', selector: row => <EditableCell row={row} columnName="b_barangay" />, sortable: true, width: '120px' },
-    { name: 'Owner Name', selector: row => <EditableCell row={row} columnName="b_ownername" />, sortable: true, grow: 2 },
-    { name: 'Address/Barangay/Zone', selector: row => <EditableCell row={row} columnName="b_address" />, sortable: true, grow: 3 },
-    { name: 'Pet Name', selector: row => <EditableCell row={row} columnName="b_petname" />, sortable: true, width: '150px' },
-    { name: 'Species', selector: row => <EditableCell row={row} columnName="b_pettype" />, sortable: true, width: '120px' },
-    { name: 'Age', selector: row => <EditableCell row={row} columnName="b_petage" />, sortable: true, width: '100px' },
-    { name: 'Sex', selector: row => <EditableCell row={row} columnName="b_petgender" />, sortable: true, width: '100px' },
-    { name: 'Color', selector: row => <EditableCell row={row} columnName="b_color" />, sortable: true, width: '150px' },
+    { name: 'Barangay', selector: row => <EditableCell row={row} columnName="b_barangay" />, sortable: true, minWidth: '120px' },
+    { name: 'Owner Name', selector: row => <EditableCell row={row} columnName="b_ownername" />, sortable: true, minWidth: '200px',},
+    { name: 'Address/Barangay/Zone', selector: row => <EditableCell row={row} columnName="b_address" />, sortable: true, minWidth: '300px'},
+    { name: 'Pet Name', selector: row => <EditableCell row={row} columnName="b_petname" />, sortable: true, minWidth: '150px' },
+    { name: 'Species', selector: row => <EditableCell row={row} columnName="b_pettype" />, sortable: true, minWidth: '120px' },
+    { name: 'Age', selector: row => <EditableCell row={row} columnName="b_petage" />, sortable: true, minWidth: '90px' },
+    { name: 'Sex', selector: row => <EditableCell row={row} columnName="b_petgender" />, sortable: true, minWidth: '100px' },
+    { name: 'Color', selector: row => <EditableCell row={row} columnName="b_color" />, sortable: true, minWidth: '130px' },
+    { name: 'Visit Reason', selector: row => <EditableCell row={row} columnName="b_vreason" />, sortable: true, minWidth: '150px' },
     {
       name: 'Date Added',
       selector: row => row.createdAt ? new Date(row.createdAt).toLocaleDateString() : 'N/A',
       sortable: true,
-      width: '150px',
+      width: '120px',
     },
   ];
 
@@ -361,18 +381,20 @@ const BarangayTable = () => {
                 <p className='bt-add-text'>Export to Excel</p>
               </Button>
             </div>
-            <div className="barangay-table">
-              <DataTable
-                columns={columns}
-                data={filteredBarangays}
-                paginationPerPage={13}
-                paginationRowsPerPageOptions={[5, 10, 13]}
-                pagination
-                highlightOnHover
-                responsive
-                fixedHeader
-                striped
-              />
+            <div className="custom-table-wrapper">
+            <div className="custom-table-wrapper">
+                <DataTable
+                    columns={columns}
+                    data={filteredBarangays}
+                    paginationPerPage={13}
+                    paginationRowsPerPageOptions={[5, 10, 13]}
+                    pagination
+                    highlightOnHover
+                    responsive
+                    fixedHeader
+                    striped
+                />
+            </div>
             </div>
           </div>
         </div>
@@ -410,123 +432,135 @@ const BarangayTable = () => {
 
       {/* Modal for adding a new row */}
       <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add New Information</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className='b-new-box'>
+      <Modal.Header closeButton>
+        <Modal.Title>Add New Information</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className='b-new-box'>
             <Form.Group className='b-new-det1'>
               <Form.Group className='b-new-group'>
-                <Form.Group controlId="b_barangay" className="b-brgy-grp">
+                <Form.Group controlId='b_barangay' className='b-brgy-grp'>
                   <Form.Label>Barangay</Form.Label>
                   <Form.Control
-                    type="number"
-                    name="b_barangay"
+                    type='number'
+                    name='b_barangay'
                     value={formData.b_barangay}
                     onChange={handleChange}
-                    min="1"
-                    max="201"  
+                    min='1'
+                    max='201'
                     required
                     className='b-brgy-inp'
                   />
                 </Form.Group>
-                <Form.Group controlId="b_pettype" className="b-type-grp">
+                <Form.Group controlId='b_pettype' className='b-type-grp'>
                   <Form.Label>Pet Type</Form.Label>
                   <Form.Select
-                  name="b_pettype"
-                  value={formData.b_pettype}
-                  onChange={handleChange}
-                  required
-                  className='b-type-inp'
+                    name='b_pettype'
+                    value={formData.b_pettype}
+                    onChange={handleChange}
+                    required
+                    className='b-type-inp'
                   >
-                  <option value="">Pet Type</option> 
-                  <option value="Dog">Dog</option>
-                  <option value="Cat">Cat</option>
+                    <option value=''>Pet Type</option>
+                    <option value='Dog'>Dog</option>
+                    <option value='Cat'>Cat</option>
                   </Form.Select>
                 </Form.Group>
               </Form.Group>
-                <Form.Group controlId="b_ownername" >
-                  <Form.Label>Owner Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="b_ownername"
-                    value={formData.b_ownername}
-                    onChange={handleChange}
-                    required
-                  />
-                </Form.Group>
-              <Form.Group controlId="b_petname" >
+              <Form.Group controlId='b_ownername'>
+                <Form.Label>Owner Name</Form.Label>
+                <Form.Control
+                  type='text'
+                  name='b_ownername'
+                  value={formData.b_ownername}
+                  onChange={handleChange}
+                  required
+                />
+              </Form.Group>
+              <Form.Group controlId='b_petname'>
                 <Form.Label>Pet Name</Form.Label>
                 <Form.Control
-                  type="text"
-                  name="b_petname"
+                  type='text'
+                  name='b_petname'
                   value={formData.b_petname}
                   onChange={handleChange}
                   required
                 />
-
+              </Form.Group>
+              <Form.Group controlId='b_vreason'>
+                <Form.Label>Visit Reason</Form.Label>
+                <Select
+                  value={options.find(
+                    (option) => option.value === formData.b_vreason
+                  )}
+                  onChange={handleSelectChange}
+                  options={options}
+                  isClearable
+                  isSearchable
+                  placeholder='Select reason'
+                />
+              </Form.Group>
             </Form.Group>
-          </Form.Group>
 
             <Form.Group className='b-new-det1'>
-             <Form.Group className='b-new-group'>
-              <Form.Group controlId="b-type-grp">
-                <Form.Label>Pet Gender</Form.Label>
-                <Form.Select
-                  name="b_petgender"
-                  value={formData.b_petgender}
-                  onChange={handleChange}
-                  className="b-gender-inp"
-                  required
-                >
-                  <option value="">Select</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </Form.Select>
+              <Form.Group className='b-new-group'>
+                <Form.Group controlId='b-type-grp'>
+                  <Form.Label>Pet Gender</Form.Label>
+                  <Form.Select
+                    name='b_petgender'
+                    value={formData.b_petgender}
+                    onChange={handleChange}
+                    className='b-gender-inp'
+                    required
+                  >
+                    <option value=''>Select</option>
+                    <option value='Male'>Male</option>
+                    <option value='Female'>Female</option>
+                  </Form.Select>
+                </Form.Group>
+                <Form.Group controlId='b_petage' className='b-type-grp'>
+                  <Form.Label>Pet Age</Form.Label>
+                  <Form.Control
+                    type='number'
+                    name='b_petage'
+                    value={formData.b_petage}
+                    onChange={handleChange}
+                    className='b-age-inp'
+                    required
+                  />
+                </Form.Group>
               </Form.Group>
-              <Form.Group controlId="b_petage" className='b-type-grp'>
-                <Form.Label>Pet Age</Form.Label>
+
+              <Form.Group controlId='b_color'>
+                <Form.Label>Color</Form.Label>
                 <Form.Control
-                  type="number"
-                  name="b_petage"
-                  value={formData.b_petage}
+                  type='text'
+                  name='b_color'
+                  value={formData.b_color}
                   onChange={handleChange}
-                  className='b-age-inp'
                   required
                 />
               </Form.Group>
-            </Form.Group> 
-
-              <Form.Group controlId="b_color" >
-              <Form.Label>Color</Form.Label>
-              <Form.Control
-                type="text"
-                name="b_color"
-                value={formData.b_color}
-                onChange={handleChange}
-                required
-              />
-              </Form.Group>
-              <Form.Group controlId="b_address" >
-              <Form.Label>Address</Form.Label>
-              <Form.Control
-                type="text"
-                name="b_address"
-                value={formData.b_address}
-                onChange={handleChange}
-                required
-              />
+              <Form.Group controlId='b_address'>
+                <Form.Label>Address</Form.Label>
+                <Form.Control
+                  type='text'
+                  name='b_address'
+                  value={formData.b_address}
+                  onChange={handleChange}
+                  required
+                />
               </Form.Group>
             </Form.Group>
+          </Form.Group>
 
-            </Form.Group>
-            <Button variant="primary" type="submit" className='b-submit-btn'>
-              Add
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
+          <Button variant='primary' type='submit' className='b-submit-btn'>
+            Add
+          </Button>
+        </Form>
+      </Modal.Body>
+    </Modal>
     </>
   );
 };
