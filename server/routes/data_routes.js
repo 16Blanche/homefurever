@@ -13,6 +13,7 @@ const barangayController =require("../controllers/barangay_controller");
 const adoptionController = require("../controllers/adoption_controller");
 const nearbyController = require("../controllers/nearby_controller");
 const activityLogController =require("../controllers/activitylog_controller");
+const messageController =require("../controllers/message_controller");
 const { authenticateJWT, isSuperAdmin, isAdminOrSuperAdmin, isPendingUser, isVerifiedUser} = require('../middlewares/auth');
 
 module.exports = (app, upload) => {
@@ -121,4 +122,12 @@ module.exports = (app, upload) => {
 
     // api links for logs
     app.get('/api/logs/all', activityLogController.getAllActivityLogs);
+
+    // api links for user messages
+    app.get('/api/conversations', authenticateJWT, messageController.getConversations);
+    app.post('/api/new/conversation', authenticateJWT, messageController.createConversation);
+    app.get('/api/messages/:conversationId', authenticateJWT, messageController.getMessages);
+    app.post('/api/messages/send/:conversationId', authenticateJWT, messageController.sendMessage);
+
+
 };

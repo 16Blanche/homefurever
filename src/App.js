@@ -52,6 +52,9 @@ import UpdateCredentials from './components/Webpages/UpdateCredentials';
 import UpdateMessage from './components/Webpages/UpdateMessage';
 import LoggedOutBrowse from './components/Users/LoggedOutBrowse';
 import LoggedOutAboutUs from './components/Users/LoggedOutAboutUs';
+import MessageContainer from './components/Webpages/MessageContainer';
+
+import { SocketContextProvider } from './context/SocketContext';
 
 
 function App() {
@@ -59,6 +62,7 @@ function App() {
     <div className="App">
       <React.StrictMode>
         <AuthProvider>
+          <SocketContextProvider>
           <BrowserRouter>
             <Routes>
               
@@ -115,11 +119,17 @@ function App() {
 
 
 
+              <Route path="/test/message" element={<ProtectedRoute roles={['verified']}> <MessageContainer/> </ProtectedRoute>}></Route>
+
+
+
+
 
 
 
             </Routes>
           </BrowserRouter>
+          </SocketContextProvider>
         </AuthProvider>
       </React.StrictMode>
       
